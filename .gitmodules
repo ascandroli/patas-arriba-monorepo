@@ -1,0 +1,6 @@
+[submodule "server"]
+	path = server
+	url = git@github.com:jorgeberrizbeitia/patas-arriba-server.git
+[submodule "client"]
+	path = client
+	url = git@github.com:jorgeberrizbeitia/patas-arriba-client.git
