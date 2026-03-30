@@ -26,6 +26,10 @@ services:
       PORT: 5005
     volumes:
       - ./server:/app
+      # Keep container's node_modules separate from host's. Without this,
+      # native binaries (e.g. bcrypt) compiled for macOS get mounted into
+      # the Linux container and crash with "invalid ELF header".
+      - /app/node_modules
     depends_on:
       mongodb:
         condition: service_healthy
@@ -41,6 +45,7 @@ services:
       - ./client/.env.local
     volumes:
       - ./client:/app
+      - /app/node_modules  # Same reason as server — see comment above
     depends_on:
       - server
 
