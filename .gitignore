@@ -1,8 +1,6 @@
 .gitnexus
 .claude/settings.local.json
 .claude/projects/
-/.idea/.gitignore
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/patas-arriba-monorepo.iml
-/.idea/vcs.xml
+.idea/
+.entire/
+.nwave/des/
