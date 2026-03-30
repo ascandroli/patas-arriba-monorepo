@@ -64,6 +64,15 @@ To update submodules to latest:
 git submodule update --remote
 ```
 
+## Branch Protection
+
+The monorepo has branch protection to prevent internal/tool-generated branches from being pushed to GitHub:
+
+- **GitHub ruleset**: A branch ruleset blocks pushes to `entire/checkpoints/**` branches server-side. If migrating to a different Git host, recreate an equivalent rule.
+- **Local pre-push hook**: `.git/hooks/pre-push` blocks pushes to any branch matching `*entire/checkpoints*` before they leave the machine.
+
+These protections prevent AI tooling (e.g., Entire CLI) from publishing checkpoint branches to the public repository.
+
 ## AI Development Tools
 
 This project uses several tools to support AI-assisted development with Claude Code. See [`TOOLS.md`](TOOLS.md) for the full list and installation instructions.
