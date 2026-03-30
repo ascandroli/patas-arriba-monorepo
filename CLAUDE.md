@@ -46,7 +46,7 @@ This monorepo is structured to provide Claude Code with full context across both
 - **`client/CLAUDE.md`**: client-specific patterns, components, conventions
 - **`server/CLAUDE.md`**: server-specific patterns, API routes, models
 
-See [`TOOLS.md`](TOOLS.md) for the full list of AI development tools used in this project (nWave, RTK, GitNexus, Tessl, ccusage, Entire).
+See [`TOOLS.md`](docs/TOOLS.md) for the full list of AI development tools used in this project (nWave, RTK, GitNexus, Tessl, ccusage, Entire).
 
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer) - Token-Optimized Commands

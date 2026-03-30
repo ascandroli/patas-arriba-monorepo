@@ -75,7 +75,7 @@ These protections prevent AI tooling (e.g., Entire CLI) from publishing checkpoi
 
 ## AI Development Tools
 
-This project uses several tools to support AI-assisted development with Claude Code. See [`TOOLS.md`](TOOLS.md) for the full list and installation instructions.
+This project uses several tools to support AI-assisted development with Claude Code. See [`TOOLS.md`](docs/TOOLS.md) for the full list and installation instructions.
 
 | Tool | Purpose |
 |------|---------|
