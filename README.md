@@ -48,6 +48,69 @@ npm install
 npm start
 ```
 
+## Development
+
+### Option 1: Docker Compose (from host machine)
+
+Starts client, server, and MongoDB as containers:
+
+```bash
+docker compose up
+```
+
+### Option 2: Dev Container
+
+Open in VS Code with Dev Containers extension, or:
+
+```bash
+npx devcontainer up --workspace-folder .
+```
+
+Inside the devcontainer, MongoDB is already running. Start the app with:
+
+```bash
+npm run dev
+```
+
+### Scripts (root `package.json`)
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start both server and client in parallel |
+| `npm run dev:server` | Start only the server (nodemon, port 5005) |
+| `npm run dev:client` | Start only the client (Vite, port 5173) |
+| `npm run test:e2e` | Run Playwright E2E tests (headless) |
+| `npm run test:e2e:headed` | Run tests in a visible browser |
+| `npm run test:e2e:ui` | Open Playwright interactive UI mode |
+
+## E2E Tests
+
+The test suite uses Playwright and covers smoke tests, authentication flows, and a full happy path (event creation, user joining, car group management).
+
+```bash
+# Headless (parallel)
+npm run test:e2e
+
+# Visible browser, sequential (for watching tests)
+npx playwright test --headed --workers=1
+
+# Run a specific test file
+npx playwright test happy-path
+npx playwright test smoke
+npx playwright test auth
+
+# View the HTML report
+npx playwright show-report
+```
+
+The Playwright config auto-detects the environment:
+- **Host machine** — starts the full stack via `docker compose up`
+- **Dev container** — starts client/server directly via npm (MongoDB already available)
+
+Detection uses the `REMOTE_CONTAINERS` or `CODESPACES` environment variables.
+
+A global setup script (`e2e/global-setup.js`) seeds MongoDB with test accounts before each run.
+
 ## Submodule Workflow
 
 Each submodule tracks a branch in its original repository. To work on a submodule:

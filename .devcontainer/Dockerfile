@@ -6,5 +6,7 @@ RUN apt-get update && apt-get install -y \
     procps \
     && rm -rf /var/lib/apt/lists/*
 
+RUN npx playwright install-deps chromium
+
 USER node
 WORKDIR /workspace

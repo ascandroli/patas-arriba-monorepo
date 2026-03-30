@@ -8,8 +8,11 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
+  "remoteEnv": {
+    "DEVCONTAINER": "true"
+  },
   "forwardPorts": [5005, 5173, 27017],
-  "postCreateCommand": "cd /workspace/client && npm install && cd /workspace/server && npm install",
+  "postCreateCommand": "npm install && npx playwright install chromium && cd /workspace/client && npm install && cd /workspace/server && npm install",
   "customizations": {
     "vscode": {
       "extensions": [
