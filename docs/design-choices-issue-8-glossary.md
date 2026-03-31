@@ -100,6 +100,14 @@ entries:
       The process by which an organizer or admin approves a new volunteer's
       account. Until activated, the user cannot view or join events.
 
+  - term: SO
+    fullName: Segundas Oportunidades (Second Chances)
+    category: Lugar
+    definition: >
+      Animal shelter located near l'Arboç, Tarragona, that houses both dogs
+      and farm animals. One of the shelters where Fundación Patas Arriba
+      volunteers regularly go to help.
+
   - term: CES
     fullName: Captura, Esterilización, Suelta (Trap, Neuter, Return / TNR)
     category: Programa
