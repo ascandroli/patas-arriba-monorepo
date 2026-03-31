@@ -85,14 +85,6 @@ Each glossary entry is defined in a YAML file — one file per language. Here is
 
 ```yaml
 entries:
-  - term: SO
-    fullName: Segundas Oportunidades (Second Chances)
-    category: Programa
-    definition: >
-      Program dedicated to giving a second chance to animals that have been
-      abandoned or mistreated. Volunteers participate in socialization
-      activities, walks, and care for these animals.
-
   - term: Activación
     fullName: Activation
     category: Plataforma
