@@ -79,6 +79,47 @@ Replaced the "page under construction" placeholder with a fully functional, inte
 3. In `Glossary.jsx`, import the new file and add it to the `glossaries` map
 4. Add a new `ToggleButton` with the appropriate flag emoji
 
+## Glossary Entry Format
+
+Each glossary entry is defined in a YAML file — one file per language. Here is a snippet from the English version to illustrate the format:
+
+```yaml
+entries:
+  - term: SO
+    fullName: Segundas Oportunidades (Second Chances)
+    category: Programa
+    definition: >
+      Program dedicated to giving a second chance to animals that have been
+      abandoned or mistreated. Volunteers participate in socialization
+      activities, walks, and care for these animals.
+
+  - term: Activación
+    fullName: Activation
+    category: Plataforma
+    definition: >
+      The process by which an organizer or admin approves a new volunteer's
+      account. Until activated, the user cannot view or join events.
+
+  - term: CES
+    fullName: Captura, Esterilización, Suelta (Trap, Neuter, Return / TNR)
+    category: Programa
+    definition: >
+      An ethical method for controlling stray cat populations. The animal is
+      captured, neutered at a veterinary clinic, and returned to its original
+      colony.
+```
+
+Each entry has four fields:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `term` | Yes | The abbreviation or term as used in the foundation (always in Spanish, since that's what volunteers see on the platform) |
+| `fullName` | No | The expanded name. In the English file this includes the English translation in parentheses |
+| `category` | Yes | Groups the entry under a filter chip on the page (e.g., Programa, Plataforma, Rol) |
+| `definition` | Yes | A short paragraph explaining the term in context |
+
+On the page, each entry appears as a collapsible accordion — the term and category are always visible, and clicking expands it to show the full definition. Users can search across all fields and filter by category.
+
 ## Open Questions for Stakeholders
 
 - **What terms and abbreviations should be in the glossary?** The current entries are placeholders to demonstrate the format. We need the real list of terms that volunteers ask about.
