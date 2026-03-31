@@ -81,7 +81,6 @@ Replaced the "page under construction" placeholder with a fully functional, inte
 
 ## Open Questions for Stakeholders
 
-- **Are the 12 initial entries sufficient?** Or are there other terms volunteers frequently ask about?
+- **What terms and abbreviations should be in the glossary?** The current entries are placeholders to demonstrate the format. We need the real list of terms that volunteers ask about.
+- **What categories should we use to group the entries?** The current ones (Programa, Organización, Plataforma, Rol, Evento) are suggestions — stakeholders should define the groupings that make sense for the foundation.
 - **Are there other languages needed** beyond Spanish and English (e.g., Catalan)?
-- **Should the glossary be visible to anonymous users?** Currently it requires login (`OnlyPrivate` route). Making it public could help prospective volunteers.
-- **Is the current category scheme useful?** (Programa, Organización, Plataforma, Rol, Evento)
