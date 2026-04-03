@@ -58,6 +58,16 @@ Captures AI agent sessions on every git push, pairing commits with the full agen
 - **Install:** `curl -fsSL https://entire.io/install.sh | bash`
 - **Supported agents:** Claude Code, Gemini CLI, Cursor, OpenCode, GitHub Copilot CLI
 
+## Conversational Programming
+
+### [VoiceMode](https://github.com/mbailey/voicemode)
+
+Two-way voice interface for Claude Code using local Whisper (STT) and Kokoro (TTS) services. Enables hands-free conversational programming through speech.
+
+- **Install:** `pipx install voicemode`
+- **Services:** Whisper (speech-to-text), Kokoro (text-to-speech)
+- **Provides:** `converse` (speak + listen), `service` (manage Whisper/Kokoro/VoiceMode services)
+
 ## Claude Code Plugins
 
 Plugins are installed via `/plugin install` inside Claude Code and enabled in `.claude/settings.json`.

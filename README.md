@@ -145,6 +145,7 @@ This project uses several tools to support AI-assisted development with Claude C
 | [nWave](https://nwave.ai/) | AI development framework with TDD workflow |
 | [RTK](https://www.rtk-ai.app/) | Token optimization — compresses CLI output ~89% |
 | [GitNexus](https://github.com/abhigyanpatwari/GitNexus) | Codebase knowledge graph via MCP |
+| [VoiceMode](https://github.com/mbailey/voicemode) | Voice interface — hands-free conversational programming |
 | [Tessl](https://tessl.io/) | Package manager for AI agent skills/context |
 | [ccusage](https://ccusage.com/) | Claude Code token usage and cost tracking |
 | [Entire](https://entire.io/) | Git-integrated AI session history |
