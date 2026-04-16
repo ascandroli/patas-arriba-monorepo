@@ -1,0 +1,53 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: patas-arriba-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: mongosh --eval "db.runCommand('ping').ok" --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    container_name: patas-arriba-server
+    ports:
+      - "5005:5005"
+    env_file:
+      - ./server/.env
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/patas-arriba
+      PORT: 5005
+    volumes:
+      - ./server:/app
+      # Keep container's node_modules separate from host's. Without this,
+      # native binaries (e.g. bcrypt) compiled for macOS get mounted into
+      # the Linux container and crash with "invalid ELF header".
+      - /app/node_modules
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: patas-arriba-client
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./client/.env.local
+    volumes:
+      - ./client:/app
+      - /app/node_modules  # Same reason as server — see comment above
+    depends_on:
+      - server
+
+volumes:
+  mongodb_data:

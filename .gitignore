@@ -1,0 +1,9 @@
+.gitnexus
+.claude/settings.local.json
+.claude/projects/
+.idea/
+.entire/
+.nwave/des/
+node_modules/
+playwright-report/
+test-results/
