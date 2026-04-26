@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#EFB665" />
+  <title>Patas Arriba — Mobile-First Mockup</title>
+
+  <!-- Roboto Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- MUI Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- React -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- MUI v5 UMD -->
+  <script crossorigin src="https://unpkg.com/@mui/material@5.17.1/umd/material-ui.production.min.js"></script>
+
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #F5F5F5;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+    #root { min-height: 100dvh; display: flex; flex-direction: column; }
+    /* Hide scrollbar on role switcher */
+    .role-switcher::-webkit-scrollbar { display: none; }
+    .role-switcher { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module">
+    // ============================================================
+    // Patas Arriba — Mobile-First Mockup
+    // ============================================================
+
+    const {
+      ThemeProvider, createTheme,
+      CssBaseline,
+      Box, Container, Paper, Typography, Button, IconButton, TextField,
+      Card, CardContent, CardHeader, CardActions, CardActionArea,
+      Chip, Avatar, Alert, Divider, Switch, FormControlLabel,
+      List, ListItem, ListItemText, ListItemAvatar, ListItemButton, ListItemIcon, ListItemSecondaryAction,
+      AppBar, Toolbar, BottomNavigation, BottomNavigationAction, Fab,
+      Collapse, Accordion, AccordionSummary, AccordionDetails,
+      Dialog, DialogTitle, DialogContent, DialogActions,
+      Select, MenuItem, InputLabel, FormControl, InputAdornment,
+      Tab, Tabs, Badge, Tooltip, CircularProgress, LinearProgress,
+    } = MaterialUI;
+
+    const { useState, useEffect, useCallback, useMemo, createContext, useContext } = React;
+
+    // ============================================================
+    // THEME — exact replica of client/src/main.jsx
+    // ============================================================
+    const theme = createTheme({
+      typography: {
+        fontFamily: 'Roboto, sans-serif',
+        h1: { fontSize: '2rem' },
+        h2: { fontSize: '1.8rem' },
+        h3: { fontSize: '1.6rem' },
+        h4: { fontSize: '1.4rem' },
+        h5: { fontSize: '1.2rem' },
+        h6: { fontSize: '1rem' },
+        subtitle1: { fontSize: '1rem' },
+        subtitle2: { fontSize: '0.875rem' },
+        body1: { fontSize: '1rem' },
+        body2: { fontSize: '0.875rem' },
+        caption: { fontSize: '0.75rem' },
+        overline: { fontSize: '0.625rem' },
+      },
+      palette: {
+        primary: { main: '#EFB665', light: '#F4CC95', dark: '#D99946', contrastText: '#173A5E' },
+        secondary: { main: '#173A5E' },
+        text: { primary: '#173A5E', secondary: '#46505A' },
+        error: { main: '#E74C3C' },
+        info: { main: '#3498DB' },
+        success: { main: '#2ECC71' },
+        warning: { main: '#F39C12' },
+        background: { default: '#F5F5F5', paper: '#FFFFFF' },
+        grey: { 500: '#95A5A6', 300: '#CED7D9' },
+      },
+      components: {
+        MuiButton: {
+          styleOverrides: {
+            root: { minHeight: 48, borderRadius: 8, textTransform: 'none', fontWeight: 500 },
+          },
+        },
+        MuiIconButton: {
+          styleOverrides: {
+            root: { minWidth: 48, minHeight: 48 },
+          },
+        },
+        MuiCard: {
+          styleOverrides: {
+            root: { borderRadius: 12 },
+          },
+        },
+        MuiFab: {
+          styleOverrides: {
+            root: { textTransform: 'none' },
+          },
+        },
+      },
+    });
+
+    // ============================================================
+    // SAMPLE DATA
+    // ============================================================
+    const USERS = [
+      { _id: 'u1', username: 'maria_v', fullName: 'Maria Valencia', email: 'maria@example.com', phone: '+34612345678', role: 'admin', icon: 'pets', color: '#EFB665', registeredAt: '2024-06-15' },
+      { _id: 'u2', username: 'carlos_r', fullName: 'Carlos Rodriguez', email: 'carlos@example.com', phone: '+34623456789', role: 'organizer', icon: 'volunteer_activism', color: '#3498DB', registeredAt: '2024-08-20' },
+      { _id: 'u3', username: 'lucia_m', fullName: 'Lucia Martinez', email: 'lucia@example.com', phone: '+34634567890', role: 'user', icon: 'favorite', color: '#2ECC71', registeredAt: '2024-10-01' },
+      { _id: 'u4', username: 'pablo_g', fullName: 'Pablo Garcia', email: 'pablo@example.com', phone: '+34645678901', role: 'user', icon: 'star', color: '#F39C12', registeredAt: '2025-01-10' },
+      { _id: 'u5', username: 'ana_s', fullName: 'Ana Sanchez', email: 'ana@example.com', phone: '+34656789012', role: 'user', icon: 'eco', color: '#E74C3C', registeredAt: '2025-02-14' },
+      { _id: 'u6', username: 'nuevo_user', fullName: 'Pedro Lopez', email: 'pedro@example.com', phone: '+34667890123', role: 'pending', icon: 'person', color: '#95A5A6', registeredAt: '2025-03-28' },
+    ];
+
+    const EVENTS = [
+      {
+        _id: 'e1', title: 'Visita a la Protectora', category: 'protectora', location: 'Protectora Municipal de Animales, Calle Esperanza 12', date: '2026-04-05T10:00:00', status: 'open',
+        owner: USERS[1], attendees: [USERS[0], USERS[1], USERS[2], USERS[3], USERS[4]],
+        hasCarOrganization: true, hasTaskAssignment: true,
+        description: 'Jornada de voluntariado en la protectora. Necesitamos ayuda para pasear a los perros y limpiar las instalaciones. Traer ropa comoda y ganas de ayudar.',
+      },
+      {
+        _id: 'e2', title: 'Mercadillo Solidario', category: 'mercadillo', location: 'Plaza Mayor, Centro', date: '2026-04-12T09:00:00', status: 'open',
+        owner: USERS[0], attendees: [USERS[0], USERS[1], USERS[2]],
+        hasCarOrganization: true, hasTaskAssignment: false,
+        description: 'Mercadillo para recaudar fondos. Necesitamos voluntarios para montar los puestos desde las 8am.',
+      },
+      {
+        _id: 'e3', title: 'Recogida de Alimentos', category: 'recogida', location: 'Supermercado Gran Via', date: '2026-03-20T11:00:00', status: 'closed',
+        owner: USERS[1], attendees: [USERS[0], USERS[1], USERS[2], USERS[3]],
+        hasCarOrganization: false, hasTaskAssignment: true,
+        description: 'Recogida de pienso y alimentos donados para la protectora.',
+      },
+    ];
+
+    const CAR_GROUPS = [
+      {
+        _id: 'cg1', eventId: 'e1', owner: USERS[1], passengers: [USERS[2]],
+        seats: 4, brand: 'Seat Leon', color: 'Blanco', pickupLocation: 'Estacion de tren, Puerta Norte', pickupTime: '09:30',
+      },
+      {
+        _id: 'cg2', eventId: 'e1', owner: USERS[3], passengers: [],
+        seats: 3, brand: 'Renault Clio', color: 'Azul', pickupLocation: 'Plaza del Ayuntamiento', pickupTime: '09:15',
+      },
+    ];
+
+    const MESSAGES = [
+      { _id: 'm1', user: USERS[1], text: 'Recordad traer agua y gorra, hara calor!', createdAt: '2026-04-04T18:30:00' },
+      { _id: 'm2', user: USERS[2], text: 'Yo llevo bolsas extra por si acaso', createdAt: '2026-04-04T19:15:00' },
+      { _id: 'm3', user: USERS[0], text: 'Perfecto, nos vemos alli!', createdAt: '2026-04-04T20:00:00' },
+    ];
+
+    const GLOSSARY_ITEMS = [
+      { term: 'Evento', definition: 'Actividad organizada por la fundacion donde los voluntarios pueden participar.' },
+      { term: 'Grupo de coche', definition: 'Un voluntario ofrece su coche para llevar a otros al evento. Los pasajeros pueden unirse.' },
+      { term: 'Organizador', definition: 'Voluntario con permisos para crear eventos, gestionar participantes y aprobar nuevos usuarios.' },
+      { term: 'Administrador', definition: 'Maximo nivel de permisos. Puede hacer todo lo que un organizador y ademas gestionar roles.' },
+      { term: 'Protectora', definition: 'Categoria de evento. Visita a un refugio o protectora de animales.' },
+      { term: 'Recogida', definition: 'Categoria de evento. Recogida de alimentos, material o donaciones.' },
+      { term: 'Mercadillo', definition: 'Categoria de evento. Mercadillo solidario para recaudar fondos.' },
+      { term: 'Asistencia', definition: 'Estado de participacion: pendiente, asistio, no asistio, o excusado.' },
+    ];
+
+    // ============================================================
+    // ROUTING & APP CONTEXT
+    // ============================================================
+    const AppContext = createContext();
+
+    function useRouter() {
+      const [hash, setHash] = useState(window.location.hash.slice(1) || 'home');
+      useEffect(() => {
+        const onHash = () => setHash(window.location.hash.slice(1) || 'home');
+        window.addEventListener('hashchange', onHash);
+        return () => window.removeEventListener('hashchange', onHash);
+      }, []);
+      const navigate = useCallback((h) => { window.location.hash = h; }, []);
+      return { route: hash, navigate };
+    }
+
+    // ============================================================
+    // HELPER COMPONENTS
+    // ============================================================
+    function MIcon({ name, sx, ...props }) {
+      return <span className="material-icons" style={{ fontSize: 24, ...sx }} {...props}>{name}</span>;
+    }
+
+    function BackLink({ to, label }) {
+      const { navigate } = useContext(AppContext);
+      return (
+        <Button startIcon={<MIcon name="arrow_back" />} onClick={() => navigate(to)} sx={{ mb: 1, pl: 0, justifyContent: 'flex-start', color: 'text.secondary' }}>
+          {label || 'Volver'}
+        </Button>
+      );
+    }
+
+    function CornerChip({ label, bgcolor, color, side = 'left' }) {
+      return (
+        <Box sx={{
+          position: 'absolute', top: 0, [side]: 0,
+          bgcolor, color, px: 1.5, py: 0.5,
+          borderBottomRightRadius: side === 'left' ? 12 : 0,
+          borderBottomLeftRadius: side === 'right' ? 12 : 0,
+          fontSize: '0.75rem', fontWeight: 500, zIndex: 1,
+        }}>
+          {label}
+        </Box>
+      );
+    }
+
+    function UserAvatar({ user, size = 40 }) {
+      return (
+        <Avatar sx={{ bgcolor: user.color, width: size, height: size }}>
+          <MIcon name={user.icon} sx={{ fontSize: size * 0.6 }} />
+        </Avatar>
+      );
+    }
+
+    function UserCard({ user, onClick }) {
+      return (
+        <ListItemButton onClick={onClick} sx={{ borderRadius: 2, mb: 0.5, minHeight: 56 }}>
+          <ListItemAvatar><UserAvatar user={user} /></ListItemAvatar>
+          <ListItemText
+            primary={user.username}
+            secondary={user.fullName}
+            primaryTypographyProps={{ fontWeight: 500 }}
+          />
+          {user.role === 'pending' && <Chip label="Pendiente" size="small" color="warning" />}
+          {user.role === 'organizer' && <Chip label="Organizador" size="small" color="info" variant="outlined" />}
+          {user.role === 'admin' && <Chip label="Admin" size="small" color="secondary" variant="outlined" />}
+        </ListItemButton>
+      );
+    }
+
+    function SectionTitle({ children, sx }) {
+      return <Typography variant="h5" sx={{ fontWeight: 600, mb: 1.5, mt: 2, ...sx }}>{children}</Typography>;
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    function formatTime(dateStr) {
+      return new Date(dateStr).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    }
+    function capitalizeAll(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function getTimeFrame(dateStr) {
+      const eventDate = new Date(dateStr); eventDate.setHours(0,0,0,0);
+      const today = new Date(); today.setHours(0,0,0,0);
+      if (eventDate.toDateString() === today.toDateString()) return 'today';
+      return eventDate > today ? 'upcoming' : 'past';
+    }
+
+    const CATEGORY_ICONS = { protectora: 'pets', recogida: 'inventory_2', mercadillo: 'storefront', otro: 'event' };
+
+    // ============================================================
+    // EVENT CARD — mobile-first redesign
+    // ============================================================
+    function EventCard({ event, onTap }) {
+      const tf = getTimeFrame(event.date);
+      const tfLabel = tf === 'upcoming' ? 'Proximo' : tf === 'today' ? 'Hoy' : 'Pasado';
+      const tfColor = tf === 'upcoming' ? 'primary.main' : tf === 'today' ? 'info.main' : '#95A5A6';
+
+      const { role } = useContext(AppContext);
+      const isJoined = role !== 'anon';
+
+      return (
+        <Card elevation={2} sx={{ mb: 2, position: 'relative', overflow: 'visible' }}>
+          <CornerChip label={tfLabel} bgcolor={tfColor} color={tf === 'upcoming' ? '#173A5E' : '#fff'} />
+          <CardActionArea onClick={onTap} sx={{ p: 0 }}>
+            <CardContent sx={{ pt: 3.5 }}>
+              {/* Title row */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <MIcon name={CATEGORY_ICONS[event.category] || 'event'} sx={{ color: '#856329', fontSize: 22 }} />
+                <Typography variant="h5" sx={{ fontWeight: 600, flex: 1 }}>{event.title}</Typography>
+              </Box>
+
+              {/* Info rows */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, ml: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="place" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{event.location}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="event" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{formatDate(event.date)}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="schedule" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{formatTime(event.date)}</Typography>
+                </Box>
+              </Box>
+
+              {/* Chips row */}
+              <Box sx={{ display: 'flex', gap: 0.75, mt: 1.5, flexWrap: 'wrap' }}>
+                <Chip label={capitalizeAll(event.category)} size="small" variant="outlined" sx={{ borderColor: '#856329', color: '#856329' }} />
+                <Chip icon={<MIcon name="group" sx={{ fontSize: 16 }} />} label={`${event.attendees.length} participantes`} size="small" variant="outlined" />
+                {event.hasCarOrganization && <Chip icon={<MIcon name="directions_car" sx={{ fontSize: 16 }} />} label="Coches" size="small" variant="outlined" />}
+                {isJoined && <Chip label="Apuntado" size="small" color="success" />}
+                {event.status === 'closed' && <Chip label="Cerrado" size="small" color="warning" />}
+                {event.status === 'cancelled' && <Chip label="Cancelado" size="small" color="error" />}
+              </Box>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: HOME
+    // ============================================================
+    function HomeScreen() {
+      const { role, navigate } = useContext(AppContext);
+
+      if (role === 'anon') {
+        return (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, px: 3, textAlign: 'center', gap: 3 }}>
+            {/* Logo placeholder */}
+            <Box sx={{ width: 200, height: 200, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MIcon name="pets" sx={{ fontSize: 80, color: '#173A5E' }} />
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>Patas Arriba</Typography>
+            <Typography variant="body1" color="text.secondary">
+              En esta pagina podras ver y participar en eventos de la fundacion Patas Arriba
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%', maxWidth: 320 }}>
+              <Button variant="contained" size="large" fullWidth onClick={() => navigate('signup')} sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+                Registrate
+              </Button>
+              <Button variant="outlined" size="large" fullWidth onClick={() => navigate('login')} sx={{ borderColor: 'primary.main', color: '#173A5E' }}>
+                Inicia Sesion
+              </Button>
+            </Box>
+          </Box>
+        );
+      }
+
+      // Logged-in: show upcoming events
+      const upcoming = EVENTS.filter(e => getTimeFrame(e.date) !== 'past');
+      return (
+        <Box sx={{ pb: 2 }}>
+          <SectionTitle>Proximos Eventos</SectionTitle>
+          {upcoming.length === 0 && <Alert severity="info">No hay eventos proximos</Alert>}
+          {upcoming.map(e => <EventCard key={e._id} event={e} onTap={() => navigate('event-details')} />)}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: LOGIN
+    // ============================================================
+    function LoginScreen() {
+      const { navigate } = useContext(AppContext);
+      const [showPw, setShowPw] = useState(false);
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="home" label="Volver" />
+          <SectionTitle sx={{ mt: 0 }}>Acceso</SectionTitle>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField label="Correo Electronico o Nombre de Usuario" fullWidth required autoComplete="username" />
+            <TextField label="Contrasena" type={showPw ? 'text' : 'password'} fullWidth required autoComplete="current-password"
+              InputProps={{ endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPw(!showPw)} edge="end"><MIcon name={showPw ? 'visibility_off' : 'visibility'} /></IconButton>
+                </InputAdornment>
+              )}}
+            />
+            <Button variant="contained" size="large" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+              Accede
+            </Button>
+            <Button size="small" onClick={() => navigate('password-forget')} sx={{ color: 'info.main' }}>
+              Olvidaste tu contrasena?
+            </Button>
+            <Button size="small" onClick={() => navigate('signup')} sx={{ color: 'info.main' }}>
+              Si no tienes cuenta, registrate aqui
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: SIGNUP
+    // ============================================================
+    function SignupScreen() {
+      const { navigate } = useContext(AppContext);
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="home" label="Volver" />
+          <SectionTitle sx={{ mt: 0 }}>Registro</SectionTitle>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField label="Correo Electronico" type="email" fullWidth required />
+            <TextField label="Nombre de Usuario" fullWidth required helperText="3-15 caracteres, sin espacios" />
+            <TextField label="Nombre Completo" fullWidth required helperText="3-30 caracteres" />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <FormControl sx={{ minWidth: 100 }}>
+                <InputLabel>Codigo</InputLabel>
+                <Select defaultValue="+34" label="Codigo">
+                  <MenuItem value="+34">+34</MenuItem>
+                  <MenuItem value="+1">+1</MenuItem>
+                  <MenuItem value="+44">+44</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField label="Numero de Movil" fullWidth required type="tel" />
+            </Box>
+            <Alert severity="warning" variant="outlined" sx={{ fontSize: '0.8rem' }}>
+              Tu numero de telefono puede ser compartido con otros voluntarios para la coordinacion de eventos
+            </Alert>
+            <TextField label="Contrasena" type="password" fullWidth required helperText="Min 6 caracteres, 1 numero, 1 minuscula, 1 mayuscula" />
+            <TextField label="Confirmar Contrasena" type="password" fullWidth required />
+            <Button variant="contained" size="large" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+              Registrate
+            </Button>
+            <Alert severity="info" variant="outlined" sx={{ fontSize: '0.8rem' }}>
+              Despues de registrarte, contacta a un administrador para activar tu cuenta
+            </Alert>
+            <Button size="small" onClick={() => navigate('login')} sx={{ color: 'info.main' }}>
+              Si ya tienes cuenta, accede aqui
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: PASSWORD FORGET
+    // ============================================================
+    function PasswordForgetScreen() {
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="home" label="Volver" />
+          <SectionTitle sx={{ mt: 0 }}>Recuperar contrasena</SectionTitle>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Introduce tu correo electronico y te enviaremos un enlace para restablecer tu contrasena.
+          </Typography>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField label="Correo Electronico" type="email" fullWidth required />
+            <Button variant="contained" size="large" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+              Enviar
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: PASSWORD RESET
+    // ============================================================
+    function PasswordResetScreen() {
+      return (
+        <Box sx={{ pb: 2 }}>
+          <SectionTitle>Nueva contrasena</SectionTitle>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField label="Nueva Contrasena" type="password" fullWidth required helperText="Min 6 caracteres, 1 numero, 1 minuscula, 1 mayuscula" />
+            <TextField label="Confirmar Contrasena" type="password" fullWidth required />
+            <Button variant="contained" size="large" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+              Actualizar contrasena
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: EVENT LIST
+    // ============================================================
+    function EventListScreen() {
+      const { navigate } = useContext(AppContext);
+      const [timeFrame, setTimeFrame] = useState('upcoming');
+
+      const filtered = EVENTS.filter(e => {
+        const tf = getTimeFrame(e.date);
+        return timeFrame === 'upcoming' ? (tf === 'upcoming' || tf === 'today') : tf === 'past';
+      });
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Aqui podras ver todos los eventos proximos y mas recientes
+          </Typography>
+
+          {/* Toggle */}
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <Button variant={timeFrame === 'upcoming' ? 'contained' : 'outlined'} onClick={() => setTimeFrame('upcoming')}
+              sx={{ flex: 1, bgcolor: timeFrame === 'upcoming' ? 'primary.main' : 'transparent', color: '#173A5E' }}>
+              Proximos
+            </Button>
+            <Button variant={timeFrame === 'past' ? 'contained' : 'outlined'} onClick={() => setTimeFrame('past')}
+              sx={{ flex: 1, bgcolor: timeFrame === 'past' ? 'primary.main' : 'transparent', color: '#173A5E' }}>
+              Pasados
+            </Button>
+          </Box>
+
+          {filtered.length === 0 && <Alert severity="info">No se han encontrado eventos</Alert>}
+          {filtered.map(e => <EventCard key={e._id} event={e} onTap={() => navigate('event-details')} />)}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: EVENT DETAILS
+    // ============================================================
+    function EventDetailsScreen() {
+      const { navigate, role } = useContext(AppContext);
+      const event = EVENTS[0]; // sample: Visita a la Protectora
+      const [joined, setJoined] = useState(true);
+      const [expandDesc, setExpandDesc] = useState(false);
+      const [expandParticipants, setExpandParticipants] = useState(false);
+      const [expandCars, setExpandCars] = useState(false);
+
+      const isOrgOrAdmin = role === 'organizer' || role === 'admin';
+      const totalCarSeats = CAR_GROUPS.reduce((acc, cg) => acc + cg.seats - cg.passengers.length, 0);
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-list" label="Eventos" />
+
+          {/* Event card (detail mode) */}
+          <Card elevation={2} sx={{ mb: 2, position: 'relative' }}>
+            <CornerChip label="Proximo" bgcolor="primary.main" color="#173A5E" />
+            <CardContent sx={{ pt: 3.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name={CATEGORY_ICONS[event.category]} sx={{ color: '#856329', fontSize: 22 }} />
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>{event.title}</Typography>
+                </Box>
+                {isOrgOrAdmin && (
+                  <IconButton onClick={() => navigate('event-edit')} sx={{ color: 'primary.dark' }}>
+                    <MIcon name="edit" />
+                  </IconButton>
+                )}
+              </Box>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 1, ml: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="place" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{event.location}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="event" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{formatDate(event.date)}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="schedule" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{formatTime(event.date)}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="group" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">{event.attendees.length} participantes</Typography>
+                </Box>
+                {event.hasCarOrganization && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <MIcon name="directions_car" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                    <Typography variant="body2" color="text.secondary">{totalCarSeats} plazas en coche disponibles</Typography>
+                  </Box>
+                )}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="person" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">Organizado por: <span style={{ color: '#3498DB', cursor: 'pointer' }} onClick={() => navigate('user-details')}>{event.owner.username}</span></Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 0.75, mt: 1.5, flexWrap: 'wrap' }}>
+                <Chip label="Estado: Abierto" size="small" color="primary" />
+                <Chip label={capitalizeAll(event.category)} size="small" variant="outlined" sx={{ borderColor: '#856329', color: '#856329' }} />
+                {joined && <Chip label="Apuntado" size="small" color="success" />}
+              </Box>
+            </CardContent>
+          </Card>
+
+          {/* Manage participants button (org/admin) */}
+          {isOrgOrAdmin && (
+            <Button variant="outlined" fullWidth onClick={() => navigate('event-manage')} startIcon={<MIcon name="manage_accounts" />}
+              sx={{ mb: 2, borderColor: 'primary.dark', color: '#173A5E' }}>
+              Gestiona los participantes
+            </Button>
+          )}
+
+          {/* Join / Status */}
+          {!joined ? (
+            <Button variant="contained" size="large" fullWidth onClick={() => setJoined(true)}
+              sx={{ mb: 2, bgcolor: 'success.main', color: '#fff', fontWeight: 600, '&:hover': { bgcolor: '#27ae60' } }}
+              startIcon={<MIcon name="person_add" />}>
+              Unete al evento!
+            </Button>
+          ) : (
+            <Alert severity="success" sx={{ mb: 2 }}>Ya estas apuntado al evento!</Alert>
+          )}
+
+          {/* Collapsible sections */}
+          {joined && (
+            <React.Fragment>
+              {/* Description */}
+              <Accordion expanded={expandDesc} onChange={() => setExpandDesc(!expandDesc)} disableGutters elevation={1} sx={{ mb: 1, borderRadius: '12px !important', '&:before': { display: 'none' } }}>
+                <AccordionSummary expandIcon={<MIcon name="expand_more" />}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <MIcon name="description" sx={{ fontSize: 20, color: 'text.secondary' }} />
+                    <Typography fontWeight={500}>Descripcion del evento</Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography variant="body2" color="text.secondary">{event.description}</Typography>
+                </AccordionDetails>
+              </Accordion>
+
+              {/* Participants */}
+              <Accordion expanded={expandParticipants} onChange={() => setExpandParticipants(!expandParticipants)} disableGutters elevation={1} sx={{ mb: 1, borderRadius: '12px !important', '&:before': { display: 'none' } }}>
+                <AccordionSummary expandIcon={<MIcon name="expand_more" />}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <MIcon name="group" sx={{ fontSize: 20, color: 'text.secondary' }} />
+                    <Typography fontWeight={500}>Participantes ({event.attendees.length})</Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 0 }}>
+                  <List dense>
+                    {event.attendees.map(u => (
+                      <UserCard key={u._id} user={u} onClick={() => navigate('user-details')} />
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+
+              {/* Car Groups */}
+              {event.hasCarOrganization && (
+                <Accordion expanded={expandCars} onChange={() => setExpandCars(!expandCars)} disableGutters elevation={1} sx={{ mb: 1, borderRadius: '12px !important', '&:before': { display: 'none' } }}>
+                  <AccordionSummary expandIcon={<MIcon name="expand_more" />}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <MIcon name="directions_car" sx={{ fontSize: 20, color: 'text.secondary' }} />
+                      <Typography fontWeight={500}>Grupos de coche ({CAR_GROUPS.length})</Typography>
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 1 }}>
+                    {CAR_GROUPS.map(cg => (
+                      <Card key={cg._id} variant="outlined" sx={{ mb: 1, cursor: 'pointer' }} onClick={() => navigate('car-group-details')}>
+                        <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box>
+                              <Typography variant="body2" fontWeight={500}>{cg.owner.username}</Typography>
+                              <Typography variant="caption" color="text.secondary">{cg.brand} - {cg.color}</Typography>
+                            </Box>
+                            <Chip label={`${cg.seats - cg.passengers.length} plazas`} size="small" color={cg.seats - cg.passengers.length > 0 ? 'success' : 'default'} />
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    ))}
+
+                    {/* Car group action */}
+                    <Alert severity="warning" variant="outlined" sx={{ mt: 1, mb: 1 }}>
+                      No tienes un coche asignado para este evento
+                    </Alert>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button variant="contained" size="small" fullWidth onClick={() => navigate('car-group-create')}
+                        sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 500, flex: 1 }}
+                        startIcon={<MIcon name="directions_car" sx={{ fontSize: 18 }} />}>
+                        Voy con mi coche
+                      </Button>
+                      <Button variant="outlined" size="small" fullWidth onClick={() => navigate('car-group-search')}
+                        sx={{ borderColor: 'primary.dark', color: '#173A5E', flex: 1 }}
+                        startIcon={<MIcon name="search" sx={{ fontSize: 18 }} />}>
+                        Buscar coche
+                      </Button>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              )}
+
+              {/* Message Board */}
+              <Card elevation={1} sx={{ mb: 2, mt: 1 }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                    <MIcon name="chat" sx={{ fontSize: 20, color: 'text.secondary' }} />
+                    <Typography fontWeight={500}>Mensajes</Typography>
+                  </Box>
+                  {MESSAGES.map(m => (
+                    <Box key={m._id} sx={{ mb: 1.5, display: 'flex', gap: 1 }}>
+                      <UserAvatar user={m.user} size={32} />
+                      <Box>
+                        <Typography variant="caption" fontWeight={500}>{m.user.username} <span style={{ fontWeight: 400, color: '#46505A' }}>{formatTime(m.createdAt)}</span></Typography>
+                        <Typography variant="body2">{m.text}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                  <TextField placeholder="Escribe un mensaje..." fullWidth size="small" sx={{ mt: 1 }}
+                    InputProps={{ endAdornment: <IconButton><MIcon name="send" /></IconButton> }}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Leave event */}
+              <Button variant="outlined" fullWidth color="error" startIcon={<MIcon name="logout" />} sx={{ mb: 2 }}>
+                Abandonar evento
+              </Button>
+            </React.Fragment>
+          )}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: EVENT CREATE
+    // ============================================================
+    function EventCreateScreen() {
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-list" label="Eventos" />
+          <SectionTitle sx={{ mt: 0 }}>Crear Evento</SectionTitle>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel>Categoria</InputLabel>
+              <Select defaultValue="" label="Categoria">
+                <MenuItem value="protectora">Protectora</MenuItem>
+                <MenuItem value="recogida">Recogida</MenuItem>
+                <MenuItem value="mercadillo">Mercadillo</MenuItem>
+                <MenuItem value="otro">Otro</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField label="Titulo" fullWidth required inputProps={{ maxLength: 50 }} />
+            <TextField label="Lugar" fullWidth required inputProps={{ maxLength: 50 }} />
+            <TextField label="Fecha" type="date" fullWidth required InputLabelProps={{ shrink: true }} />
+            <TextField label="Hora" type="time" fullWidth required InputLabelProps={{ shrink: true }} />
+            <FormControl fullWidth>
+              <InputLabel>Requiere grupos de coches?</InputLabel>
+              <Select defaultValue="si" label="Requiere grupos de coches?">
+                <MenuItem value="si">Si</MenuItem>
+                <MenuItem value="no">No</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Requiere asignar tareas?</InputLabel>
+              <Select defaultValue="si" label="Requiere asignar tareas?">
+                <MenuItem value="si">Si</MenuItem>
+                <MenuItem value="no">No</MenuItem>
+              </Select>
+            </FormControl>
+            <Button variant="contained" size="large" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+              Crear Evento
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: EVENT EDIT
+    // ============================================================
+    function EventEditScreen() {
+      const { navigate } = useContext(AppContext);
+      const [tab, setTab] = useState(0);
+      const event = EVENTS[0];
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-details" label="Evento" />
+          <SectionTitle sx={{ mt: 0 }}>Editar evento</SectionTitle>
+          <Tabs value={tab} onChange={(e, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ mb: 2, '& .MuiTab-root': { minHeight: 48, textTransform: 'none' } }}>
+            <Tab label="Info basica" />
+            <Tab label="Descripcion" />
+            <Tab label="Estado" sx={{ color: 'warning.main' }} />
+            <Tab label="Eliminar" sx={{ color: 'error.main' }} />
+          </Tabs>
+
+          {tab === 0 && (
+            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField label="Titulo" defaultValue={event.title} fullWidth />
+              <FormControl fullWidth>
+                <InputLabel>Categoria</InputLabel>
+                <Select defaultValue={event.category} label="Categoria">
+                  <MenuItem value="protectora">Protectora</MenuItem>
+                  <MenuItem value="recogida">Recogida</MenuItem>
+                  <MenuItem value="mercadillo">Mercadillo</MenuItem>
+                  <MenuItem value="otro">Otro</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField label="Lugar" defaultValue={event.location} fullWidth />
+              <TextField label="Fecha" type="date" defaultValue="2026-04-05" fullWidth InputLabelProps={{ shrink: true }} />
+              <TextField label="Hora" type="time" defaultValue="10:00" fullWidth InputLabelProps={{ shrink: true }} />
+              <Button variant="contained" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>Guardar cambios</Button>
+            </Box>
+          )}
+          {tab === 1 && (
+            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField label="Descripcion" multiline rows={6} defaultValue={event.description} fullWidth />
+              <Button variant="contained" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>Guardar descripcion</Button>
+            </Box>
+          )}
+          {tab === 2 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Alert severity="info">Estado actual: <strong>Abierto</strong></Alert>
+              <Button variant="contained" fullWidth color="warning" sx={{ fontWeight: 600 }}>Cerrar evento</Button>
+              <Button variant="contained" fullWidth color="error" sx={{ fontWeight: 600 }}>Cancelar evento</Button>
+            </Box>
+          )}
+          {tab === 3 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center', pt: 2 }}>
+              <MIcon name="warning" sx={{ fontSize: 48, color: '#E74C3C' }} />
+              <Typography variant="body1" textAlign="center" color="text.secondary">
+                Esta accion eliminara el evento y todos los datos asociados (participantes, grupos de coche, mensajes).
+              </Typography>
+              <Button variant="contained" fullWidth color="error" sx={{ fontWeight: 600 }}>Eliminar evento</Button>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: EVENT MANAGE
+    // ============================================================
+    function EventManageScreen() {
+      const { navigate } = useContext(AppContext);
+      const [tab, setTab] = useState(0);
+      const event = EVENTS[0];
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-details" label="Evento" />
+          <Typography variant="h5" fontWeight={600}>{event.title}</Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>{formatDate(event.date)}</Typography>
+
+          {event.status === 'open' && (
+            <Alert severity="warning" sx={{ my: 1 }}>Recomendamos cerrar el evento antes de gestionar los participantes</Alert>
+          )}
+
+          <Tabs value={tab} onChange={(e, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ mb: 2, mt: 1, '& .MuiTab-root': { minHeight: 48, textTransform: 'none' } }}>
+            <Tab label="Por coches" />
+            <Tab label="Tareas" />
+            <Tab label="Asistencia" />
+          </Tabs>
+
+          {tab === 0 && (
+            <Box>
+              {CAR_GROUPS.map(cg => (
+                <Card key={cg._id} variant="outlined" sx={{ mb: 1.5 }}>
+                  <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                    <Typography variant="body2" fontWeight={600}>{cg.brand} - {cg.owner.username} (conductor)</Typography>
+                    {cg.passengers.length > 0 ? cg.passengers.map(p => (
+                      <Typography key={p._id} variant="body2" color="text.secondary" sx={{ ml: 2 }}>- {p.username}</Typography>
+                    )) : <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>Sin pasajeros</Typography>}
+                  </CardContent>
+                </Card>
+              ))}
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Sin coche asignado: {event.attendees.filter(a => !CAR_GROUPS.some(cg => cg.owner._id === a._id || cg.passengers.some(p => p._id === a._id))).map(a => a.username).join(', ') || 'Ninguno'}
+              </Typography>
+            </Box>
+          )}
+          {tab === 1 && (
+            <Box>
+              {event.attendees.map(u => (
+                <Box key={u._id} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <UserAvatar user={u} size={32} />
+                  <Typography variant="body2" sx={{ flex: 1 }}>{u.username}</Typography>
+                  <TextField size="small" placeholder="Tarea..." sx={{ flex: 2 }} defaultValue={u._id === 'u3' ? 'Pasear perros zona B' : ''} />
+                </Box>
+              ))}
+              <Button variant="contained" fullWidth sx={{ mt: 1, bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>Guardar tareas</Button>
+            </Box>
+          )}
+          {tab === 2 && (
+            <Box>
+              {event.attendees.map(u => (
+                <Box key={u._id} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <UserAvatar user={u} size={32} />
+                  <Typography variant="body2" sx={{ flex: 1 }}>{u.username}</Typography>
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <Select defaultValue="pending" size="small">
+                      <MenuItem value="pending">Pendiente</MenuItem>
+                      <MenuItem value="show">Asistio</MenuItem>
+                      <MenuItem value="no-show">No asistio</MenuItem>
+                      <MenuItem value="excused">Excusado</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
+              ))}
+              <Button variant="contained" fullWidth sx={{ mt: 1, bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>Guardar asistencia</Button>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: CAR GROUP CREATE
+    // ============================================================
+    function CarGroupCreateScreen() {
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-details" label="Evento" />
+          <SectionTitle sx={{ mt: 0 }}>Crea un grupo de coche</SectionTitle>
+          <Alert severity="info" variant="outlined" sx={{ mb: 2, fontSize: '0.8rem' }}>
+            Todos los campos se pueden modificar luego
+          </Alert>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField label="Plazas disponibles" type="number" fullWidth required inputProps={{ min: 1 }} />
+            <TextField label="Marca y modelo del coche" fullWidth required />
+            <TextField label="Color del coche" fullWidth required />
+            <TextField label="Direccion de recogida" fullWidth required />
+            <TextField label="Hora de recogida" type="time" fullWidth required InputLabelProps={{ shrink: true }} helperText="La fecha sera la del evento" />
+            <Button variant="contained" size="large" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>
+              Crear Grupo de coche
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: CAR GROUP SEARCH
+    // ============================================================
+    function CarGroupSearchScreen() {
+      const [selected, setSelected] = useState(null);
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-details" label="Evento" />
+          <SectionTitle sx={{ mt: 0 }}>Coches disponibles</SectionTitle>
+          {CAR_GROUPS.filter(cg => cg.seats - cg.passengers.length > 0).map(cg => (
+            <Card key={cg._id} variant="outlined" sx={{ mb: 1.5, border: selected === cg._id ? '2px solid #EFB665' : undefined, cursor: 'pointer' }}
+              onClick={() => setSelected(cg._id)}>
+              <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box>
+                    <Typography variant="body1" fontWeight={500}>{cg.owner.username}</Typography>
+                    <Typography variant="body2" color="text.secondary">{cg.brand} - {cg.color}</Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <MIcon name="place" sx={{ fontSize: 16, color: 'text.secondary' }} />
+                        <Typography variant="caption" color="text.secondary">{cg.pickupLocation}</Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <MIcon name="schedule" sx={{ fontSize: 16, color: 'text.secondary' }} />
+                      <Typography variant="caption" color="text.secondary">{cg.pickupTime}</Typography>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                    <Chip label={`${cg.seats - cg.passengers.length} plazas`} size="small" color="success" />
+                    {selected === cg._id ? (
+                      <MIcon name="check_circle" sx={{ color: '#EFB665', fontSize: 28 }} />
+                    ) : (
+                      <MIcon name="add_circle_outline" sx={{ color: '#95A5A6', fontSize: 28 }} />
+                    )}
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+          <Button variant="contained" size="large" fullWidth disabled={!selected}
+            sx={{ mt: 1, bgcolor: selected ? 'primary.main' : undefined, color: '#173A5E', fontWeight: 600 }}>
+            {selected ? 'Unete al grupo de coche!' : 'Selecciona un grupo de coche'}
+          </Button>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: CAR GROUP DETAILS
+    // ============================================================
+    function CarGroupDetailsScreen() {
+      const { navigate } = useContext(AppContext);
+      const cg = CAR_GROUPS[0];
+      const [expandMembers, setExpandMembers] = useState(false);
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="event-details" label="Evento" />
+          <SectionTitle sx={{ mt: 0 }}>Detalles del grupo de coche</SectionTitle>
+
+          <Card elevation={2} sx={{ mb: 2 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                <Typography variant="h6" fontWeight={600}>Tu coche</Typography>
+                <IconButton onClick={() => navigate('car-group-edit')} sx={{ color: 'primary.dark' }}>
+                  <MIcon name="edit" />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="place" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2"><strong>Lugar de recogida:</strong> {cg.pickupLocation}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="schedule" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2"><strong>Hora de recogida:</strong> {cg.pickupTime}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="directions_car" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2"><strong>Coche:</strong> {cg.brand} - {cg.color}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="event_seat" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2"><strong>Plazas disponibles:</strong> {cg.seats - cg.passengers.length}</Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+
+          {/* Members */}
+          <Accordion expanded={expandMembers} onChange={() => setExpandMembers(!expandMembers)} disableGutters elevation={1} sx={{ mb: 2, borderRadius: '12px !important', '&:before': { display: 'none' } }}>
+            <AccordionSummary expandIcon={<MIcon name="expand_more" />}>
+              <Typography fontWeight={500}>Conductor y pasajeros: {1 + cg.passengers.length}</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ p: 0 }}>
+              <List dense>
+                <UserCard user={cg.owner} onClick={() => navigate('user-details')} />
+                {cg.passengers.map(p => <UserCard key={p._id} user={p} onClick={() => navigate('user-details')} />)}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Messages */}
+          <Card elevation={1} sx={{ mb: 2 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                <MIcon name="chat" sx={{ fontSize: 20, color: 'text.secondary' }} />
+                <Typography fontWeight={500}>Mensajes del grupo</Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>No hay mensajes aun</Typography>
+              <TextField placeholder="Escribe un mensaje..." fullWidth size="small" sx={{ mt: 1 }}
+                InputProps={{ endAdornment: <IconButton><MIcon name="send" /></IconButton> }}
+              />
+            </CardContent>
+          </Card>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: CAR GROUP EDIT
+    // ============================================================
+    function CarGroupEditScreen() {
+      const [tab, setTab] = useState(0);
+      const cg = CAR_GROUPS[0];
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="car-group-details" label="Grupo de coche" />
+          <SectionTitle sx={{ mt: 0 }}>Editar grupo de coche</SectionTitle>
+          <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { minHeight: 48, textTransform: 'none' } }}>
+            <Tab label="Editar info" />
+            <Tab label="Eliminar" sx={{ color: 'error.main' }} />
+          </Tabs>
+
+          {tab === 0 && (
+            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField label="Plazas disponibles" type="number" defaultValue={cg.seats} fullWidth />
+              <TextField label="Marca y modelo" defaultValue={cg.brand} fullWidth />
+              <TextField label="Color" defaultValue={cg.color} fullWidth />
+              <TextField label="Direccion de recogida" defaultValue={cg.pickupLocation} fullWidth />
+              <TextField label="Hora de recogida" type="time" defaultValue={cg.pickupTime} fullWidth InputLabelProps={{ shrink: true }} />
+              <Button variant="contained" fullWidth sx={{ bgcolor: 'primary.main', color: '#173A5E', fontWeight: 600 }}>Guardar cambios</Button>
+            </Box>
+          )}
+          {tab === 1 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center', pt: 2 }}>
+              <MIcon name="warning" sx={{ fontSize: 48, color: '#E74C3C' }} />
+              <Typography variant="body1" textAlign="center" color="text.secondary">
+                Esta accion eliminara el grupo de coche y todos los pasajeros seran removidos.
+              </Typography>
+              <Button variant="contained" fullWidth color="error" sx={{ fontWeight: 600 }}>Eliminar grupo de coche</Button>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: USER LIST
+    // ============================================================
+    function UserListScreen() {
+      const { navigate } = useContext(AppContext);
+      const [search, setSearch] = useState('');
+      const pending = USERS.filter(u => u.role === 'pending');
+      const active = USERS.filter(u => u.role !== 'pending').filter(u =>
+        !search || u.username.toLowerCase().includes(search.toLowerCase()) || u.fullName.toLowerCase().includes(search.toLowerCase())
+      );
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          {pending.length > 0 && (
+            <React.Fragment>
+              <SectionTitle>Por aprobacion</SectionTitle>
+              <List>
+                {pending.map(u => <UserCard key={u._id} user={u} onClick={() => navigate('user-details')} />)}
+              </List>
+              <Divider sx={{ my: 1 }} />
+            </React.Fragment>
+          )}
+          <SectionTitle>Usuarios</SectionTitle>
+          <TextField placeholder="Buscar por nombre o usuario..." fullWidth size="small" sx={{ mb: 2 }}
+            value={search} onChange={e => setSearch(e.target.value)}
+            InputProps={{ startAdornment: <InputAdornment position="start"><MIcon name="search" sx={{ fontSize: 20 }} /></InputAdornment> }}
+          />
+          <List>
+            {active.map(u => <UserCard key={u._id} user={u} onClick={() => navigate('user-details')} />)}
+          </List>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: USER DETAILS
+    // ============================================================
+    function UserDetailsScreen() {
+      const { role } = useContext(AppContext);
+      const user = USERS[5]; // pending user
+      const isOrgOrAdmin = role === 'organizer' || role === 'admin';
+
+      return (
+        <Box sx={{ pb: 2 }}>
+          <BackLink to="user-list" label="Usuarios" />
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, mb: 2 }}>
+            <UserAvatar user={user} size={80} />
+            <Typography variant="h5" fontWeight={600}>{user.username}</Typography>
+            <Typography variant="body1" color="text.secondary">{user.fullName}</Typography>
+            {user.role !== 'user' && user.role !== 'pending' && (
+              <Chip label={capitalizeAll(user.role)} color="info" size="small" />
+            )}
+          </Box>
+          <Card elevation={1} sx={{ mb: 2 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="phone" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2">{user.phone}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MIcon name="calendar_today" sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Typography variant="body2">Registrado: {formatDate(user.registeredAt)}</Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+
+          {isOrgOrAdmin && user.role === 'pending' && (
+            <React.Fragment>
+              <Alert severity="warning" sx={{ mb: 2 }}>Pendiente por permiso</Alert>
+              <Button variant="contained" fullWidth size="large"
+                sx={{ bgcolor: 'success.main', color: '#fff', fontWeight: 600, '&:hover': { bgcolor: '#27ae60' } }}
+                startIcon={<MIcon name="check_circle" />}>
+                Permitir acceso a la pagina
+              </Button>
+            </React.Fragment>
+          )}
+          {isOrgOrAdmin && user.role !== 'pending' && (
+            <Alert severity="success">Usuario habilitado</Alert>
+          )}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: OWN PROFILE
+    // ============================================================
+    function OwnProfileScreen() {
+      const user = USERS[0]; // current user (admin)
+      return (
+        <Box sx={{ pb: 2 }}>
+          {/* Avatar */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, mb: 3 }}>
+            <Box sx={{ position: 'relative' }}>
+              <UserAvatar user={user} size={100} />
+              <IconButton sx={{ position: 'absolute', bottom: -4, right: -4, bgcolor: 'primary.main', width: 36, height: 36, minWidth: 36, minHeight: 36, '&:hover': { bgcolor: 'primary.dark' } }}>
+                <MIcon name="edit" sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Box>
+            <Typography variant="caption" color="text.secondary">Cambiar imagen</Typography>
+          </Box>
+
+          {/* Editable fields */}
+          <Card elevation={1} sx={{ mb: 2 }}>
+            <List>
+              <ListItem sx={{ minHeight: 56 }}>
+                <ListItemIcon><MIcon name="person" /></ListItemIcon>
+                <ListItemText primary="Nombre de usuario" secondary={user.username} />
+                <IconButton edge="end"><MIcon name="edit" sx={{ fontSize: 20 }} /></IconButton>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+              <ListItem sx={{ minHeight: 56 }}>
+                <ListItemIcon><MIcon name="badge" /></ListItemIcon>
+                <ListItemText primary="Nombre completo" secondary={user.fullName} />
+                <IconButton edge="end"><MIcon name="edit" sx={{ fontSize: 20 }} /></IconButton>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+              <ListItem sx={{ minHeight: 56 }}>
+                <ListItemIcon><MIcon name="email" /></ListItemIcon>
+                <ListItemText primary="Correo" secondary={user.email} />
+              </ListItem>
+              <Divider variant="inset" component="li" />
+              <ListItem sx={{ minHeight: 56 }}>
+                <ListItemIcon><MIcon name="phone" /></ListItemIcon>
+                <ListItemText primary="Telefono" secondary={user.phone} />
+              </ListItem>
+            </List>
+          </Card>
+
+          <Alert severity="info" variant="outlined" sx={{ mb: 2, fontSize: '0.8rem' }}>
+            Para cambiar tu correo o telefono, contacta a un administrador
+          </Alert>
+
+          <Card elevation={1} sx={{ mb: 2 }}>
+            <List>
+              <ListItem sx={{ minHeight: 56 }}>
+                <ListItemIcon><MIcon name="calendar_today" /></ListItemIcon>
+                <ListItemText primary="Miembro desde" secondary={formatDate(user.registeredAt)} />
+              </ListItem>
+            </List>
+          </Card>
+
+          {/* Notifications */}
+          <Card elevation={1}>
+            <CardContent>
+              <Typography variant="h6" fontWeight={500} sx={{ mb: 1 }}>Notificaciones</Typography>
+              <FormControlLabel control={<Switch defaultChecked color="primary" />} label="Notificaciones push" />
+            </CardContent>
+          </Card>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: GLOSSARY
+    // ============================================================
+    function GlossaryScreen() {
+      return (
+        <Box sx={{ pb: 2 }}>
+          <SectionTitle>Glosario</SectionTitle>
+          {GLOSSARY_ITEMS.map((item, i) => (
+            <Card key={i} variant="outlined" sx={{ mb: 1.5 }}>
+              <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                <Typography variant="body1" fontWeight={600} color="primary.dark">{item.term}</Typography>
+                <Typography variant="body2" color="text.secondary">{item.definition}</Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: NOT FOUND
+    // ============================================================
+    function NotFoundScreen() {
+      const { navigate } = useContext(AppContext);
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 2, textAlign: 'center' }}>
+          <MIcon name="search_off" sx={{ fontSize: 80, color: '#95A5A6' }} />
+          <Typography variant="h4" fontWeight={600}>Pagina no encontrada</Typography>
+          <Button variant="contained" onClick={() => navigate('home')} sx={{ bgcolor: 'primary.main', color: '#173A5E' }}>
+            Ir al inicio
+          </Button>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // SCREEN: SERVER ERROR
+    // ============================================================
+    function ServerErrorScreen() {
+      const { navigate } = useContext(AppContext);
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 2, textAlign: 'center', px: 3 }}>
+          <MIcon name="cloud_off" sx={{ fontSize: 80, color: '#E74C3C' }} />
+          <Typography variant="h4" fontWeight={600}>Error de Servidor</Typography>
+          <Typography variant="body1" color="text.secondary">
+            Intenta nuevamente, si el problema persiste, contacta a un admin
+          </Typography>
+          <Button variant="contained" onClick={() => navigate('home')} sx={{ bgcolor: 'primary.main', color: '#173A5E' }}>
+            Volver
+          </Button>
+        </Box>
+      );
+    }
+
+    // ============================================================
+    // ROUTER
+    // ============================================================
+    function Router({ route }) {
+      switch (route) {
+        case 'home': return <HomeScreen />;
+        case 'login': return <LoginScreen />;
+        case 'signup': return <SignupScreen />;
+        case 'password-forget': return <PasswordForgetScreen />;
+        case 'password-reset': return <PasswordResetScreen />;
+        case 'event-list': return <EventListScreen />;
+        case 'event-details': return <EventDetailsScreen />;
+        case 'event-create': return <EventCreateScreen />;
+        case 'event-edit': return <EventEditScreen />;
+        case 'event-manage': return <EventManageScreen />;
+        case 'car-group-create': return <CarGroupCreateScreen />;
+        case 'car-group-search': return <CarGroupSearchScreen />;
+        case 'car-group-details': return <CarGroupDetailsScreen />;
+        case 'car-group-edit': return <CarGroupEditScreen />;
+        case 'user-list': return <UserListScreen />;
+        case 'user-details': return <UserDetailsScreen />;
+        case 'own-profile': return <OwnProfileScreen />;
+        case 'glossary': return <GlossaryScreen />;
+        case 'server-error': return <ServerErrorScreen />;
+        default: return <NotFoundScreen />;
+      }
+    }
+
+    // ============================================================
+    // NAV MAPPING
+    // ============================================================
+    const BOTTOM_NAV_ITEMS = {
+      anon: [
+        { label: 'Inicio', icon: 'home', route: 'home' },
+        { label: 'Acceso', icon: 'login', route: 'login' },
+        { label: 'Registro', icon: 'person_add', route: 'signup' },
+      ],
+      user: [
+        { label: 'Inicio', icon: 'home', route: 'home' },
+        { label: 'Eventos', icon: 'event', route: 'event-list' },
+        { label: 'Perfil', icon: 'person', route: 'own-profile' },
+        { label: 'Mas', icon: 'menu', route: '_more' },
+      ],
+      organizer: [
+        { label: 'Inicio', icon: 'home', route: 'home' },
+        { label: 'Eventos', icon: 'event', route: 'event-list' },
+        { label: 'Usuarios', icon: 'group', route: 'user-list' },
+        { label: 'Perfil', icon: 'person', route: 'own-profile' },
+        { label: 'Mas', icon: 'menu', route: '_more' },
+      ],
+      admin: [
+        { label: 'Inicio', icon: 'home', route: 'home' },
+        { label: 'Eventos', icon: 'event', route: 'event-list' },
+        { label: 'Usuarios', icon: 'group', route: 'user-list' },
+        { label: 'Perfil', icon: 'person', route: 'own-profile' },
+        { label: 'Mas', icon: 'menu', route: '_more' },
+      ],
+    };
+
+    const MORE_MENU_ITEMS = [
+      { label: 'Glosario', icon: 'menu_book', route: 'glossary' },
+    ];
+
+    // Screen titles for the AppBar
+    const SCREEN_TITLES = {
+      'home': 'Patas Arriba',
+      'login': 'Acceso',
+      'signup': 'Registro',
+      'password-forget': 'Recuperar contrasena',
+      'password-reset': 'Nueva contrasena',
+      'event-list': 'Eventos',
+      'event-details': 'Detalle del evento',
+      'event-create': 'Crear Evento',
+      'event-edit': 'Editar Evento',
+      'event-manage': 'Gestionar Evento',
+      'car-group-create': 'Crear grupo de coche',
+      'car-group-search': 'Buscar coche',
+      'car-group-details': 'Grupo de coche',
+      'car-group-edit': 'Editar grupo de coche',
+      'user-list': 'Usuarios',
+      'user-details': 'Perfil de usuario',
+      'own-profile': 'Tu Perfil',
+      'glossary': 'Glosario',
+      'not-found': 'No encontrado',
+      'server-error': 'Error',
+    };
+
+    // ============================================================
+    // APP SHELL
+    // ============================================================
+    function App() {
+      const { route, navigate } = useRouter();
+      const [role, setRole] = useState('user');
+      const [moreOpen, setMoreOpen] = useState(false);
+
+      const navItems = BOTTOM_NAV_ITEMS[role] || BOTTOM_NAV_ITEMS.user;
+      const currentNavIdx = navItems.findIndex(n => n.route === route);
+      const showBottomNav = true;
+      const showFab = (role === 'organizer' || role === 'admin') && (route === 'event-list' || route === 'home');
+      const isAnon = role === 'anon';
+      const screenTitle = SCREEN_TITLES[route] || 'Patas Arriba';
+
+      const contextValue = useMemo(() => ({ role, navigate, route }), [role, route, navigate]);
+
+      return (
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppContext.Provider value={contextValue}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+
+              {/* Role Switcher (debug toolbar) */}
+              <Box className="role-switcher" sx={{
+                bgcolor: '#173A5E', color: '#fff', py: 0.75, px: 2,
+                display: 'flex', alignItems: 'center', gap: 1,
+                overflowX: 'auto', whiteSpace: 'nowrap',
+                fontSize: '0.75rem',
+              }}>
+                <Typography variant="caption" sx={{ color: '#95A5A6', mr: 1, flexShrink: 0 }}>Vista:</Typography>
+                {['anon', 'user', 'organizer', 'admin'].map(r => (
+                  <Chip key={r} label={r === 'anon' ? 'Anonimo' : capitalizeAll(r)} size="small"
+                    onClick={() => { setRole(r); if (r === 'anon') navigate('home'); }}
+                    sx={{
+                      bgcolor: role === r ? '#EFB665' : 'transparent',
+                      color: role === r ? '#173A5E' : '#CED7D9',
+                      border: role === r ? 'none' : '1px solid #46505A',
+                      fontWeight: role === r ? 600 : 400,
+                      cursor: 'pointer',
+                    }}
+                  />
+                ))}
+              </Box>
+
+              {/* AppBar */}
+              <AppBar position="sticky" elevation={1} sx={{ bgcolor: '#FFFFFF' }}>
+                <Toolbar sx={{ minHeight: 56, justifyContent: 'space-between' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    {screenTitle}
+                  </Typography>
+                  {!isAnon && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+                        {USERS[0].username}
+                      </Typography>
+                      {(role === 'admin' || role === 'organizer') && (
+                        <Chip label={role === 'admin' ? 'Admin' : 'Org'} size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: '#EFB665', color: '#173A5E' }} />
+                      )}
+                      <IconButton onClick={() => navigate('own-profile')} sx={{ p: 0.5 }}>
+                        <UserAvatar user={USERS[0]} size={32} />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Toolbar>
+              </AppBar>
+
+              {/* Content */}
+              <Container maxWidth="sm" sx={{ flex: 1, py: 2, px: 2 }}>
+                <Router route={route} />
+              </Container>
+
+              {/* FAB */}
+              {showFab && (
+                <Fab variant="extended" color="primary" onClick={() => navigate('event-create')}
+                  sx={{ position: 'fixed', bottom: 72, right: 16, zIndex: 1000, color: '#173A5E', fontWeight: 600 }}>
+                  <MIcon name="add" sx={{ mr: 0.5 }} />
+                  Crear Evento
+                </Fab>
+              )}
+
+              {/* More Menu Dialog */}
+              <Dialog open={moreOpen} onClose={() => setMoreOpen(false)} fullWidth maxWidth="xs"
+                PaperProps={{ sx: { position: 'fixed', bottom: 56, m: 2, borderRadius: 3 } }}>
+                <List>
+                  {MORE_MENU_ITEMS.map(item => (
+                    <ListItemButton key={item.route} onClick={() => { setMoreOpen(false); navigate(item.route); }} sx={{ minHeight: 48 }}>
+                      <ListItemIcon><MIcon name={item.icon} /></ListItemIcon>
+                      <ListItemText primary={item.label} />
+                    </ListItemButton>
+                  ))}
+                  <Divider />
+                  <ListItemButton onClick={() => { setMoreOpen(false); setRole('anon'); navigate('home'); }} sx={{ minHeight: 48, color: 'error.main' }}>
+                    <ListItemIcon><MIcon name="logout" sx={{ color: '#E74C3C' }} /></ListItemIcon>
+                    <ListItemText primary="Cerrar Sesion" sx={{ color: '#E74C3C' }} />
+                  </ListItemButton>
+                </List>
+              </Dialog>
+
+              {/* Bottom Navigation */}
+              <Paper elevation={8} sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 999 }}>
+                <BottomNavigation value={currentNavIdx >= 0 ? currentNavIdx : false} showLabels
+                  onChange={(e, idx) => {
+                    const item = navItems[idx];
+                    if (item.route === '_more') { setMoreOpen(true); }
+                    else { navigate(item.route); }
+                  }}
+                  sx={{ '& .MuiBottomNavigationAction-root': { minWidth: 0, py: 1 }, '& .Mui-selected': { color: '#D99946' } }}
+                >
+                  {navItems.map((item, i) => (
+                    <BottomNavigationAction key={i} label={item.label} icon={<MIcon name={item.icon} />} />
+                  ))}
+                </BottomNavigation>
+              </Paper>
+
+              {/* Bottom padding for fixed nav */}
+              <Box sx={{ height: 56 }} />
+            </Box>
+          </AppContext.Provider>
+        </ThemeProvider>
+      );
+    }
+
+    // ============================================================
+    // MOUNT
+    // ============================================================
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+2 <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#FAFAF8" />
+  <title>Patas Arriba — MUI Light Mockup v4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@mui/material@5.17.1/umd/material-ui.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Roboto', -apple-system, sans-serif; background: #FAFAF8; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+    #root { min-height: 100dvh; }
+    .MuiBottomNavigation-root .Mui-selected { color: #D99946 !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const {
+      ThemeProvider, createTheme, styled,
+      CssBaseline,
+      Box, Container, Paper, Typography, Button, IconButton, TextField, Stack,
+      Card, CardContent, CardHeader, CardActions, CardActionArea,
+      Chip, Avatar, Alert, Divider, Switch, FormControlLabel,
+      List, ListItem, ListItemText, ListItemAvatar, ListItemButton, ListItemIcon,
+      AppBar, Toolbar, BottomNavigation, BottomNavigationAction, Fab,
+      Collapse, Accordion, AccordionSummary, AccordionDetails,
+      Drawer, SwipeableDrawer,
+      Select, MenuItem, InputLabel, FormControl, InputAdornment,
+      Tab, Tabs, Badge, Tooltip, ToggleButton, ToggleButtonGroup,
+    } = MaterialUI;
+    const { useState, useEffect, useCallback, useMemo, createContext, useContext } = React;
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    const theme = createTheme({
+      palette: {
+        mode: 'light',
+        primary: { main: '#EFB665', light: '#F4CC95', dark: '#D99946', contrastText: '#173A5E' },
+        secondary: { main: '#173A5E', light: '#2D5F8A', dark: '#0E2740' },
+        error: { main: '#E74C3C' },
+        warning: { main: '#F39C12' },
+        success: { main: '#2ECC71' },
+        info: { main: '#3498DB' },
+        background: { default: '#FAFAF8', paper: '#FFFFFF' },
+        text: { primary: '#173A5E', secondary: '#5A6B7A' },
+        divider: '#E8E8E4',
+      },
+      typography: {
+        fontFamily: "'Roboto', -apple-system, sans-serif",
+        h1: { fontSize: 'clamp(1.5rem, 5vw, 1.75rem)', fontWeight: 800, letterSpacing: '-0.5px', color: '#173A5E' },
+        h2: { fontSize: 'clamp(1.3rem, 4vw, 1.5rem)', fontWeight: 700, letterSpacing: '-0.3px', color: '#173A5E' },
+        h3: { fontSize: '1.1rem', fontWeight: 700, color: '#173A5E' },
+        h4: { fontSize: '1rem', fontWeight: 700, color: '#173A5E' },
+        h5: { fontSize: '0.95rem', fontWeight: 600, color: '#173A5E' },
+        h6: { fontSize: '0.875rem', fontWeight: 600, color: '#173A5E' },
+        body1: { fontSize: '0.875rem' },
+        body2: { fontSize: '0.8125rem' },
+        caption: { fontSize: '0.6875rem' },
+        button: { textTransform: 'none', fontWeight: 600 },
+      },
+      shape: { borderRadius: 12 },
+      components: {
+        MuiButton: { styleOverrides: { root: { minHeight: 48, borderRadius: 10, padding: '12px 20px' } } },
+        MuiIconButton: { styleOverrides: { root: { minWidth: 44, minHeight: 44 } } },
+        MuiCard: { styleOverrides: { root: { borderRadius: 16, backgroundImage: 'none', boxShadow: '0 1px 3px rgba(23,58,94,0.06), 0 1px 2px rgba(23,58,94,0.04)' } } },
+        MuiFab: { styleOverrides: { root: { textTransform: 'none', fontWeight: 600 } } },
+        MuiChip: { styleOverrides: { root: { fontWeight: 600, borderRadius: 20 } } },
+        MuiTextField: { styleOverrides: { root: { '& .MuiOutlinedInput-root': { borderRadius: 10 } } } },
+        MuiAccordion: { styleOverrides: { root: { backgroundImage: 'none', '&:before': { display: 'none' } } } },
+        MuiBottomNavigationAction: { styleOverrides: { root: { minWidth: 0, '&.Mui-selected': { color: '#D99946' } } } },
+      },
+    });
+
+    // ============================================================
+    // DATA
+    // ============================================================
+    const USERS = [
+      { _id:'u1', username:'maria_v', name:'Maria V.', role:'admin', color:'#D99946', initials:'MV', phone:'+34 612 345 678', since:'Jun 2024' },
+      { _id:'u2', username:'carlos_r', name:'Carlos R.', role:'organizer', color:'#3498DB', initials:'CR', phone:'+34 623 456 789', since:'Ago 2024' },
+      { _id:'u3', username:'lucia_m', name:'Lucia M.', role:'user', color:'#8E7CC3', initials:'LM', phone:'+34 634 567 890', since:'Oct 2024' },
+      { _id:'u4', username:'pablo_g', name:'Pablo G.', role:'user', color:'#E06B8D', initials:'PG', phone:'+34 645 678 901', since:'Ene 2025' },
+      { _id:'u5', username:'ana_s', name:'Ana S.', role:'user', color:'#2ECC71', initials:'AS', phone:'+34 656 789 012', since:'Feb 2025' },
+      { _id:'u6', username:'nuevo_user', name:'Pedro L.', role:'pending', color:'#95A5A6', initials:'PL', phone:'+34 667 890 123', since:'Mar 2025' },
+    ];
+    const EVENTS = [
+      { _id:'e1', title:'Visita a la Protectora', cat:'protectora', loc:'Protectora Municipal, C/ Esperanza 12', date:'2026-04-05T10:00:00', status:'open', owner:USERS[1], attendees:5, hasCars:true, hasTasks:true, desc:'Jornada de voluntariado en la protectora. Necesitamos ayuda para pasear a los perros y limpiar las instalaciones. Traer ropa comoda.' },
+      { _id:'e2', title:'Mercadillo Solidario', cat:'mercadillo', loc:'Plaza Mayor, Centro', date:'2026-04-12T09:00:00', status:'open', owner:USERS[0], attendees:3, hasCars:true, hasTasks:false, desc:'Mercadillo para recaudar fondos. Voluntarios para montar puestos desde las 8am.' },
+      { _id:'e3', title:'Recogida de Alimentos', cat:'recogida', loc:'Supermercado Gran Via', date:'2026-03-20T11:00:00', status:'closed', owner:USERS[1], attendees:4, hasCars:false, hasTasks:true, desc:'Recogida de pienso y alimentos donados.' },
+    ];
+    const CAR_GROUPS = [
+      { _id:'cg1', owner:USERS[1], brand:'Seat Leon', color:'Blanco', seats:4, taken:1, pickup:'Estacion de tren, Puerta Norte', time:'09:30' },
+      { _id:'cg2', owner:USERS[3], brand:'Renault Clio', color:'Azul', seats:3, taken:0, pickup:'Plaza del Ayuntamiento', time:'09:15' },
+    ];
+    const MESSAGES = [
+      { _id:'m1', user:USERS[1], text:'Recordad traer agua y gorra, hara calor!', time:'18:30', mine:false },
+      { _id:'m2', user:USERS[2], text:'Yo llevo bolsas extra por si acaso', time:'19:15', mine:false },
+      { _id:'m3', user:USERS[0], text:'Perfecto! Nos vemos alli', time:'20:00', mine:true },
+    ];
+    const GLOSSARY = [
+      { term:'Evento', def:'Actividad organizada por la fundacion donde los voluntarios participan.' },
+      { term:'Grupo de coche', def:'Un voluntario ofrece plazas en su coche para llevar a otros al evento.' },
+      { term:'Organizador', def:'Voluntario con permisos para crear eventos y gestionar participantes.' },
+      { term:'Protectora', def:'Visita a un refugio o protectora de animales.' },
+      { term:'Recogida', def:'Recogida de alimentos, material o donaciones.' },
+      { term:'Mercadillo', def:'Mercadillo solidario para recaudar fondos.' },
+    ];
+
+    const CAT_COLORS = { protectora:'#D99946', mercadillo:'#3498DB', recogida:'#F39C12', otro:'#95A5A6' };
+    const CAT_ICONS = { protectora:'pets', mercadillo:'storefront', recogida:'inventory_2', otro:'event' };
+    function MIcon({name, sx, ...p}) { return <span className="material-icons-round" style={{fontSize:20,...sx}} {...p}>{name}</span>; }
+    function fmtDate(d) { return new Date(d).toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}); }
+    function fmtTime(d) { return new Date(d).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}); }
+    function isPast(d) { const e=new Date(d);e.setHours(0,0,0,0);const t=new Date();t.setHours(0,0,0,0);return e<t; }
+    function isToday(d) { return new Date(d).toDateString()===new Date().toDateString(); }
+    function timeLabel(d) { return isToday(d)?'Hoy':isPast(d)?'Pasado':'Proximo'; }
+    function UserAvatar({user,size=36}) { return <Avatar sx={{bgcolor:user.color,width:size,height:size,fontSize:size*0.4,fontWeight:700}}>{user.initials}</Avatar>; }
+
+    // ============================================================
+    // CONTEXT
+    // ============================================================
+    const AppCtx = createContext();
+    function useApp() { return useContext(AppCtx); }
+
+    function useRouter() {
+      const [hash, setHash] = useState(window.location.hash.slice(1)||'home');
+      useEffect(() => { const h=()=>setHash(window.location.hash.slice(1)||'home'); window.addEventListener('hashchange',h); return ()=>window.removeEventListener('hashchange',h); },[]);
+      const navigate = useCallback(h => { window.location.hash = h; }, []);
+      const back = useCallback(() => history.back(), []);
+      return { route: hash, navigate, back };
+    }
+
+    // ============================================================
+    // SHARED COMPONENTS
+    // ============================================================
+    function BackBtn({label, onClick}) {
+      const {back} = useApp();
+      return <Button startIcon={<MIcon name="arrow_back" sx={{fontSize:18}} />} onClick={onClick||back} sx={{color:'text.secondary',pl:0,mb:0.5,minHeight:40,justifyContent:'flex-start'}}>{label||'Volver'}</Button>;
+    }
+
+    function TimeBadge({date}) {
+      const l = timeLabel(date);
+      const color = l==='Hoy'?'secondary':l==='Proximo'?'primary':'default';
+      return <Chip label={l} size="small" color={color} variant={l==='Pasado'?'outlined':'filled'} sx={{fontWeight:600,fontSize:'0.65rem',height:22}} />;
+    }
+
+    function EventCard({event, onTap}) {
+      const catColor = CAT_COLORS[event.cat]||'#666';
+      return (
+        <Card sx={{mb:1.5,position:'relative',overflow:'visible',cursor:'pointer','&:active':{transform:'scale(0.98)'},transition:'transform 0.1s'}} onClick={onTap}>
+          <Box sx={{position:'absolute',top:0,left:0,width:4,height:'100%',bgcolor:catColor,borderRadius:'4px 0 0 4px'}} />
+          <CardContent sx={{pl:2.5}}>
+            <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',mb:1}}>
+              <TimeBadge date={event.date} />
+              <Box sx={{display:'flex',alignItems:'center',gap:0.5}}>
+                <MIcon name={CAT_ICONS[event.cat]} sx={{fontSize:16,color:catColor}} />
+                <Typography variant="caption" sx={{textTransform:'capitalize',color:'text.secondary'}}>{event.cat}</Typography>
+              </Box>
+            </Box>
+            <Typography variant="h3" sx={{mb:1}}>{event.title}</Typography>
+            <Stack spacing={0.5}>
+              <Box sx={{display:'flex',alignItems:'center',gap:0.75}}><MIcon name="place" sx={{fontSize:16,color:'text.secondary'}} /><Typography variant="body2" color="text.secondary">{event.loc}</Typography></Box>
+              <Box sx={{display:'flex',gap:2}}>
+                <Box sx={{display:'flex',alignItems:'center',gap:0.5}}><MIcon name="event" sx={{fontSize:16,color:'text.secondary'}} /><Typography variant="body2" color="text.secondary">{fmtDate(event.date)}</Typography></Box>
+                <Box sx={{display:'flex',alignItems:'center',gap:0.5}}><MIcon name="schedule" sx={{fontSize:16,color:'text.secondary'}} /><Typography variant="body2" color="text.secondary">{fmtTime(event.date)}</Typography></Box>
+              </Box>
+            </Stack>
+            <Box sx={{display:'flex',gap:0.75,mt:1.5,flexWrap:'wrap'}}>
+              <Chip icon={<MIcon name="group" sx={{fontSize:14}} />} label={event.attendees} size="small" variant="outlined" sx={{borderColor:'divider'}} />
+              {event.hasCars && <Chip icon={<MIcon name="directions_car" sx={{fontSize:14}} />} label="Coches" size="small" variant="outlined" sx={{borderColor:'divider'}} />}
+              {event.status==='closed' && <Chip label="Cerrado" size="small" color="warning" />}
+            </Box>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    function ChatBubble({msg}) {
+      return (
+        <Box sx={{display:'flex',flexDirection:'column',alignItems:msg.mine?'flex-end':'flex-start',mb:1.5}}>
+          {!msg.mine && <Box sx={{display:'flex',gap:0.5,mb:0.5,alignItems:'center'}}><Typography variant="caption" sx={{fontWeight:600,color:msg.user.color}}>{msg.user.username}</Typography><Typography variant="caption" color="text.secondary">{msg.time}</Typography></Box>}
+          <Box sx={{maxWidth:'80%',px:1.75,py:1,borderRadius:2,bgcolor:msg.mine?'primary.main':'#F0F0EC',color:msg.mine?'primary.contrastText':'text.primary',borderBottomRightRadius:msg.mine?4:16,borderBottomLeftRadius:msg.mine?16:4}}>
+            <Typography variant="body2">{msg.text}</Typography>
+          </Box>
+          {msg.mine && <Typography variant="caption" color="text.secondary" sx={{mt:0.25}}>{msg.time}</Typography>}
+        </Box>
+      );
+    }
+
+    function SectionExpander({icon,title,badge,children,defaultOpen=false}) {
+      const [open,setOpen]=useState(defaultOpen);
+      return (
+        <React.Fragment>
+          <Box onClick={()=>setOpen(!open)} sx={{display:'flex',alignItems:'center',justifyContent:'space-between',py:1.5,cursor:'pointer',minHeight:48}}>
+            <Box sx={{display:'flex',alignItems:'center',gap:1}}>
+              {icon && <MIcon name={icon} sx={{fontSize:18,color:'text.secondary'}} />}
+              <Typography variant="h5">{title}</Typography>
+              {badge!==undefined && <Chip label={badge} size="small" variant="outlined" sx={{height:20,fontSize:'0.6rem',borderColor:'divider'}} />}
+            </Box>
+            <MIcon name={open?'expand_less':'expand_more'} sx={{color:'text.secondary'}} />
+          </Box>
+          <Collapse in={open}>{children}</Collapse>
+          <Divider />
+        </React.Fragment>
+      );
+    }
+
+    function UserListItem({user, onClick}) {
+      return (
+        <ListItemButton onClick={onClick} sx={{borderRadius:2,mb:0.5,minHeight:52}}>
+          <ListItemAvatar><UserAvatar user={user} /></ListItemAvatar>
+          <ListItemText primary={user.username} secondary={user.name} primaryTypographyProps={{fontWeight:600,fontSize:'0.875rem'}} secondaryTypographyProps={{fontSize:'0.75rem'}} />
+          {user.role==='pending' && <Chip label="Pendiente" size="small" color="warning" sx={{height:22}} />}
+          {user.role==='organizer' && <Chip label="Org" size="small" color="secondary" variant="outlined" sx={{height:22}} />}
+          {user.role==='admin' && <Chip label="Admin" size="small" color="primary" variant="outlined" sx={{height:22}} />}
+        </ListItemButton>
+      );
+    }
+
+    // ============================================================
+    // SCREENS
+    // ============================================================
+    function HomeScreen() {
+      const {role,navigate}=useApp();
+      if (role==='anon') return (
+        <Box sx={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flex:1,px:4,textAlign:'center',gap:3}}>
+          <Box sx={{width:120,height:120,borderRadius:'28px',background:'linear-gradient(135deg,#EFB665,#D99946)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 16px 48px rgba(217,153,70,0.25)'}}>
+            <MIcon name="pets" sx={{fontSize:56,color:'#173A5E'}} />
+          </Box>
+          <Typography variant="h1" sx={{fontSize:'2rem !important'}}>Patas Arriba</Typography>
+          <Typography variant="body1" color="text.secondary" sx={{maxWidth:260,lineHeight:1.6}}>Coordina voluntarios, organiza eventos y ayuda a los animales que mas lo necesitan</Typography>
+          <Stack spacing={1.5} sx={{width:'100%',maxWidth:280,mt:1}}>
+            <Button variant="contained" size="large" fullWidth onClick={()=>navigate('signup')}>Crear cuenta</Button>
+            <Button variant="outlined" size="large" fullWidth onClick={()=>navigate('login')} sx={{borderColor:'divider',color:'text.primary'}}>Ya tengo cuenta</Button>
+          </Stack>
+        </Box>
+      );
+      const upcoming=EVENTS.filter(e=>!isPast(e.date));
+      const past=EVENTS.filter(e=>isPast(e.date));
+      return (
+        <Box sx={{pb:10}}>
+          <Box sx={{px:2.5,pt:3,pb:1,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <Box><Typography variant="body2" color="text.secondary">Hola, {USERS[0].name.split(' ')[0]}</Typography><Typography variant="h1">Eventos</Typography></Box>
+            <IconButton onClick={()=>navigate('own-profile')}><UserAvatar user={USERS[0]} size={40} /></IconButton>
+          </Box>
+          <Box sx={{px:2.5}}>
+            {upcoming.map(e=><EventCard key={e._id} event={e} onTap={()=>navigate('event-details')} />)}
+            {past.length>0 && <Typography variant="caption" sx={{display:'block',mt:2,mb:1,fontWeight:600,textTransform:'uppercase',letterSpacing:1,color:'text.secondary'}}>Pasados</Typography>}
+            {past.map(e=><EventCard key={e._id} event={e} onTap={()=>navigate('event-details')} />)}
+          </Box>
+        </Box>
+      );
+    }
+
+    function EventDetailsScreen() {
+      const {navigate,back,role}=useApp();
+      const e=EVENTS[0]; const [joined,setJoined]=useState(true);
+      const isOrg=role==='organizer'||role==='admin';
+      return (
+        <Box sx={{pb:10}}>
+          <Box sx={{px:2.5,pt:1}}>
+            <BackBtn label="Eventos" onClick={()=>navigate('home')} />
+            <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <TimeBadge date={e.date} />
+              {isOrg && <Button size="small" startIcon={<MIcon name="edit" sx={{fontSize:16}} />} onClick={()=>navigate('event-edit')} sx={{color:'text.secondary'}}>Editar</Button>}
+            </Box>
+            <Typography variant="h1" sx={{mt:1,mb:2}}>{e.title}</Typography>
+            <Card variant="outlined" sx={{mb:2,bgcolor:'#F5F5F2',border:'none'}}>
+              <CardContent>
+                <Stack spacing={0.75}>
+                  <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name={CAT_ICONS[e.cat]} sx={{fontSize:18,color:CAT_COLORS[e.cat]}} /><Typography variant="body2" sx={{fontWeight:600,textTransform:'capitalize'}}>{e.cat}</Typography></Box>
+                  <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="place" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{e.loc}</Typography></Box>
+                  <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="event" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{fmtDate(e.date)} a las {fmtTime(e.date)}</Typography></Box>
+                  <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="person" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">Organizado por <Typography component="span" sx={{color:'secondary.main',fontWeight:600,cursor:'pointer'}} onClick={()=>navigate('user-details')}>{e.owner.username}</Typography></Typography></Box>
+                  <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="group" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{e.attendees} participantes</Typography></Box>
+                </Stack>
+              </CardContent>
+            </Card>
+            {isOrg && <Button variant="outlined" fullWidth startIcon={<MIcon name="tune" sx={{fontSize:18}} />} onClick={()=>navigate('event-manage')} sx={{mb:2,borderColor:'divider',color:'text.primary'}}>Gestionar participantes</Button>}
+            {!joined ? <Button variant="contained" fullWidth size="large" startIcon={<MIcon name="person_add" sx={{fontSize:18}} />} onClick={()=>setJoined(true)} sx={{mb:2}}>Unete al evento!</Button>
+            : <Card variant="outlined" sx={{mb:2,bgcolor:'transparent',borderColor:'success.main',borderLeft:'3px solid'}}>
+                <CardContent sx={{py:1.5,'&:last-child':{pb:1.5},display:'flex',alignItems:'center',gap:1}}>
+                  <MIcon name="check_circle" sx={{color:'success.main'}} /><Typography variant="body2" fontWeight={600}>Estas apuntado a este evento</Typography>
+                </CardContent>
+              </Card>}
+            {joined && <React.Fragment>
+              <SectionExpander icon="description" title="Descripcion">
+                <Typography variant="body2" color="text.secondary" sx={{pb:2,lineHeight:1.7}}>{e.desc}</Typography>
+              </SectionExpander>
+              <SectionExpander icon="group" title="Participantes" badge={e.attendees}>
+                <List dense disablePadding>{USERS.slice(0,5).map(u=><UserListItem key={u._id} user={u} onClick={()=>navigate('user-details')} />)}</List>
+              </SectionExpander>
+              {e.hasCars && <SectionExpander icon="directions_car" title="Coches" badge={CAR_GROUPS.length}>
+                {CAR_GROUPS.map(cg=>(
+                  <Card key={cg._id} variant="outlined" sx={{mb:1,bgcolor:'#F5F5F2',border:'none',cursor:'pointer'}} onClick={()=>navigate('car-group-details')}>
+                    <CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}>
+                      <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                        <Box><Typography variant="body2" fontWeight={600}>{cg.owner.username}</Typography><Typography variant="caption" color="text.secondary">{cg.brand} · {cg.color}</Typography></Box>
+                        <Chip label={`${cg.seats-cg.taken} plazas`} size="small" color={cg.seats-cg.taken>0?'success':'default'} sx={{height:22}} />
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Card variant="outlined" sx={{mb:1,bgcolor:'transparent',borderStyle:'dashed',textAlign:'center'}}>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary" sx={{mb:1}}>No tienes coche asignado</Typography>
+                    <Stack direction="row" spacing={1}>
+                      <Button variant="contained" size="small" fullWidth onClick={()=>navigate('car-group-create')} startIcon={<MIcon name="directions_car" sx={{fontSize:16}} />} sx={{bgcolor:'#F0F0EC',color:'text.primary','&:hover':{bgcolor:'#E8E8E4'}}}>Mi coche</Button>
+                      <Button variant="outlined" size="small" fullWidth onClick={()=>navigate('car-group-search')} startIcon={<MIcon name="search" sx={{fontSize:16}} />} sx={{borderColor:'divider',color:'text.primary'}}>Buscar</Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </SectionExpander>}
+              <Box sx={{mt:2,mb:2}}>
+                <Box sx={{display:'flex',alignItems:'center',gap:1,mb:2}}><MIcon name="chat" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="h5">Mensajes</Typography></Box>
+                {MESSAGES.map(m=><ChatBubble key={m._id} msg={m} />)}
+                <Box sx={{display:'flex',gap:1,mt:2}}>
+                  <TextField placeholder="Escribe un mensaje..." fullWidth size="small" sx={{'& .MuiOutlinedInput-root':{borderRadius:'24px',bgcolor:'#F5F5F2'}}} />
+                  <IconButton sx={{bgcolor:'primary.main',color:'primary.contrastText',width:40,height:40,'&:hover':{bgcolor:'primary.dark'}}}><MIcon name="send" sx={{fontSize:18}} /></IconButton>
+                </Box>
+              </Box>
+              <Divider sx={{my:2}} />
+              <Button variant="outlined" fullWidth startIcon={<MIcon name="logout" sx={{fontSize:18}} />} onClick={()=>setJoined(false)} sx={{color:'error.main',borderColor:'rgba(239,68,68,0.3)'}}>Abandonar evento</Button>
+            </React.Fragment>}
+          </Box>
+        </Box>
+      );
+    }
+
+    function EventListScreen() {
+      const {navigate,role}=useApp();
+      const [tab,setTab]=useState('upcoming');
+      const filtered=EVENTS.filter(e=>tab==='upcoming'?!isPast(e.date):isPast(e.date));
+      return (
+        <Box sx={{pb:10}}>
+          <Box sx={{px:2.5,pt:3,pb:1}}><Typography variant="h1">Eventos</Typography></Box>
+          <Box sx={{px:2.5}}>
+            <Box sx={{display:'flex',bgcolor:'background.paper',borderRadius:'10px',p:'3px',gap:'2px',mb:2}}>
+              <Button fullWidth onClick={()=>setTab('upcoming')} sx={{borderRadius:'8px',minHeight:40,bgcolor:tab==='upcoming'?'primary.main':'transparent',color:tab==='upcoming'?'primary.contrastText':'text.secondary','&:hover':{bgcolor:tab==='upcoming'?'primary.dark':'action.hover'}}}>Proximos</Button>
+              <Button fullWidth onClick={()=>setTab('past')} sx={{borderRadius:'8px',minHeight:40,bgcolor:tab==='past'?'primary.main':'transparent',color:tab==='past'?'primary.contrastText':'text.secondary','&:hover':{bgcolor:tab==='past'?'primary.dark':'action.hover'}}}>Pasados</Button>
+            </Box>
+            {filtered.length===0 && <Typography color="text.secondary" sx={{textAlign:'center',py:5}}>No se han encontrado eventos</Typography>}
+            {filtered.map(e=><EventCard key={e._id} event={e} onTap={()=>navigate('event-details')} />)}
+          </Box>
+        </Box>
+      );
+    }
+
+    function LoginScreen() {
+      const {navigate,back}=useApp();
+      return (
+        <Box sx={{px:2.5,pt:1}}>
+          <BackBtn />
+          <Box sx={{mt:3,mb:4}}><Typography variant="h1" sx={{fontSize:'1.75rem !important',lineHeight:1.2}}>Bienvenido<br/>de vuelta</Typography><Typography variant="body2" color="text.secondary" sx={{mt:1}}>Accede a tu cuenta para continuar</Typography></Box>
+          <Stack spacing={2}>
+            <TextField label="Correo o nombre de usuario" fullWidth inputProps={{inputMode:'email'}} />
+            <TextField label="Contrasena" type="password" fullWidth />
+            <Button variant="contained" fullWidth size="large">Acceder</Button>
+          </Stack>
+          <Box sx={{textAlign:'center',mt:3}}><Button size="small" onClick={()=>navigate('password-forget')} sx={{color:'text.secondary'}}>¿Olvidaste tu contrasena?</Button></Box>
+          <Box sx={{textAlign:'center',mt:1}}><Typography variant="body2" color="text.secondary" component="span">¿No tienes cuenta? </Typography><Button size="small" onClick={()=>navigate('signup')} sx={{color:'primary.main'}}>Registrate</Button></Box>
+        </Box>
+      );
+    }
+
+    function SignupScreen() {
+      const {navigate}=useApp();
+      return (
+        <Box sx={{px:2.5,pt:1,pb:4}}>
+          <BackBtn />
+          <Box sx={{mt:3,mb:4}}><Typography variant="h1" sx={{fontSize:'1.75rem !important',lineHeight:1.2}}>Crea tu<br/>cuenta</Typography><Typography variant="body2" color="text.secondary" sx={{mt:1}}>Unete como voluntario de Patas Arriba</Typography></Box>
+          <Stack spacing={2}>
+            <TextField label="Correo electronico" fullWidth inputProps={{inputMode:'email'}} />
+            <TextField label="Nombre de usuario" fullWidth />
+            <TextField label="Nombre completo" fullWidth />
+            <Stack direction={{xs:'column',sm:'row'}} spacing={1}>
+              <TextField select label="Codigo" defaultValue="+34" sx={{minWidth:100}}><MenuItem value="+34">+34</MenuItem><MenuItem value="+1">+1</MenuItem></TextField>
+              <TextField label="Telefono" fullWidth inputProps={{inputMode:'tel'}} />
+            </Stack>
+            <Card variant="outlined" sx={{bgcolor:'transparent',borderColor:'warning.main',borderLeft:'3px solid'}}>
+              <CardContent sx={{py:1,'&:last-child':{pb:1}}}><Typography variant="caption" color="text.secondary">Tu telefono puede ser compartido con otros voluntarios para coordinacion</Typography></CardContent>
+            </Card>
+            <TextField label="Contrasena" type="password" fullWidth />
+            <TextField label="Confirmar contrasena" type="password" fullWidth />
+            <Button variant="contained" fullWidth size="large">Registrate</Button>
+            <Card variant="outlined" sx={{bgcolor:'transparent',borderColor:'secondary.main',borderLeft:'3px solid'}}>
+              <CardContent sx={{py:1,'&:last-child':{pb:1}}}><Typography variant="caption" color="text.secondary">Despues de registrarte, contacta a un admin para activar tu cuenta</Typography></CardContent>
+            </Card>
+          </Stack>
+          <Box sx={{textAlign:'center',mt:2}}><Typography variant="body2" color="text.secondary" component="span">¿Ya tienes cuenta? </Typography><Button size="small" onClick={()=>navigate('login')} sx={{color:'primary.main'}}>Accede</Button></Box>
+        </Box>
+      );
+    }
+
+    function PasswordForgetScreen() {
+      return (<Box sx={{px:2.5,pt:1}}><BackBtn /><Box sx={{mt:3,mb:4}}><Typography variant="h2">Recuperar contrasena</Typography><Typography variant="body2" color="text.secondary" sx={{mt:1,lineHeight:1.6}}>Introduce tu correo y te enviaremos instrucciones.</Typography></Box><Stack spacing={2}><TextField label="Correo electronico" fullWidth inputProps={{inputMode:'email'}} /><Button variant="contained" fullWidth size="large">Enviar</Button></Stack></Box>);
+    }
+    function PasswordResetScreen() {
+      return (<Box sx={{px:2.5,pt:1}}><BackBtn /><Box sx={{mt:3,mb:4}}><Typography variant="h2">Nueva contrasena</Typography><Typography variant="body2" color="text.secondary" sx={{mt:1}}>Elige una contrasena segura.</Typography></Box><Stack spacing={2}><TextField label="Nueva contrasena" type="password" fullWidth /><TextField label="Confirmar contrasena" type="password" fullWidth /><Button variant="contained" fullWidth size="large">Actualizar</Button></Stack></Box>);
+    }
+
+    function EventCreateScreen() {
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Eventos" /><Typography variant="h1" sx={{mt:2,mb:3}}>Crear evento</Typography><Stack spacing={2}><TextField select label="Categoria" defaultValue=""><MenuItem value="">Seleccionar...</MenuItem><MenuItem value="protectora">Protectora</MenuItem><MenuItem value="recogida">Recogida</MenuItem><MenuItem value="mercadillo">Mercadillo</MenuItem><MenuItem value="otro">Otro</MenuItem></TextField><TextField label="Titulo" fullWidth /><TextField label="Lugar" fullWidth /><Stack direction="row" spacing={1}><TextField label="Fecha" type="date" fullWidth InputLabelProps={{shrink:true}} /><TextField label="Hora" type="time" fullWidth InputLabelProps={{shrink:true}} /></Stack><TextField select label="Grupos de coches" defaultValue="si"><MenuItem value="si">Si</MenuItem><MenuItem value="no">No</MenuItem></TextField><TextField select label="Asignar tareas" defaultValue="si"><MenuItem value="si">Si</MenuItem><MenuItem value="no">No</MenuItem></TextField><Button variant="contained" fullWidth size="large">Crear evento</Button></Stack></Box>);
+    }
+
+    function EventEditScreen() {
+      const [tab,setTab]=useState(0);
+      const tabs=['Info','Descripcion','Estado','Eliminar'];
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Evento" /><Typography variant="h2" sx={{mt:1,mb:2}}>Editar evento</Typography>
+        <Box sx={{display:'flex',bgcolor:'background.paper',borderRadius:'10px',p:'3px',gap:'2px',mb:3}}>{tabs.map((t,i)=><Button key={i} fullWidth onClick={()=>setTab(i)} sx={{borderRadius:'8px',minHeight:40,fontSize:'0.75rem',bgcolor:tab===i?'primary.main':'transparent',color:tab===i?'primary.contrastText':(i>=2?(i===2?'warning.main':'error.main'):'text.secondary'),'&:hover':{bgcolor:tab===i?'primary.dark':'action.hover'}}}>{t}</Button>)}</Box>
+        {tab===0 && <Stack spacing={2}><TextField label="Titulo" defaultValue="Visita a la Protectora" fullWidth /><TextField label="Lugar" defaultValue="Protectora Municipal" fullWidth /><Stack direction="row" spacing={1}><TextField label="Fecha" type="date" defaultValue="2026-04-05" fullWidth InputLabelProps={{shrink:true}} /><TextField label="Hora" type="time" defaultValue="10:00" fullWidth InputLabelProps={{shrink:true}} /></Stack><Button variant="contained" fullWidth>Guardar cambios</Button></Stack>}
+        {tab===1 && <Stack spacing={2}><TextField label="Descripcion" multiline rows={5} defaultValue={EVENTS[0].desc} fullWidth /><Button variant="contained" fullWidth>Guardar</Button></Stack>}
+        {tab===2 && <Stack spacing={2}><Card variant="outlined" sx={{borderColor:'success.main',borderLeft:'3px solid',bgcolor:'transparent'}}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}><Typography variant="body2"><strong>Estado actual:</strong> Abierto</Typography></CardContent></Card><Button variant="outlined" fullWidth sx={{color:'warning.main',borderColor:'rgba(251,191,36,0.3)'}}>Cerrar evento</Button><Button variant="outlined" fullWidth sx={{color:'error.main',borderColor:'rgba(239,68,68,0.3)'}}>Cancelar evento</Button></Stack>}
+        {tab===3 && <Box sx={{textAlign:'center',pt:3}}><MIcon name="warning" sx={{fontSize:48,color:'error.main'}} /><Typography variant="body2" color="text.secondary" sx={{mt:2,maxWidth:260,mx:'auto',lineHeight:1.6}}>Se eliminara el evento y todos los datos asociados.</Typography><Button variant="contained" color="error" fullWidth sx={{mt:3}}>Eliminar evento</Button></Box>}
+      </Box>);
+    }
+
+    function EventManageScreen() {
+      const [tab,setTab]=useState(0);
+      const tabs=['Coches','Tareas','Asistencia'];
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Evento" /><Typography variant="h2" sx={{mt:1}}>{EVENTS[0].title}</Typography><Typography variant="caption" color="text.secondary">{fmtDate(EVENTS[0].date)}</Typography>
+        <Card variant="outlined" sx={{my:2,bgcolor:'transparent',borderColor:'warning.main',borderLeft:'3px solid'}}><CardContent sx={{py:1,'&:last-child':{pb:1}}}><Typography variant="caption" color="text.secondary">Recomendamos cerrar el evento antes de gestionar participantes</Typography></CardContent></Card>
+        <Box sx={{display:'flex',bgcolor:'background.paper',borderRadius:'10px',p:'3px',gap:'2px',mb:3}}>{tabs.map((t,i)=><Button key={i} fullWidth onClick={()=>setTab(i)} sx={{borderRadius:'8px',minHeight:40,fontSize:'0.75rem',bgcolor:tab===i?'primary.main':'transparent',color:tab===i?'primary.contrastText':'text.secondary','&:hover':{bgcolor:tab===i?'primary.dark':'action.hover'}}}>{t}</Button>)}</Box>
+        {tab===0 && CAR_GROUPS.map(cg=><Card key={cg._id} variant="outlined" sx={{mb:1,bgcolor:'#F5F5F2',border:'none'}}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}><Typography variant="body2" fontWeight={600}>{cg.brand} — {cg.owner.username} <Typography component="span" variant="caption" color="text.secondary">(conductor)</Typography></Typography>{cg.taken>0?<Typography variant="caption" color="text.secondary" sx={{ml:1.5}}>· {USERS[2].username}</Typography>:<Typography variant="caption" color="text.secondary" sx={{ml:1.5}}>Sin pasajeros</Typography>}</CardContent></Card>)}
+        {tab===1 && <React.Fragment>{USERS.slice(0,5).map(u=><Box key={u._id} sx={{display:'flex',alignItems:'center',gap:1,mb:1}}><UserAvatar user={u} size={32} /><Typography variant="body2" sx={{flex:1}}>{u.username}</Typography><TextField size="small" placeholder="Tarea..." sx={{maxWidth:160,'& .MuiOutlinedInput-root':{borderRadius:8}}} /></Box>)}<Button variant="contained" fullWidth sx={{mt:2}}>Guardar tareas</Button></React.Fragment>}
+        {tab===2 && <React.Fragment>{USERS.slice(0,5).map(u=><Box key={u._id} sx={{display:'flex',alignItems:'center',gap:1,mb:1}}><UserAvatar user={u} size={32} /><Typography variant="body2" sx={{flex:1}}>{u.username}</Typography><TextField select defaultValue="pending" size="small" sx={{minWidth:120,'& .MuiOutlinedInput-root':{borderRadius:8}}}><MenuItem value="pending">Pendiente</MenuItem><MenuItem value="show">Asistio</MenuItem><MenuItem value="no-show">No asistio</MenuItem><MenuItem value="excused">Excusado</MenuItem></TextField></Box>)}<Button variant="contained" fullWidth sx={{mt:2}}>Guardar asistencia</Button></React.Fragment>}
+      </Box>);
+    }
+
+    function CarGroupCreateScreen() {
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Evento" /><Typography variant="h2" sx={{mt:1,mb:0.5}}>Ofrece tu coche</Typography><Typography variant="body2" color="text.secondary" sx={{mb:3}}>Todos los campos se pueden modificar luego</Typography><Stack spacing={2}><TextField label="Plazas disponibles" type="number" inputProps={{inputMode:'numeric'}} fullWidth /><TextField label="Marca y modelo" fullWidth /><TextField label="Color del coche" fullWidth /><TextField label="Direccion de recogida" fullWidth /><TextField label="Hora de recogida" type="time" fullWidth InputLabelProps={{shrink:true}} helperText="La fecha sera la del evento" /><Button variant="contained" fullWidth size="large">Crear grupo de coche</Button></Stack></Box>);
+    }
+
+    function CarGroupSearchScreen() {
+      const [sel,setSel]=useState(null);
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Evento" /><Typography variant="h2" sx={{mt:1,mb:3}}>Coches disponibles</Typography>
+        {CAR_GROUPS.filter(cg=>cg.seats-cg.taken>0).map(cg=>(
+          <Card key={cg._id} sx={{mb:1.5,cursor:'pointer',border:sel===cg._id?'2px solid #FF6B35':'2px solid transparent',transition:'border 0.2s'}} onClick={()=>setSel(sel===cg._id?null:cg._id)}>
+            <CardContent>
+              <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',mb:1}}>
+                <Box sx={{display:'flex',alignItems:'center',gap:1}}><UserAvatar user={cg.owner} size={32} /><Typography fontWeight={600}>{cg.owner.username}</Typography></Box>
+                <Chip label={`${cg.seats-cg.taken} plazas`} size="small" color="success" sx={{height:22}} />
+              </Box>
+              <Typography variant="body2" color="text.secondary">{cg.brand} · {cg.color}</Typography>
+              <Box sx={{display:'flex',alignItems:'center',gap:0.5,mt:0.5}}><MIcon name="place" sx={{fontSize:14,color:'text.secondary'}} /><Typography variant="caption" color="text.secondary">{cg.pickup}</Typography></Box>
+              <Box sx={{display:'flex',alignItems:'center',gap:0.5,mt:0.25}}><MIcon name="schedule" sx={{fontSize:14,color:'text.secondary'}} /><Typography variant="caption" color="text.secondary">{cg.time}</Typography></Box>
+              {sel===cg._id && <Box sx={{position:'absolute',top:12,right:12}}><MIcon name="check_circle" sx={{color:'primary.main',fontSize:24}} /></Box>}
+            </CardContent>
+          </Card>
+        ))}
+        <Button variant="contained" fullWidth size="large" disabled={!sel} sx={{mt:1}}>{sel?'Unete al grupo de coche!':'Selecciona un coche'}</Button>
+      </Box>);
+    }
+
+    function CarGroupDetailsScreen() {
+      const {navigate}=useApp(); const cg=CAR_GROUPS[0];
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Evento" />
+        <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',mt:1,mb:2}}><Typography variant="h2">Tu coche</Typography><IconButton onClick={()=>navigate('car-group-edit')}><MIcon name="edit" sx={{color:'text.secondary'}} /></IconButton></Box>
+        <Card variant="outlined" sx={{mb:2,bgcolor:'#F5F5F2',border:'none'}}><CardContent><Stack spacing={0.75}>
+          <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="place" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{cg.pickup}</Typography></Box>
+          <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="schedule" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{cg.time}</Typography></Box>
+          <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="directions_car" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{cg.brand} · {cg.color}</Typography></Box>
+          <Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="event_seat" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2">{cg.seats-cg.taken} plazas disponibles</Typography></Box>
+        </Stack></CardContent></Card>
+        <SectionExpander title="Conductor y pasajeros" badge={1+cg.taken}>
+          <List dense disablePadding><UserListItem user={cg.owner} />{cg.taken>0 && <UserListItem user={USERS[2]} />}</List>
+        </SectionExpander>
+        <Box sx={{mt:2}}><Box sx={{display:'flex',alignItems:'center',gap:1,mb:2}}><MIcon name="chat" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="h5">Mensajes del grupo</Typography></Box>
+          <Typography variant="body2" color="text.secondary" sx={{textAlign:'center',py:3,fontStyle:'italic'}}>No hay mensajes aun</Typography>
+          <Box sx={{display:'flex',gap:1}}><TextField placeholder="Escribe un mensaje..." fullWidth size="small" sx={{'& .MuiOutlinedInput-root':{borderRadius:'24px',bgcolor:'#F5F5F2'}}} /><IconButton sx={{bgcolor:'primary.main',color:'primary.contrastText',width:40,height:40,'&:hover':{bgcolor:'primary.dark'}}}><MIcon name="send" sx={{fontSize:18}} /></IconButton></Box>
+        </Box>
+      </Box>);
+    }
+
+    function CarGroupEditScreen() {
+      const [tab,setTab]=useState(0); const cg=CAR_GROUPS[0];
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Grupo de coche" /><Typography variant="h2" sx={{mt:1,mb:2}}>Editar grupo de coche</Typography>
+        <Box sx={{display:'flex',bgcolor:'background.paper',borderRadius:'10px',p:'3px',gap:'2px',mb:3}}><Button fullWidth onClick={()=>setTab(0)} sx={{borderRadius:'8px',minHeight:40,bgcolor:tab===0?'primary.main':'transparent',color:tab===0?'#fff':'text.secondary'}}>Editar</Button><Button fullWidth onClick={()=>setTab(1)} sx={{borderRadius:'8px',minHeight:40,bgcolor:tab===1?'primary.main':'transparent',color:tab===1?'error.main':'text.secondary'}}>Eliminar</Button></Box>
+        {tab===0 && <Stack spacing={2}><TextField label="Plazas" type="number" defaultValue={cg.seats} inputProps={{inputMode:'numeric'}} /><TextField label="Marca y modelo" defaultValue={cg.brand} /><TextField label="Color" defaultValue={cg.color} /><TextField label="Direccion de recogida" defaultValue={cg.pickup} /><TextField label="Hora de recogida" type="time" defaultValue={cg.time} InputLabelProps={{shrink:true}} /><Button variant="contained" fullWidth>Guardar cambios</Button></Stack>}
+        {tab===1 && <Box sx={{textAlign:'center',pt:3}}><MIcon name="warning" sx={{fontSize:48,color:'error.main'}} /><Typography variant="body2" color="text.secondary" sx={{mt:2,maxWidth:260,mx:'auto',lineHeight:1.6}}>Se eliminara el grupo y los pasajeros seran removidos.</Typography><Button variant="contained" color="error" fullWidth sx={{mt:3}}>Eliminar grupo</Button></Box>}
+      </Box>);
+    }
+
+    function UserListScreen() {
+      const {navigate}=useApp(); const [search,setSearch]=useState('');
+      const pending=USERS.filter(u=>u.role==='pending');
+      const active=USERS.filter(u=>u.role!=='pending').filter(u=>!search||u.username.includes(search.toLowerCase())||u.name.toLowerCase().includes(search.toLowerCase()));
+      return (<Box sx={{pb:10}}>
+        <Box sx={{px:2.5,pt:3,pb:1}}><Typography variant="h1">Usuarios</Typography></Box>
+        <Box sx={{px:2.5}}>
+          {pending.length>0 && <React.Fragment>
+            <Typography variant="caption" sx={{fontWeight:600,textTransform:'uppercase',letterSpacing:1,color:'text.secondary',mb:1,display:'block'}}>Pendientes de aprobacion</Typography>
+            {pending.map(u=><Card key={u._id} sx={{mb:1,cursor:'pointer',borderLeft:'3px solid',borderColor:'warning.main'}} onClick={()=>navigate('user-details')}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5},display:'flex',alignItems:'center',gap:1.5}}><UserAvatar user={u} /><Box sx={{flex:1}}><Typography variant="body2" fontWeight={600}>{u.username}</Typography><Typography variant="caption" color="text.secondary">{u.name}</Typography></Box><Chip label="Pendiente" size="small" color="warning" sx={{height:22}} /></CardContent></Card>)}
+            <Divider sx={{my:2}} />
+          </React.Fragment>}
+          <TextField placeholder="Buscar usuario..." fullWidth size="small" value={search} onChange={e=>setSearch(e.target.value)} sx={{mb:2,'& .MuiOutlinedInput-root':{borderRadius:'24px',bgcolor:'#F5F5F2'}}} InputProps={{startAdornment:<InputAdornment position="start"><MIcon name="search" sx={{fontSize:18,color:'text.secondary'}} /></InputAdornment>}} />
+          <List disablePadding>{active.map(u=><UserListItem key={u._id} user={u} onClick={()=>navigate('user-details')} />)}</List>
+        </Box>
+      </Box>);
+    }
+
+    function UserDetailsScreen() {
+      const {role}=useApp(); const u=USERS[5]; const isOrg=role==='organizer'||role==='admin';
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn label="Usuarios" />
+        <Box sx={{textAlign:'center',mt:3,mb:3}}><UserAvatar user={u} size={80} /><Typography variant="h2" sx={{mt:1.5}}>{u.username}</Typography><Typography variant="body2" color="text.secondary">{u.name}</Typography></Box>
+        <Card variant="outlined" sx={{mb:2,bgcolor:'#F5F5F2',border:'none'}}><CardContent>
+          <Box sx={{py:1,borderBottom:'1px solid',borderColor:'divider'}}><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Telefono</Typography><Typography variant="body2" fontWeight={500}>{u.phone}</Typography></Box>
+          <Box sx={{py:1}}><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Miembro desde</Typography><Typography variant="body2" fontWeight={500}>{u.since}</Typography></Box>
+        </CardContent></Card>
+        {isOrg && u.role==='pending' && <React.Fragment><Card variant="outlined" sx={{mb:2,bgcolor:'transparent',borderColor:'warning.main',borderLeft:'3px solid'}}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}><Typography variant="body2" fontWeight={600} sx={{color:'warning.main'}}>Pendiente de aprobacion</Typography></CardContent></Card><Button variant="contained" fullWidth size="large" startIcon={<MIcon name="check_circle" sx={{fontSize:18}} />}>Permitir acceso</Button></React.Fragment>}
+        {isOrg && u.role!=='pending' && <Card variant="outlined" sx={{bgcolor:'transparent',borderColor:'success.main',borderLeft:'3px solid'}}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}><Typography variant="body2" fontWeight={600} sx={{color:'success.main'}}>Usuario habilitado</Typography></CardContent></Card>}
+      </Box>);
+    }
+
+    function OwnProfileScreen() {
+      const u=USERS[0];
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn />
+        <Box sx={{textAlign:'center',mt:3,mb:3,position:'relative'}}>
+          <Box sx={{display:'inline-block',position:'relative'}}><UserAvatar user={u} size={80} /><Box sx={{position:'absolute',bottom:-2,right:-2,width:28,height:28,borderRadius:'50%',bgcolor:'primary.main',display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid',borderColor:'background.default'}}><MIcon name="edit" sx={{fontSize:14,color:'#fff'}} /></Box></Box>
+        </Box>
+        <Card variant="outlined" sx={{mb:2,bgcolor:'#F5F5F2',border:'none'}}><CardContent>
+          <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',py:1,borderBottom:'1px solid',borderColor:'divider'}}><Box><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Usuario</Typography><Typography variant="body2" fontWeight={500}>{u.username}</Typography></Box><MIcon name="edit" sx={{fontSize:16,color:'primary.main'}} /></Box>
+          <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',py:1,borderBottom:'1px solid',borderColor:'divider'}}><Box><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Nombre</Typography><Typography variant="body2" fontWeight={500}>{u.name}</Typography></Box><MIcon name="edit" sx={{fontSize:16,color:'primary.main'}} /></Box>
+          <Box sx={{py:1,borderBottom:'1px solid',borderColor:'divider'}}><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Correo</Typography><Typography variant="body2" color="text.secondary">{u.username}@email.com</Typography></Box>
+          <Box sx={{py:1}}><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Telefono</Typography><Typography variant="body2" color="text.secondary">{u.phone}</Typography></Box>
+        </CardContent></Card>
+        <Typography variant="caption" color="text.secondary" sx={{display:'block',mb:2}}>Para cambiar correo o telefono, contacta a un admin</Typography>
+        <Card variant="outlined" sx={{mb:2,bgcolor:'#F5F5F2',border:'none'}}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}><Typography variant="caption" color="text.secondary" sx={{textTransform:'uppercase',letterSpacing:0.5}}>Miembro desde</Typography><Typography variant="body2" fontWeight={500}>{u.since}</Typography></CardContent></Card>
+        <Card variant="outlined" sx={{bgcolor:'#F5F5F2',border:'none'}}><CardContent sx={{py:1,'&:last-child':{pb:1}}}>
+          <Box sx={{display:'flex',alignItems:'center',justifyContent:'space-between',minHeight:44}}><Box sx={{display:'flex',alignItems:'center',gap:1}}><MIcon name="notifications" sx={{fontSize:18,color:'text.secondary'}} /><Typography variant="body2" fontWeight={600}>Notificaciones push</Typography></Box><Switch defaultChecked color="primary" /></Box>
+        </CardContent></Card>
+      </Box>);
+    }
+
+    function GlossaryScreen() {
+      return (<Box sx={{px:2.5,pt:1,pb:4}}><BackBtn /><Typography variant="h1" sx={{mt:2,mb:3}}>Glosario</Typography>
+        {GLOSSARY.map((g,i)=><Card key={i} variant="outlined" sx={{mb:1.5,bgcolor:'#F5F5F2',border:'none'}}><CardContent sx={{py:1.5,'&:last-child':{pb:1.5}}}><Typography variant="body2" fontWeight={700} sx={{color:'primary.main',mb:0.5}}>{g.term}</Typography><Typography variant="body2" color="text.secondary" sx={{lineHeight:1.6}}>{g.def}</Typography></CardContent></Card>)}
+      </Box>);
+    }
+
+    function NotFoundScreen() {
+      const {navigate}=useApp();
+      return (<Box sx={{display:'flex',alignItems:'center',justifyContent:'center',flex:1,textAlign:'center'}}><Box><MIcon name="search_off" sx={{fontSize:64,color:'text.secondary'}} /><Typography variant="h2" sx={{mt:2,mb:1}}>Pagina no encontrada</Typography><Button variant="contained" onClick={()=>navigate('home')} sx={{mt:2}}>Ir al inicio</Button></Box></Box>);
+    }
+    function ServerErrorScreen() {
+      const {navigate}=useApp();
+      return (<Box sx={{display:'flex',alignItems:'center',justifyContent:'center',flex:1,textAlign:'center',px:4}}><Box><MIcon name="cloud_off" sx={{fontSize:64,color:'error.main'}} /><Typography variant="h2" sx={{mt:2,mb:1}}>Error de servidor</Typography><Typography variant="body2" color="text.secondary">Intenta nuevamente. Si persiste, contacta a un admin.</Typography><Button variant="contained" onClick={()=>navigate('home')} sx={{mt:2}}>Volver</Button></Box></Box>);
+    }
+
+    // ============================================================
+    // ROUTER
+    // ============================================================
+    function Router({route}) {
+      const map = { home:HomeScreen, login:LoginScreen, signup:SignupScreen, 'password-forget':PasswordForgetScreen, 'password-reset':PasswordResetScreen, 'event-list':EventListScreen, 'event-details':EventDetailsScreen, 'event-create':EventCreateScreen, 'event-edit':EventEditScreen, 'event-manage':EventManageScreen, 'car-group-create':CarGroupCreateScreen, 'car-group-search':CarGroupSearchScreen, 'car-group-details':CarGroupDetailsScreen, 'car-group-edit':CarGroupEditScreen, 'user-list':UserListScreen, 'user-details':UserDetailsScreen, 'own-profile':OwnProfileScreen, glossary:GlossaryScreen, 'not-found':NotFoundScreen, 'server-error':ServerErrorScreen };
+      const Screen = map[route] || NotFoundScreen;
+      return <Screen />;
+    }
+
+    // ============================================================
+    // APP
+    // ============================================================
+    function App() {
+      const {route,navigate,back} = useRouter();
+      const [role,setRole] = useState('user');
+      const isOrg = role==='organizer'||role==='admin';
+      const isAnon = role==='anon';
+
+      const tabItems = isAnon ? [] : [
+        {label:'Inicio',icon:'home',route:'home'},
+        {label:'Eventos',icon:'event',route:'event-list'},
+        ...(isOrg?[{label:'Usuarios',icon:'group',route:'user-list'}]:[]),
+        {label:'Perfil',icon:'person',route:'own-profile'},
+        {label:'Glosario',icon:'menu_book',route:'glossary'},
+      ];
+      const tabIdx = tabItems.findIndex(t => t.route===route || (route==='home' && t.route==='home'));
+
+      const ctx = useMemo(()=>({role,navigate,back,route}),[role,route,navigate,back]);
+
+      return (
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppCtx.Provider value={ctx}>
+            <Box sx={{display:'flex',flexDirection:'column',minHeight:'100dvh',maxWidth:430,mx:'auto',position:'relative'}}>
+              {/* Role switcher */}
+              <Box sx={{bgcolor:'background.paper',py:0.75,px:2,display:'flex',alignItems:'center',gap:1,overflowX:'auto',flexShrink:0,'&::-webkit-scrollbar':{display:'none'}}}>
+                <Typography variant="caption" sx={{color:'text.secondary',flexShrink:0}}>Vista:</Typography>
+                {['anon','user','organizer','admin'].map(r=>(
+                  <Chip key={r} label={r==='anon'?'Anonimo':r[0].toUpperCase()+r.slice(1)} size="small"
+                    onClick={()=>{setRole(r);if(r==='anon')navigate('home');}}
+                    sx={{cursor:'pointer',fontWeight:role===r?600:400,bgcolor:role===r?'primary.main':'transparent',color:role===r?'primary.contrastText':'text.secondary',border:role===r?'none':'1px solid',borderColor:'divider','&:hover':{bgcolor:role===r?'primary.dark':'action.hover'}}}
+                  />
+                ))}
+              </Box>
+
+              {/* Screen */}
+              <Box sx={{flex:1,overflow:'auto','&::-webkit-scrollbar':{display:'none'}}}>
+                <Router route={route} />
+              </Box>
+
+              {/* FAB */}
+              {isOrg && (route==='home'||route==='event-list') && (
+                <Fab variant="extended" color="primary" onClick={()=>navigate('event-create')} aria-label="Crear evento"
+                  sx={{position:'absolute',bottom:tabItems.length?76:20,right:16,zIndex:10,boxShadow:'0 8px 24px rgba(217,153,70,0.3)'}}>
+                  <MIcon name="add" sx={{mr:0.5}} /> Crear Evento
+                </Fab>
+              )}
+
+              {/* Tab Bar */}
+              {tabItems.length>0 && (
+                <Paper elevation={0} sx={{borderTop:'1px solid',borderColor:'divider',flexShrink:0}}>
+                  <BottomNavigation value={tabIdx>=0?tabIdx:false} showLabels
+                    onChange={(e,idx)=>{navigate(tabItems[idx].route);}}
+                    sx={{bgcolor:'background.paper',height:64}}>
+                    {tabItems.map((t,i)=>(
+                      <BottomNavigationAction key={i} label={t.label} icon={<MIcon name={t.icon} />} sx={{fontSize:'0.6rem',py:1}} />
+                    ))}
+                  </BottomNavigation>
+                </Paper>
+              )}
+            </Box>
+          </AppCtx.Provider>
+        </ThemeProvider>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0F0F0F" />
+  <title>Patas Arriba — Native Mobile Mockup v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0F0F0F;
+      --surface: #1A1A1A;
+      --surface2: #242424;
+      --surface3: #2E2E2E;
+      --accent: #FF6B35;
+      --accent-soft: rgba(255,107,53,0.12);
+      --accent2: #4ECDC4;
+      --accent2-soft: rgba(78,205,196,0.12);
+      --text: #F5F5F5;
+      --text2: #A0A0A0;
+      --text3: #666;
+      --success: #34D399;
+      --warning: #FBBF24;
+      --danger: #EF4444;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-xs: 8px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); overscroll-behavior: none; overflow: hidden; height: 100dvh; }
+    #app { height: 100dvh; display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; position: relative; overflow: hidden; }
+
+    /* Shared utilities */
+    .screen { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+    .screen::-webkit-scrollbar { display: none; }
+    .pad { padding: 0 20px; }
+    .icon { font-family: 'Material Icons Round'; font-size: 24px; font-style: normal; -webkit-font-smoothing: antialiased; }
+    .icon-sm { font-size: 18px; }
+    .icon-lg { font-size: 28px; }
+    .icon-xl { font-size: 48px; }
+
+    /* Status bar */
+    .status-bar { height: 44px; display: flex; align-items: center; justify-content: center; padding: 0 20px; flex-shrink: 0; }
+    .status-bar span { font-size: 11px; color: var(--text2); letter-spacing: 0.5px; }
+
+    /* Tab bar */
+    .tab-bar { display: flex; align-items: center; justify-content: space-around; height: 64px; padding-bottom: var(--safe-bottom); background: var(--surface); border-top: 1px solid var(--surface2); flex-shrink: 0; }
+    .tab-bar button { background: none; border: none; color: var(--text3); display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-family: inherit; font-weight: 500; cursor: pointer; padding: 8px 16px; min-width: 64px; min-height: 48px; transition: color 0.2s; }
+    .tab-bar button.active { color: var(--accent); }
+    .tab-bar button .icon { font-size: 22px; }
+
+    /* Role switcher */
+    .role-bar { display: flex; align-items: center; gap: 8px; padding: 8px 20px; background: var(--surface); overflow-x: auto; flex-shrink: 0; }
+    .role-bar::-webkit-scrollbar { display: none; }
+    .role-bar span { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+    .role-chip { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--surface3); color: var(--text2); background: transparent; cursor: pointer; font-family: inherit; font-weight: 500; white-space: nowrap; transition: all 0.2s; }
+    .role-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* Header */
+    .header { padding: 16px 20px 8px; flex-shrink: 0; }
+    .header-lg { padding: 24px 20px 16px; }
+    .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
+    .header h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .header p { font-size: 14px; color: var(--text2); margin-top: 4px; line-height: 1.4; }
+
+    /* Cards */
+    .card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden; transition: transform 0.15s; }
+    .card:active { transform: scale(0.98); }
+    .card-glow { box-shadow: 0 0 0 1px rgba(255,107,53,0.15), 0 8px 32px rgba(255,107,53,0.08); }
+    .card-flat { background: var(--surface2); }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase; }
+    .badge-accent { background: var(--accent-soft); color: var(--accent); }
+    .badge-teal { background: var(--accent2-soft); color: var(--accent2); }
+    .badge-success { background: rgba(52,211,153,0.12); color: var(--success); }
+    .badge-warning { background: rgba(251,191,36,0.12); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .badge-muted { background: var(--surface3); color: var(--text3); }
+
+    /* Buttons */
+    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: var(--radius-sm); border: none; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; min-height: 52px; width: 100%; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: var(--surface2); color: var(--text); }
+    .btn-outline { background: transparent; border: 1.5px solid var(--surface3); color: var(--text); }
+    .btn-ghost { background: transparent; color: var(--accent); padding: 14px 8px; width: auto; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { min-height: 40px; padding: 8px 16px; font-size: 13px; border-radius: var(--radius-xs); }
+
+    /* Input */
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+    .input { width: 100%; padding: 14px 16px; background: var(--surface2); border: 1.5px solid transparent; border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 15px; outline: none; transition: border-color 0.2s; min-height: 52px; }
+    .input:focus { border-color: var(--accent); }
+    .input::placeholder { color: var(--text3); }
+
+    /* Avatar */
+    .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+    .avatar-sm { width: 32px; height: 32px; font-size: 12px; }
+    .avatar-lg { width: 56px; height: 56px; font-size: 20px; }
+    .avatar-xl { width: 80px; height: 80px; font-size: 28px; }
+
+    /* Misc */
+    .divider { height: 1px; background: var(--surface3); margin: 16px 0; }
+    .row { display: flex; align-items: center; gap: 12px; }
+    .row-between { display: flex; align-items: center; justify-content: space-between; }
+    .col { display: flex; flex-direction: column; }
+    .gap-sm { gap: 4px; }
+    .gap { gap: 8px; }
+    .gap-lg { gap: 16px; }
+    .flex-1 { flex: 1; }
+    .text-sm { font-size: 13px; }
+    .text-xs { font-size: 11px; }
+    .text-muted { color: var(--text2); }
+    .text-accent { color: var(--accent); }
+    .text-teal { color: var(--accent2); }
+    .fw-600 { font-weight: 600; }
+    .fw-700 { font-weight: 700; }
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .mb-8 { margin-bottom: 8px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-24 { margin-bottom: 24px; }
+    .pb-32 { padding-bottom: 32px; }
+    .hidden { display: none !important; }
+
+    /* Scroll fade */
+    .scroll-fade { position: relative; }
+    .scroll-fade::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(transparent, var(--bg)); pointer-events: none; }
+
+    /* Skeleton shimmer */
+    @keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+    .shimmer { background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%); background-size: 400px 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-xs); }
+
+    /* Expandable */
+    .expandable-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; cursor: pointer; min-height: 48px; }
+    .expandable-body { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
+    .expandable-body.open { max-height: 2000px; }
+
+    /* Chat */
+    .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.4; }
+    .chat-bubble-in { background: var(--surface2); border-bottom-left-radius: 4px; align-self: flex-start; }
+    .chat-bubble-out { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .chat-input { display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: var(--surface); border-top: 1px solid var(--surface2); }
+    .chat-input input { flex: 1; background: var(--surface2); border: none; border-radius: 24px; padding: 12px 16px; color: var(--text); font-family: inherit; font-size: 14px; outline: none; min-height: 44px; }
+    .chat-input button { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+
+    /* Floating */
+    .fab { position: absolute; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 28px; background: var(--accent); color: #fff; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(255,107,53,0.3); cursor: pointer; z-index: 10; transition: transform 0.15s; }
+    .fab:active { transform: scale(0.92); }
+
+    /* Hero */
+    .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 32px; }
+    .hero-logo { width: 120px; height: 120px; border-radius: 32px; background: linear-gradient(135deg, var(--accent), #FF8F65); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 16px 48px rgba(255,107,53,0.2); }
+    .hero-logo .icon { font-size: 56px; color: #fff; }
+    .hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+    .hero p { font-size: 15px; color: var(--text2); max-width: 260px; line-height: 1.5; }
+
+    /* Event card special */
+    .event-card { position: relative; overflow: hidden; }
+    .event-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 0 4px 4px 0; }
+    .event-card.cat-protectora::before { background: var(--accent); }
+    .event-card.cat-mercadillo::before { background: var(--accent2); }
+    .event-card.cat-recogida::before { background: var(--warning); }
+    .event-card.cat-otro::before { background: var(--text3); }
+
+    /* Profile section */
+    .profile-stat { text-align: center; flex: 1; }
+    .profile-stat .num { font-size: 22px; font-weight: 800; }
+    .profile-stat .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Toggle pills */
+    .toggle-pills { display: flex; background: var(--surface); border-radius: var(--radius-sm); padding: 3px; gap: 2px; }
+    .toggle-pill { flex: 1; text-align: center; padding: 10px 12px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; color: var(--text2); border: none; background: transparent; cursor: pointer; font-family: inherit; min-height: 40px; transition: all 0.2s; }
+    .toggle-pill.active { background: var(--accent); color: #fff; }
+
+    /* List item */
+    .list-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; min-height: 56px; cursor: pointer; }
+    .list-item:active { opacity: 0.7; }
+
+    /* Inline edit */
+    .inline-field { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--surface2); min-height: 52px; }
+    .inline-field .label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+    .inline-field .value { font-size: 15px; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // ============================================================
+    // STATE
+    // ============================================================
+    const state = {
+      screen: 'home',
+      role: 'user',
+      eventTab: 'upcoming',
+      editTab: 0,
+      manageTab: 0,
+      carEditTab: 0,
+      expandDesc: false,
+      expandPeople: false,
+      expandCars: false,
+      joined: true,
+      selectedCar: null,
+      search: '',
+      history: [],
+    };
+
+    function go(screen) {
+      state.history.push(state.screen);
+      state.screen = screen;
+      render();
+      document.querySelector('.screen')?.scrollTo(0, 0);
+    }
+    function back() {
+      if (state.history.length) { state.screen = state.history.pop(); render(); }
+    }
+    function setRole(r) { state.role = r; if (r === 'anon') go('home'); else render(); }
+
+    // ============================================================
+    // DATA
+    // ============================================================
+    const users = [
+      { id:'u1', name:'Maria V.', username:'maria_v', role:'admin', color:'#FF6B35', initials:'MV', phone:'+34 612 345 678', since:'Jun 2024' },
+      { id:'u2', name:'Carlos R.', username:'carlos_r', role:'organizer', color:'#4ECDC4', initials:'CR', phone:'+34 623 456 789', since:'Ago 2024' },
+      { id:'u3', name:'Lucia M.', username:'lucia_m', role:'user', color:'#A78BFA', initials:'LM', phone:'+34 634 567 890', since:'Oct 2024' },
+      { id:'u4', name:'Pablo G.', username:'pablo_g', role:'user', color:'#F472B6', initials:'PG', phone:'+34 645 678 901', since:'Ene 2025' },
+      { id:'u5', name:'Ana S.', username:'ana_s', role:'user', color:'#34D399', initials:'AS', phone:'+34 656 789 012', since:'Feb 2025' },
+      { id:'u6', name:'Pedro L.', username:'nuevo_user', role:'pending', color:'#6B7280', initials:'PL', phone:'+34 667 890 123', since:'Mar 2025' },
+    ];
+
+    const events = [
+      { id:'e1', title:'Visita a la Protectora', cat:'protectora', loc:'Protectora Municipal, C/ Esperanza 12', date:'2026-04-05', time:'10:00', status:'open', owner:users[1], attendees:5, hasCars:true, hasTasks:true,
+        desc:'Jornada de voluntariado en la protectora. Necesitamos ayuda para pasear a los perros y limpiar las instalaciones.' },
+      { id:'e2', title:'Mercadillo Solidario', cat:'mercadillo', loc:'Plaza Mayor, Centro', date:'2026-04-12', time:'09:00', status:'open', owner:users[0], attendees:3, hasCars:true, hasTasks:false,
+        desc:'Mercadillo para recaudar fondos. Voluntarios para montar puestos desde las 8am.' },
+      { id:'e3', title:'Recogida de Alimentos', cat:'recogida', loc:'Supermercado Gran Via', date:'2026-03-20', time:'11:00', status:'closed', owner:users[1], attendees:4, hasCars:false, hasTasks:true,
+        desc:'Recogida de pienso y alimentos donados para la protectora.' },
+    ];
+
+    const carGroups = [
+      { id:'cg1', owner:users[1], brand:'Seat Leon', color:'Blanco', seats:4, taken:1, pickup:'Estacion de tren, Puerta Norte', time:'09:30' },
+      { id:'cg2', owner:users[3], brand:'Renault Clio', color:'Azul', seats:3, taken:0, pickup:'Plaza del Ayuntamiento', time:'09:15' },
+    ];
+
+    const messages = [
+      { id:'m1', user:users[1], text:'Recordad traer agua y gorra, hara calor!', time:'18:30', mine:false },
+      { id:'m2', user:users[2], text:'Yo llevo bolsas extra por si acaso', time:'19:15', mine:false },
+      { id:'m3', user:users[0], text:'Perfecto! Nos vemos alli', time:'20:00', mine:true },
+    ];
+
+    const glossary = [
+      { term:'Evento', def:'Actividad organizada por la fundacion donde los voluntarios participan.' },
+      { term:'Grupo de coche', def:'Un voluntario ofrece plazas en su coche para llevar a otros al evento.' },
+      { term:'Organizador', def:'Voluntario con permisos para crear eventos y gestionar participantes.' },
+      { term:'Protectora', def:'Visita a un refugio o protectora de animales.' },
+      { term:'Recogida', def:'Recogida de alimentos, material o donaciones.' },
+      { term:'Mercadillo', def:'Mercadillo solidario para recaudar fondos.' },
+    ];
+
+    // Helpers
+    const catIcon = { protectora:'pets', mercadillo:'storefront', recogida:'inventory_2', otro:'event' };
+    const catColor = { protectora:'var(--accent)', mercadillo:'var(--accent2)', recogida:'var(--warning)', otro:'var(--text3)' };
+    function fmtDate(d) { return new Date(d+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}); }
+    function isPast(d) { const e=new Date(d+'T00:00:00'); e.setHours(0,0,0,0); const t=new Date(); t.setHours(0,0,0,0); return e<t; }
+    function isToday(d) { return new Date(d+'T00:00:00').toDateString()===new Date().toDateString(); }
+    function timeLabel(d) { return isToday(d)?'Hoy':isPast(d)?'Pasado':'Proximo'; }
+    function timeBadge(d) { const l=timeLabel(d); return l==='Hoy'?'badge-teal':l==='Proximo'?'badge-accent':'badge-muted'; }
+    function avatar(u,cls='') { return `<div class="avatar ${cls}" style="background:${u.color}">${u.initials}</div>`; }
+    function icon(name,cls='') { return `<span class="icon ${cls}">${name}</span>`; }
+    const isOrg = () => state.role==='organizer'||state.role==='admin';
+
+    // ============================================================
+    // SCREENS
+    // ============================================================
+
+    function screenHome() {
+      if (state.role === 'anon') {
+        return `
+          <div class="screen">
+            <div class="hero">
+              <div class="hero-logo">${icon('pets')}</div>
+              <h1>Patas Arriba</h1>
+              <p>Coordina voluntarios, organiza eventos y ayuda a los animales que mas lo necesitan</p>
+              <div class="col gap-lg" style="width:100%;max-width:280px;margin-top:32px">
+                <button class="btn btn-primary" onclick="go('signup')">Crear cuenta</button>
+                <button class="btn btn-outline" onclick="go('login')">Ya tengo cuenta</button>
+              </div>
+            </div>
+          </div>`;
+      }
+      const upcoming = events.filter(e => !isPast(e.date));
+      return `
+        <div class="screen">
+          <div class="header header-lg">
+            <div class="row-between">
+              <div>
+                <p class="text-sm text-muted">Hola, ${users[0].name.split(' ')[0]} 👋</p>
+                <h1>Eventos</h1>
+              </div>
+              <div onclick="go('own-profile')" style="cursor:pointer">
+                ${avatar(users[0])}
+              </div>
+            </div>
+          </div>
+          <div class="pad">
+            ${upcoming.length === 0 ? '<p class="text-muted" style="text-align:center;padding:40px 0">No hay eventos proximos</p>' : ''}
+            ${upcoming.map(e => eventCard(e)).join('')}
+
+            <p class="text-xs text-muted fw-600 mt-24 mb-8" style="text-transform:uppercase;letter-spacing:1px">Eventos pasados</p>
+            ${events.filter(e => isPast(e.date)).map(e => eventCard(e)).join('')}
+          </div>
+          <div style="height:80px"></div>
+        </div>
+        ${isOrg() ? `<button class="fab" onclick="go('event-create')">${icon('add')}</button>` : ''}`;
+    }
+
+    function eventCard(e) {
+      return `
+        <div class="card event-card cat-${e.cat}" onclick="go('event-details')" style="cursor:pointer">
+          <div class="row-between mb-8">
+            <span class="badge ${timeBadge(e.date)}">${timeLabel(e.date)}</span>
+            <div class="row gap-sm">
+              <span class="icon icon-sm" style="color:${catColor[e.cat]}">${catIcon[e.cat]}</span>
+              <span class="text-xs text-muted fw-600" style="text-transform:capitalize">${e.cat}</span>
+            </div>
+          </div>
+          <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;letter-spacing:-0.2px">${e.title}</h3>
+          <div class="col gap-sm">
+            <div class="row gap-sm">
+              <span class="icon icon-sm text-muted">place</span>
+              <span class="text-sm text-muted">${e.loc}</span>
+            </div>
+            <div class="row" style="gap:16px">
+              <div class="row gap-sm">
+                <span class="icon icon-sm text-muted">event</span>
+                <span class="text-sm text-muted">${fmtDate(e.date)}</span>
+              </div>
+              <div class="row gap-sm">
+                <span class="icon icon-sm text-muted">schedule</span>
+                <span class="text-sm text-muted">${e.time}</span>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-8" style="gap:6px">
+            <div class="row gap-sm" style="background:var(--surface2);padding:4px 10px;border-radius:20px">
+              <span class="icon icon-sm" style="color:var(--accent2)">group</span>
+              <span class="text-xs fw-600">${e.attendees}</span>
+            </div>
+            ${e.hasCars ? `<div class="row gap-sm" style="background:var(--surface2);padding:4px 10px;border-radius:20px">
+              <span class="icon icon-sm" style="color:var(--warning)">directions_car</span>
+              <span class="text-xs fw-600">Coches</span>
+            </div>` : ''}
+            ${e.status==='closed' ? '<span class="badge badge-warning">Cerrado</span>' : ''}
+            ${state.joined && !isPast(e.date) ? '<span class="badge badge-success">Apuntado</span>' : ''}
+          </div>
+        </div>`;
+    }
+
+    function screenEventDetails() {
+      const e = events[0];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px;margin-bottom:4px">${icon('arrow_back','icon-sm')} Eventos</button>
+
+            <div class="row-between">
+              <span class="badge ${timeBadge(e.date)}">${timeLabel(e.date)}</span>
+              ${isOrg() ? `<button class="btn-ghost" onclick="go('event-edit')" style="padding:8px">${icon('edit','icon-sm')} Editar</button>` : ''}
+            </div>
+
+            <h1 style="font-size:24px;font-weight:800;margin:8px 0 16px;letter-spacing:-0.5px">${e.title}</h1>
+
+            <div class="card card-flat">
+              <div class="col gap">
+                <div class="row gap"><span class="icon icon-sm" style="color:${catColor[e.cat]}">${catIcon[e.cat]}</span><span class="text-sm fw-600" style="text-transform:capitalize">${e.cat}</span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">place</span><span class="text-sm">${e.loc}</span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">event</span><span class="text-sm">${fmtDate(e.date)} a las ${e.time}</span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">person</span><span class="text-sm">Organizado por <span class="text-teal fw-600" onclick="go('user-details')" style="cursor:pointer">${e.owner.username}</span></span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">group</span><span class="text-sm">${e.attendees} participantes</span></div>
+              </div>
+            </div>
+
+            ${isOrg() ? `<button class="btn btn-secondary mt-16" onclick="go('event-manage')">${icon('tune','icon-sm')} Gestionar participantes</button>` : ''}
+
+            ${!state.joined ? `
+              <button class="btn btn-primary mt-16" onclick="state.joined=true;render()">${icon('person_add','icon-sm')} Unete al evento!</button>
+            ` : `
+              <div class="card card-flat mt-16" style="border-left:3px solid var(--success)">
+                <div class="row gap"><span class="icon" style="color:var(--success)">check_circle</span><span class="fw-600">Estas apuntado a este evento</span></div>
+              </div>
+            `}
+
+            ${state.joined ? `
+              <!-- Description -->
+              <div class="expandable-header" onclick="state.expandDesc=!state.expandDesc;render()">
+                <div class="row gap"><span class="icon icon-sm text-muted">description</span><span class="fw-600">Descripcion</span></div>
+                <span class="icon icon-sm text-muted">${state.expandDesc?'expand_less':'expand_more'}</span>
+              </div>
+              <div class="expandable-body ${state.expandDesc?'open':''}">
+                <p class="text-sm text-muted" style="padding-bottom:16px;line-height:1.6">${e.desc}</p>
+              </div>
+              <div style="height:1px;background:var(--surface2)"></div>
+
+              <!-- Participants -->
+              <div class="expandable-header" onclick="state.expandPeople=!state.expandPeople;render()">
+                <div class="row gap"><span class="icon icon-sm text-muted">group</span><span class="fw-600">Participantes</span><span class="badge badge-muted">${e.attendees}</span></div>
+                <span class="icon icon-sm text-muted">${state.expandPeople?'expand_less':'expand_more'}</span>
+              </div>
+              <div class="expandable-body ${state.expandPeople?'open':''}">
+                ${users.slice(0,5).map(u => `
+                  <div class="list-item" onclick="go('user-details')">
+                    ${avatar(u,'avatar-sm')}
+                    <div class="flex-1"><span class="text-sm fw-600">${u.username}</span><br><span class="text-xs text-muted">${u.name}</span></div>
+                  </div>
+                `).join('')}
+              </div>
+              <div style="height:1px;background:var(--surface2)"></div>
+
+              <!-- Car Groups -->
+              ${e.hasCars ? `
+                <div class="expandable-header" onclick="state.expandCars=!state.expandCars;render()">
+                  <div class="row gap"><span class="icon icon-sm text-muted">directions_car</span><span class="fw-600">Coches</span><span class="badge badge-muted">${carGroups.length}</span></div>
+                  <span class="icon icon-sm text-muted">${state.expandCars?'expand_less':'expand_more'}</span>
+                </div>
+                <div class="expandable-body ${state.expandCars?'open':''}">
+                  ${carGroups.map(cg => `
+                    <div class="card card-flat" onclick="go('car-group-details')" style="cursor:pointer">
+                      <div class="row-between">
+                        <div>
+                          <span class="text-sm fw-600">${cg.owner.username}</span>
+                          <p class="text-xs text-muted">${cg.brand} · ${cg.color}</p>
+                        </div>
+                        <span class="badge ${cg.seats-cg.taken>0?'badge-success':'badge-muted'}">${cg.seats-cg.taken} plazas</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                  <div class="card" style="border:1.5px dashed var(--surface3);background:transparent;text-align:center">
+                    <p class="text-sm text-muted mb-8">No tienes coche asignado</p>
+                    <div class="row gap">
+                      <button class="btn btn-secondary btn-sm flex-1" onclick="event.stopPropagation();go('car-group-create')">${icon('directions_car','icon-sm')} Mi coche</button>
+                      <button class="btn btn-outline btn-sm flex-1" onclick="event.stopPropagation();go('car-group-search')">${icon('search','icon-sm')} Buscar</button>
+                    </div>
+                  </div>
+                </div>
+                <div style="height:1px;background:var(--surface2)"></div>
+              ` : ''}
+
+              <!-- Messages -->
+              <div style="margin-top:16px">
+                <div class="row gap mb-16"><span class="icon icon-sm text-muted">chat</span><span class="fw-600">Mensajes</span></div>
+                <div class="col gap" style="margin-bottom:12px">
+                  ${messages.map(m => `
+                    <div style="display:flex;flex-direction:column;${m.mine?'align-items:flex-end':'align-items:flex-start'}">
+                      ${!m.mine ? `<div class="row gap-sm mb-8"><span class="text-xs fw-600" style="color:${m.user.color}">${m.user.username}</span><span class="text-xs text-muted">${m.time}</span></div>` : ''}
+                      <div class="chat-bubble ${m.mine?'chat-bubble-out':'chat-bubble-in'}">${m.text}</div>
+                      ${m.mine ? `<span class="text-xs text-muted mt-8">${m.time}</span>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <button class="btn btn-outline" style="color:var(--danger);border-color:rgba(239,68,68,0.3)" onclick="state.joined=false;render()">${icon('logout','icon-sm')} Abandonar evento</button>
+            ` : ''}
+          </div>
+          <div style="height:32px"></div>
+        </div>
+        ${state.joined ? `
+          <div class="chat-input">
+            <input placeholder="Escribe un mensaje...">
+            <button>${icon('send','icon-sm')}</button>
+          </div>
+        ` : ''}`;
+    }
+
+    function screenEventList() {
+      const filtered = events.filter(e => state.eventTab==='upcoming' ? !isPast(e.date) : isPast(e.date));
+      return `
+        <div class="screen">
+          <div class="header"><h1>Eventos</h1></div>
+          <div class="pad">
+            <div class="toggle-pills mb-16">
+              <button class="toggle-pill ${state.eventTab==='upcoming'?'active':''}" onclick="state.eventTab='upcoming';render()">Proximos</button>
+              <button class="toggle-pill ${state.eventTab==='past'?'active':''}" onclick="state.eventTab='past';render()">Pasados</button>
+            </div>
+            ${filtered.length===0 ? '<p class="text-muted" style="text-align:center;padding:40px 0">No se han encontrado eventos</p>' : ''}
+            ${filtered.map(e => eventCard(e)).join('')}
+          </div>
+          <div style="height:80px"></div>
+        </div>
+        ${isOrg() ? `<button class="fab" onclick="go('event-create')">${icon('add')}</button>` : ''}`;
+    }
+
+    function screenLogin() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Volver</button>
+            <div style="margin-top:24px;margin-bottom:32px">
+              <h1 style="font-size:28px;font-weight:800">Bienvenido<br>de vuelta</h1>
+              <p class="text-muted mt-8">Accede a tu cuenta para continuar</p>
+            </div>
+            <div class="input-group"><label>Correo o nombre de usuario</label><input class="input" placeholder="tu@email.com" inputmode="email"></div>
+            <div class="input-group"><label>Contrasena</label><input class="input" type="password" placeholder="••••••••"></div>
+            <button class="btn btn-primary mt-8">Acceder</button>
+            <div style="text-align:center;margin-top:24px">
+              <button class="btn-ghost text-sm" onclick="go('password-forget')">¿Olvidaste tu contrasena?</button>
+            </div>
+            <div style="text-align:center;margin-top:8px">
+              <span class="text-sm text-muted">¿No tienes cuenta? </span>
+              <button class="btn-ghost text-sm" onclick="go('signup')">Registrate</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function screenSignup() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Volver</button>
+            <div style="margin-top:24px;margin-bottom:32px">
+              <h1 style="font-size:28px;font-weight:800">Crea tu<br>cuenta</h1>
+              <p class="text-muted mt-8">Unete como voluntario de Patas Arriba</p>
+            </div>
+            <div class="input-group"><label>Correo electronico</label><input class="input" placeholder="tu@email.com" inputmode="email"></div>
+            <div class="input-group"><label>Nombre de usuario</label><input class="input" placeholder="tu_nombre"></div>
+            <div class="input-group"><label>Nombre completo</label><input class="input" placeholder="Maria Garcia"></div>
+            <div class="row gap" style="margin-bottom:16px">
+              <div class="input-group flex-1" style="margin-bottom:0"><label>Codigo</label><select class="input" style="appearance:auto"><option>+34</option><option>+1</option></select></div>
+              <div class="input-group" style="flex:2;margin-bottom:0"><label>Telefono</label><input class="input" placeholder="612 345 678" inputmode="tel"></div>
+            </div>
+            <div class="card card-flat mb-16" style="border-left:3px solid var(--warning)">
+              <p class="text-xs text-muted">${icon('warning','icon-sm')} Tu telefono puede ser compartido con otros voluntarios para coordinacion</p>
+            </div>
+            <div class="input-group"><label>Contrasena</label><input class="input" type="password" placeholder="Min 6 caracteres, 1 numero, 1 mayuscula"></div>
+            <div class="input-group"><label>Confirmar contrasena</label><input class="input" type="password" placeholder="••••••••"></div>
+            <button class="btn btn-primary">Registrate</button>
+            <div class="card card-flat mt-16" style="border-left:3px solid var(--accent2)">
+              <p class="text-xs text-muted">${icon('info','icon-sm')} Despues de registrarte, contacta a un admin para activar tu cuenta</p>
+            </div>
+            <div style="text-align:center;margin-top:16px;padding-bottom:32px">
+              <span class="text-sm text-muted">¿Ya tienes cuenta? </span>
+              <button class="btn-ghost text-sm" onclick="go('login')">Accede</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function screenPasswordForget() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Volver</button>
+            <div style="margin-top:24px;margin-bottom:32px">
+              <h1 style="font-size:24px;font-weight:800">Recuperar contrasena</h1>
+              <p class="text-muted mt-8">Introduce tu correo y te enviaremos instrucciones para restablecer tu contrasena.</p>
+            </div>
+            <div class="input-group"><label>Correo electronico</label><input class="input" placeholder="tu@email.com" inputmode="email"></div>
+            <button class="btn btn-primary">Enviar</button>
+          </div>
+        </div>`;
+    }
+
+    function screenPasswordReset() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <div style="margin-top:24px;margin-bottom:32px">
+              <h1 style="font-size:24px;font-weight:800">Nueva contrasena</h1>
+              <p class="text-muted mt-8">Elige una contrasena segura y confirmala.</p>
+            </div>
+            <div class="input-group"><label>Nueva contrasena</label><input class="input" type="password" placeholder="Min 6 caracteres"></div>
+            <div class="input-group"><label>Confirmar contrasena</label><input class="input" type="password" placeholder="••••••••"></div>
+            <button class="btn btn-primary">Actualizar contrasena</button>
+          </div>
+        </div>`;
+    }
+
+    function screenEventCreate() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Eventos</button>
+            <h1 style="font-size:24px;font-weight:800;margin:16px 0 24px">Crear evento</h1>
+            <div class="input-group"><label>Categoria</label><select class="input" style="appearance:auto"><option value="">Seleccionar...</option><option>Protectora</option><option>Recogida</option><option>Mercadillo</option><option>Otro</option></select></div>
+            <div class="input-group"><label>Titulo</label><input class="input" placeholder="Nombre del evento"></div>
+            <div class="input-group"><label>Lugar</label><input class="input" placeholder="Direccion o ubicacion"></div>
+            <div class="row gap" style="margin-bottom:16px">
+              <div class="input-group flex-1" style="margin-bottom:0"><label>Fecha</label><input class="input" type="date"></div>
+              <div class="input-group flex-1" style="margin-bottom:0"><label>Hora</label><input class="input" type="time"></div>
+            </div>
+            <div class="input-group"><label>Grupos de coches</label><select class="input" style="appearance:auto"><option>Si</option><option>No</option></select></div>
+            <div class="input-group"><label>Asignar tareas</label><select class="input" style="appearance:auto"><option>Si</option><option>No</option></select></div>
+            <button class="btn btn-primary mt-8">Crear evento</button>
+            <div style="height:32px"></div>
+          </div>
+        </div>`;
+    }
+
+    function screenEventEdit() {
+      const tabs = ['Info','Descripcion','Estado','Eliminar'];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Evento</button>
+            <h2 style="font-size:22px;font-weight:800;margin:12px 0 16px">Editar evento</h2>
+            <div class="toggle-pills mb-24">
+              ${tabs.map((t,i) => `<button class="toggle-pill ${state.editTab===i?'active':''}" ${i>=2?`style="color:${i===2?'var(--warning)':i===3?'var(--danger)':''}"`:''} onclick="state.editTab=${i};render()">${t}</button>`).join('')}
+            </div>
+            ${state.editTab===0 ? `
+              <div class="input-group"><label>Titulo</label><input class="input" value="Visita a la Protectora"></div>
+              <div class="input-group"><label>Lugar</label><input class="input" value="Protectora Municipal, C/ Esperanza 12"></div>
+              <div class="row gap mb-16">
+                <div class="input-group flex-1" style="margin-bottom:0"><label>Fecha</label><input class="input" type="date" value="2026-04-05"></div>
+                <div class="input-group flex-1" style="margin-bottom:0"><label>Hora</label><input class="input" type="time" value="10:00"></div>
+              </div>
+              <button class="btn btn-primary">Guardar cambios</button>
+            ` : state.editTab===1 ? `
+              <div class="input-group"><label>Descripcion del evento</label><textarea class="input" rows="6" style="min-height:160px;resize:vertical">${events[0].desc}</textarea></div>
+              <button class="btn btn-primary">Guardar descripcion</button>
+            ` : state.editTab===2 ? `
+              <div class="card card-flat" style="border-left:3px solid var(--success)">
+                <p class="text-sm"><span class="fw-600">Estado actual:</span> Abierto</p>
+              </div>
+              <button class="btn btn-secondary mt-16" style="color:var(--warning)">Cerrar evento</button>
+              <button class="btn btn-outline mt-8" style="color:var(--danger);border-color:rgba(239,68,68,0.3)">Cancelar evento</button>
+            ` : `
+              <div style="text-align:center;padding:24px 0">
+                <span class="icon icon-xl" style="color:var(--danger)">warning</span>
+                <p class="text-sm text-muted mt-16" style="max-width:260px;margin-left:auto;margin-right:auto;line-height:1.5">Se eliminara el evento y todos los datos asociados: participantes, coches y mensajes.</p>
+                <button class="btn btn-danger mt-24">Eliminar evento</button>
+              </div>
+            `}
+          </div>
+          <div style="height:32px"></div>
+        </div>`;
+    }
+
+    function screenEventManage() {
+      const tabs = ['Coches','Tareas','Asistencia'];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Evento</button>
+            <h2 style="font-size:20px;font-weight:800;margin:12px 0 4px">${events[0].title}</h2>
+            <p class="text-xs text-muted mb-16">${fmtDate(events[0].date)}</p>
+            <div class="card card-flat mb-16" style="border-left:3px solid var(--warning)">
+              <p class="text-xs text-muted">Recomendamos cerrar el evento antes de gestionar participantes</p>
+            </div>
+            <div class="toggle-pills mb-24">
+              ${tabs.map((t,i) => `<button class="toggle-pill ${state.manageTab===i?'active':''}" onclick="state.manageTab=${i};render()">${t}</button>`).join('')}
+            </div>
+            ${state.manageTab===0 ? carGroups.map(cg => `
+              <div class="card card-flat">
+                <p class="text-sm fw-600">${cg.brand} — ${cg.owner.username} <span class="text-xs text-muted">(conductor)</span></p>
+                ${cg.taken>0 ? `<p class="text-xs text-muted" style="margin-left:12px;margin-top:4px">· ${users[2].username}</p>` : '<p class="text-xs text-muted" style="margin-left:12px;margin-top:4px">Sin pasajeros</p>'}
+              </div>
+            `).join('') : state.manageTab===1 ? users.slice(0,5).map(u => `
+              <div class="row gap mb-8">
+                ${avatar(u,'avatar-sm')}
+                <span class="text-sm flex-1">${u.username}</span>
+                <input class="input" style="max-width:160px;min-height:40px;padding:8px 12px;font-size:13px" placeholder="Tarea...">
+              </div>
+            `).join('')+'<button class="btn btn-primary mt-16">Guardar tareas</button>' : users.slice(0,5).map(u => `
+              <div class="row gap mb-8">
+                ${avatar(u,'avatar-sm')}
+                <span class="text-sm flex-1">${u.username}</span>
+                <select class="input" style="max-width:130px;min-height:40px;padding:8px;font-size:12px;appearance:auto"><option>Pendiente</option><option>Asistio</option><option>No asistio</option><option>Excusado</option></select>
+              </div>
+            `).join('')+'<button class="btn btn-primary mt-16">Guardar asistencia</button>'}
+          </div>
+          <div style="height:32px"></div>
+        </div>`;
+    }
+
+    function screenCarGroupCreate() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Evento</button>
+            <h2 style="font-size:22px;font-weight:800;margin:12px 0 8px">Ofrece tu coche</h2>
+            <p class="text-sm text-muted mb-24">Todos los campos se pueden modificar luego</p>
+            <div class="input-group"><label>Plazas disponibles</label><input class="input" type="number" placeholder="4" inputmode="numeric"></div>
+            <div class="input-group"><label>Marca y modelo</label><input class="input" placeholder="Seat Leon"></div>
+            <div class="input-group"><label>Color del coche</label><input class="input" placeholder="Blanco"></div>
+            <div class="input-group"><label>Direccion de recogida</label><input class="input" placeholder="Estacion de tren..."></div>
+            <div class="input-group"><label>Hora de recogida</label><input class="input" type="time"><p class="text-xs text-muted mt-8">La fecha sera la del evento</p></div>
+            <button class="btn btn-primary mt-8">Crear grupo de coche</button>
+            <div style="height:32px"></div>
+          </div>
+        </div>`;
+    }
+
+    function screenCarGroupSearch() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Evento</button>
+            <h2 style="font-size:22px;font-weight:800;margin:12px 0 24px">Coches disponibles</h2>
+            ${carGroups.filter(cg=>cg.seats-cg.taken>0).map(cg => `
+              <div class="card ${state.selectedCar===cg.id?'card-glow':''}" onclick="state.selectedCar=state.selectedCar==='${cg.id}'?null:'${cg.id}';render()" style="cursor:pointer">
+                <div class="row-between mb-8">
+                  <div class="row gap">${avatar(cg.owner,'avatar-sm')}<span class="fw-600">${cg.owner.username}</span></div>
+                  <span class="badge badge-success">${cg.seats-cg.taken} plazas</span>
+                </div>
+                <p class="text-sm text-muted">${cg.brand} · ${cg.color}</p>
+                <div class="row mt-8" style="gap:16px">
+                  <div class="row gap-sm"><span class="icon icon-sm text-muted">place</span><span class="text-xs text-muted">${cg.pickup}</span></div>
+                </div>
+                <div class="row gap-sm mt-8"><span class="icon icon-sm text-muted">schedule</span><span class="text-xs text-muted">${cg.time}</span></div>
+                ${state.selectedCar===cg.id ? `<div style="position:absolute;top:12px;right:12px"><span class="icon" style="color:var(--accent)">check_circle</span></div>` : ''}
+              </div>
+            `).join('')}
+            <button class="btn ${state.selectedCar?'btn-primary':'btn-secondary'} mt-8" ${!state.selectedCar?'disabled':''}>${state.selectedCar?'Unete al grupo de coche!':'Selecciona un coche'}</button>
+          </div>
+        </div>`;
+    }
+
+    function screenCarGroupDetails() {
+      const cg = carGroups[0];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Evento</button>
+            <div class="row-between mt-8 mb-16">
+              <h2 style="font-size:22px;font-weight:800">Tu coche</h2>
+              <button class="btn-ghost" onclick="go('car-group-edit')">${icon('edit','icon-sm')}</button>
+            </div>
+            <div class="card card-flat">
+              <div class="col gap">
+                <div class="row gap"><span class="icon icon-sm text-muted">place</span><span class="text-sm">${cg.pickup}</span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">schedule</span><span class="text-sm">${cg.time}</span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">directions_car</span><span class="text-sm">${cg.brand} · ${cg.color}</span></div>
+                <div class="row gap"><span class="icon icon-sm text-muted">event_seat</span><span class="text-sm">${cg.seats-cg.taken} plazas disponibles</span></div>
+              </div>
+            </div>
+            <div class="expandable-header" onclick="state.expandPeople=!state.expandPeople;render()">
+              <div class="row gap"><span class="fw-600">Conductor y pasajeros</span><span class="badge badge-muted">${1+cg.taken}</span></div>
+              <span class="icon icon-sm text-muted">${state.expandPeople?'expand_less':'expand_more'}</span>
+            </div>
+            <div class="expandable-body ${state.expandPeople?'open':''}">
+              <div class="list-item">${avatar(cg.owner,'avatar-sm')}<div><span class="text-sm fw-600">${cg.owner.username}</span><span class="text-xs text-muted"> · Conductor</span></div></div>
+              ${cg.taken>0?`<div class="list-item">${avatar(users[2],'avatar-sm')}<div><span class="text-sm fw-600">${users[2].username}</span></div></div>`:''}
+            </div>
+            <div class="divider"></div>
+            <div class="row gap mb-16"><span class="icon icon-sm text-muted">chat</span><span class="fw-600">Mensajes del grupo</span></div>
+            <p class="text-sm text-muted" style="text-align:center;padding:24px 0;font-style:italic">No hay mensajes aun</p>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input placeholder="Escribe un mensaje...">
+          <button>${icon('send','icon-sm')}</button>
+        </div>`;
+    }
+
+    function screenCarGroupEdit() {
+      const cg = carGroups[0];
+      const tabs = ['Editar','Eliminar'];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Grupo de coche</button>
+            <h2 style="font-size:22px;font-weight:800;margin:12px 0 16px">Editar grupo de coche</h2>
+            <div class="toggle-pills mb-24">
+              ${tabs.map((t,i) => `<button class="toggle-pill ${state.carEditTab===i?'active':''}" ${i===1?'style="color:var(--danger)"':''} onclick="state.carEditTab=${i};render()">${t}</button>`).join('')}
+            </div>
+            ${state.carEditTab===0 ? `
+              <div class="input-group"><label>Plazas</label><input class="input" type="number" value="${cg.seats}" inputmode="numeric"></div>
+              <div class="input-group"><label>Marca y modelo</label><input class="input" value="${cg.brand}"></div>
+              <div class="input-group"><label>Color</label><input class="input" value="${cg.color}"></div>
+              <div class="input-group"><label>Direccion de recogida</label><input class="input" value="${cg.pickup}"></div>
+              <div class="input-group"><label>Hora de recogida</label><input class="input" type="time" value="${cg.time}"></div>
+              <button class="btn btn-primary mt-8">Guardar cambios</button>
+            ` : `
+              <div style="text-align:center;padding:24px 0">
+                <span class="icon icon-xl" style="color:var(--danger)">warning</span>
+                <p class="text-sm text-muted mt-16" style="max-width:260px;margin-left:auto;margin-right:auto;line-height:1.5">Se eliminara el grupo y todos los pasajeros seran removidos.</p>
+                <button class="btn btn-danger mt-24">Eliminar grupo de coche</button>
+              </div>
+            `}
+          </div>
+        </div>`;
+    }
+
+    function screenUserList() {
+      const pending = users.filter(u=>u.role==='pending');
+      const active = users.filter(u=>u.role!=='pending').filter(u=> !state.search || u.username.includes(state.search.toLowerCase()) || u.name.toLowerCase().includes(state.search.toLowerCase()));
+      return `
+        <div class="screen">
+          <div class="header"><h1>Usuarios</h1></div>
+          <div class="pad">
+            ${pending.length ? `
+              <p class="text-xs fw-600 text-muted mb-8" style="text-transform:uppercase;letter-spacing:1px">Pendientes de aprobacion</p>
+              ${pending.map(u => `
+                <div class="card" style="border-left:3px solid var(--warning);cursor:pointer" onclick="go('user-details')">
+                  <div class="row gap">
+                    ${avatar(u)}
+                    <div class="flex-1"><span class="fw-600">${u.username}</span><br><span class="text-xs text-muted">${u.name}</span></div>
+                    <span class="badge badge-warning">Pendiente</span>
+                  </div>
+                </div>
+              `).join('')}
+              <div class="divider"></div>
+            ` : ''}
+            <div class="input-group">
+              <div style="position:relative">
+                <span class="icon icon-sm" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3)">search</span>
+                <input class="input" style="padding-left:42px" placeholder="Buscar usuario..." oninput="state.search=this.value;render()" value="${state.search}">
+              </div>
+            </div>
+            ${active.map(u => `
+              <div class="list-item" onclick="go('user-details')">
+                ${avatar(u)}
+                <div class="flex-1">
+                  <span class="text-sm fw-600">${u.username}</span><br>
+                  <span class="text-xs text-muted">${u.name}</span>
+                </div>
+                ${u.role==='admin'?'<span class="badge badge-accent">Admin</span>':u.role==='organizer'?'<span class="badge badge-teal">Org</span>':''}
+              </div>
+            `).join('')}
+          </div>
+          <div style="height:32px"></div>
+        </div>`;
+    }
+
+    function screenUserDetails() {
+      const u = users[5];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Usuarios</button>
+            <div style="text-align:center;margin:24px 0">
+              ${avatar(u,'avatar-xl')}
+              <h2 style="font-size:22px;font-weight:800;margin-top:12px">${u.username}</h2>
+              <p class="text-sm text-muted">${u.name}</p>
+            </div>
+            <div class="card card-flat">
+              <div class="inline-field"><div><span class="label">Telefono</span><p class="value">${u.phone}</p></div></div>
+              <div class="inline-field" style="border-bottom:none"><div><span class="label">Miembro desde</span><p class="value">${u.since}</p></div></div>
+            </div>
+            ${isOrg() && u.role==='pending' ? `
+              <div class="card mt-16" style="border-left:3px solid var(--warning)">
+                <p class="text-sm fw-600" style="color:var(--warning)">Pendiente de aprobacion</p>
+              </div>
+              <button class="btn btn-primary mt-8">${icon('check_circle','icon-sm')} Permitir acceso</button>
+            ` : isOrg() ? `
+              <div class="card card-flat mt-16" style="border-left:3px solid var(--success)">
+                <p class="text-sm fw-600" style="color:var(--success)">Usuario habilitado</p>
+              </div>
+            ` : ''}
+          </div>
+        </div>`;
+    }
+
+    function screenOwnProfile() {
+      const u = users[0];
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Volver</button>
+            <div style="text-align:center;margin:24px 0">
+              <div style="position:relative;display:inline-block">
+                ${avatar(u,'avatar-xl')}
+                <div style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)">
+                  <span class="icon" style="font-size:14px;color:#fff">edit</span>
+                </div>
+              </div>
+            </div>
+            <div class="card card-flat">
+              <div class="inline-field"><div><span class="label">Usuario</span><p class="value">${u.username}</p></div><span class="icon icon-sm text-accent">edit</span></div>
+              <div class="inline-field"><div><span class="label">Nombre</span><p class="value">${u.name}</p></div><span class="icon icon-sm text-accent">edit</span></div>
+              <div class="inline-field"><div><span class="label">Correo</span><p class="value" style="color:var(--text2)">${u.username}@email.com</p></div></div>
+              <div class="inline-field" style="border-bottom:none"><div><span class="label">Telefono</span><p class="value" style="color:var(--text2)">${u.phone}</p></div></div>
+            </div>
+            <p class="text-xs text-muted mt-8 mb-16">Para cambiar correo o telefono, contacta a un admin</p>
+            <div class="card card-flat">
+              <div class="inline-field" style="border-bottom:none">
+                <div><span class="label">Miembro desde</span><p class="value">${u.since}</p></div>
+              </div>
+            </div>
+            <div class="card card-flat mt-16">
+              <div class="row-between" style="min-height:44px">
+                <div class="row gap"><span class="icon icon-sm text-muted">notifications</span><span class="text-sm fw-600">Notificaciones push</span></div>
+                <div style="width:44px;height:26px;border-radius:13px;background:var(--accent);display:flex;align-items:center;padding:2px;cursor:pointer">
+                  <div style="width:22px;height:22px;border-radius:50%;background:#fff;margin-left:auto"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="height:32px"></div>
+        </div>`;
+    }
+
+    function screenGlossary() {
+      return `
+        <div class="screen">
+          <div class="pad" style="padding-top:12px">
+            <button class="btn-ghost" onclick="back()" style="margin-left:-8px">${icon('arrow_back','icon-sm')} Volver</button>
+            <h1 style="font-size:24px;font-weight:800;margin:12px 0 24px">Glosario</h1>
+            ${glossary.map(g => `
+              <div class="card card-flat">
+                <p class="fw-700 text-accent" style="font-size:15px;margin-bottom:4px">${g.term}</p>
+                <p class="text-sm text-muted" style="line-height:1.5">${g.def}</p>
+              </div>
+            `).join('')}
+          </div>
+          <div style="height:32px"></div>
+        </div>`;
+    }
+
+    function screenNotFound() {
+      return `
+        <div class="screen" style="display:flex;align-items:center;justify-content:center">
+          <div style="text-align:center">
+            <span class="icon" style="font-size:64px;color:var(--text3)">search_off</span>
+            <h2 style="font-size:22px;font-weight:800;margin:16px 0 8px">Pagina no encontrada</h2>
+            <button class="btn btn-primary" style="width:auto;margin-top:16px" onclick="go('home')">Ir al inicio</button>
+          </div>
+        </div>`;
+    }
+
+    function screenServerError() {
+      return `
+        <div class="screen" style="display:flex;align-items:center;justify-content:center">
+          <div style="text-align:center;padding:0 32px">
+            <span class="icon" style="font-size:64px;color:var(--danger)">cloud_off</span>
+            <h2 style="font-size:22px;font-weight:800;margin:16px 0 8px">Error de servidor</h2>
+            <p class="text-sm text-muted">Intenta nuevamente. Si el problema persiste, contacta a un admin.</p>
+            <button class="btn btn-primary" style="width:auto;margin-top:16px" onclick="go('home')">Volver</button>
+          </div>
+        </div>`;
+    }
+
+    // ============================================================
+    // ROUTER + TAB BAR
+    // ============================================================
+    function getScreen() {
+      const map = {
+        'home': screenHome,
+        'login': screenLogin,
+        'signup': screenSignup,
+        'password-forget': screenPasswordForget,
+        'password-reset': screenPasswordReset,
+        'event-list': screenEventList,
+        'event-details': screenEventDetails,
+        'event-create': screenEventCreate,
+        'event-edit': screenEventEdit,
+        'event-manage': screenEventManage,
+        'car-group-create': screenCarGroupCreate,
+        'car-group-search': screenCarGroupSearch,
+        'car-group-details': screenCarGroupDetails,
+        'car-group-edit': screenCarGroupEdit,
+        'user-list': screenUserList,
+        'user-details': screenUserDetails,
+        'own-profile': screenOwnProfile,
+        'glossary': screenGlossary,
+        'not-found': screenNotFound,
+        'server-error': screenServerError,
+      };
+      return (map[state.screen] || screenNotFound)();
+    }
+
+    function tabBar() {
+      if (state.role === 'anon') return '';
+      const tabs = [
+        { icon:'home', label:'Inicio', screen:'home' },
+        { icon:'event', label:'Eventos', screen:'event-list' },
+      ];
+      if (isOrg()) tabs.push({ icon:'group', label:'Usuarios', screen:'user-list' });
+      tabs.push({ icon:'person', label:'Perfil', screen:'own-profile' });
+      tabs.push({ icon:'menu_book', label:'Glosario', screen:'glossary' });
+
+      return `<div class="tab-bar">
+        ${tabs.map(t => `<button class="${state.screen===t.screen||state.screen==='home'&&t.screen==='home'?'active':''}" onclick="state.history=[];state.screen='${t.screen}';render();document.querySelector('.screen')?.scrollTo(0,0)">
+          <span class="icon">${t.icon}</span>${t.label}
+        </button>`).join('')}
+      </div>`;
+    }
+
+    // ============================================================
+    // RENDER
+    // ============================================================
+    function render() {
+      document.getElementById('app').innerHTML = `
+        <div class="role-bar">
+          <span>Vista:</span>
+          ${['anon','user','organizer','admin'].map(r =>
+            `<button class="role-chip ${state.role===r?'active':''}" onclick="setRole('${r}')">${r==='anon'?'Anonimo':r.charAt(0).toUpperCase()+r.slice(1)}</button>`
+          ).join('')}
+        </div>
+        ${getScreen()}
+        ${tabBar()}
+      `;
+    }
+
+    render();
+  </script>
+</body>
+</html>
