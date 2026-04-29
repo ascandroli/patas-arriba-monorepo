@@ -6,9 +6,9 @@ Replaced the "page under construction" placeholder with a fully functional, inte
 
 ## Key Design Decisions
 
-### 1. Static YAML files instead of a database/API
+### 1. Static YAML file instead of a database/API
 
-**Choice:** Glossary content lives in `client/src/data/glossary.{lang}.yaml` files, imported at build time via a Vite plugin.
+**Choice:** Glossary content lives in `client/src/data/glossary.es.yaml`, imported at build time via a Vite plugin.
 
 **Why:**
 - Contributors (including non-developers) can edit glossary entries directly on GitHub without touching code
@@ -20,34 +20,17 @@ Replaced the "page under construction" placeholder with a fully functional, inte
 
 **Alternative considered:** Server-side admin-editable glossary (mentioned in issue #8). Deferred — the YAML approach covers the immediate need and can be migrated later if dynamic editing becomes a requirement.
 
-### 2. Client-side internationalization (no i18n framework)
+### 2. Spanish-only (no internationalization)
 
-**Choice:** A simple language toggle on the glossary page itself, loading from separate YAML files per language. No global i18n library (react-i18next, react-intl, etc.).
+**Choice:** The glossary is published only in Spanish. No language toggle, no i18n framework.
 
-**Why:**
-- The glossary is the only page that currently needs translation
-- Adding a full i18n framework for one page would be over-engineering
-- The YAML structure is self-contained — each file has both UI labels and content, making it easy for translators
+**Why:** Volunteers and the platform UI all operate in Spanish. An earlier draft included an English version with a flag toggle, but stakeholders confirmed there was no real demand for it — non-Spanish-speaking volunteers are not part of the target audience today. Removing the English variant simplifies maintenance and avoids translation drift.
 
-**Trade-off:** If many more pages need i18n in the future, we'd want to adopt a framework and migrate. The YAML content structure is compatible with that migration.
+**Trade-off:** If a second language is needed in the future (Catalan was mentioned), the YAML structure can support it by adding a sibling file and a language switcher. Until then, single-file is the simplest thing that works.
 
-### 3. Flag icons for language toggle (🇪🇸 / 🇬🇧)
+### 3. Accordion + search + category filters
 
-**Choice:** Unicode flag emoji (Spain, UK) instead of text labels (ES/EN) or a dropdown.
-
-**Why:** Stakeholder feedback — flags are more immediately recognizable as a language switcher, especially for users who may not be tech-savvy.
-
-**Note:** Unicode flags render natively on all modern browsers and mobile devices. No image assets needed.
-
-### 4. Original Spanish terms preserved in English translation
-
-**Choice:** The English version keeps the original Spanish terms (SO, ASS, CES, Evento, etc.) and adds English translations in parentheses.
-
-**Why:** These abbreviations are what volunteers encounter in real conversations and on the platform UI (which remains in Spanish). The English glossary helps non-Spanish-speaking volunteers understand the terms they'll actually see and hear.
-
-### 5. Accordion + search + category filters
-
-**Choice:** MUI Accordion components with a search bar and clickable category chips (Programa, Organización, Plataforma, Rol, Evento).
+**Choice:** MUI Accordion components with a search bar and clickable category chips (Refugio/Protectora, Plataforma, Rol, Evento).
 
 **Why:**
 - Expandable format was specifically requested in issue #8
@@ -55,7 +38,9 @@ Replaced the "page under construction" placeholder with a fully functional, inte
 - Category chips provide quick visual filtering and help users discover related terms
 - All built with existing MUI components — no new dependencies beyond the YAML plugin
 
-### 6. Navbar icon update
+**Note on categories:** Earlier drafts included `Programa`, `Organización`, and `Lugar`. `Programa` was unused, and `Organización` and `Lugar` were merged into a single `Refugio/Protectora` category — every entry that previously fit either of those is a shelter or rescue organization, so the split was creating inconsistency rather than clarity (e.g. SO was filed under Lugar, ASS under Organización, despite being the same kind of thing).
+
+### 4. Navbar icon update
 
 **Choice:** Changed the glossary menu icon from `CalendarMonthIcon` to `MenuBookIcon`.
 
@@ -65,63 +50,48 @@ Replaced the "page under construction" placeholder with a fully functional, inte
 
 | File | Change |
 |------|--------|
-| `client/src/data/glossary.es.yaml` | New — Spanish glossary content (12 entries + UI labels) |
-| `client/src/data/glossary.en.yaml` | New — English glossary content |
-| `client/src/pages/Glossary.jsx` | Rewritten — YAML-driven, i18n, search, categories, accordions |
+| `client/src/data/glossary.es.yaml` | New — Spanish glossary content (UI labels + entries) |
+| `client/src/pages/Glossary.jsx` | Rewritten — YAML-driven, search, categories, accordions |
 | `client/src/components/navigation/Navbar.jsx` | Icon change + MenuBookIcon import |
 | `client/vite.config.js` | Added `@modyfi/vite-plugin-yaml` plugin |
 | `client/package.json` | New dev dependency: `@modyfi/vite-plugin-yaml` |
 
-## Adding a New Language
-
-1. Copy `glossary.es.yaml` to `glossary.{lang}.yaml`
-2. Translate the `label`, `categories`, and `entries` sections
-3. In `Glossary.jsx`, import the new file and add it to the `glossaries` map
-4. Add a new `ToggleButton` with the appropriate flag emoji
-
 ## Glossary Entry Format
 
-Each glossary entry is defined in a YAML file — one file per language. Here is a snippet from the English version to illustrate the format:
+Each glossary entry is defined in `client/src/data/glossary.es.yaml`. Here is a snippet to illustrate the format:
 
 ```yaml
 entries:
-  - term: Activación
-    fullName: Activation
-    category: Plataforma
-    definition: >
-      The process by which an organizer or admin approves a new volunteer's
-      account. Until activated, the user cannot view or join events.
-
   - term: SO
-    fullName: Segundas Oportunidades (Second Chances)
-    category: Lugar
+    fullName: Segundas Oportunidades
+    category: Refugio/Protectora
     definition: >
-      Animal shelter located near l'Arboç, Tarragona, that houses both dogs
-      and farm animals. One of the shelters where Fundación Patas Arriba
-      volunteers regularly go to help.
+      Refugio de animales ubicado cerca de l'Arboç, Tarragona, que acoge
+      tanto perros como animales de granja. Es uno de los refugios donde los
+      voluntarios de Fundación Patas Arriba acuden regularmente a ayudar.
+      Responsable de las salidas Silvia Speroni
 
-  - term: CES
-    fullName: Captura, Esterilización, Suelta (Trap, Neuter, Return / TNR)
-    category: Programa
+  - term: Jornada de Adopción
+    fullName:
+    category: Evento
     definition: >
-      An ethical method for controlling stray cat populations. The animal is
-      captured, neutered at a veterinary clinic, and returned to its original
-      colony.
+      Evento especial donde se presentan animales disponibles para adopción
+      al público. Los voluntarios ayudan con la logística, atención al
+      público y cuidado de los animales durante la jornada.
 ```
 
 Each entry has four fields:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `term` | Yes | The abbreviation or term as used in the foundation (always in Spanish, since that's what volunteers see on the platform) |
-| `fullName` | No | The expanded name. In the English file this includes the English translation in parentheses |
-| `category` | Yes | Groups the entry under a filter chip on the page (e.g., Programa, Plataforma, Rol) |
+| `term` | Yes | The abbreviation or term as used in the foundation |
+| `fullName` | No | The expanded name (typically used to spell out an abbreviation) |
+| `category` | Yes | Groups the entry under a filter chip on the page (Refugio/Protectora, Plataforma, Rol, Evento) |
 | `definition` | Yes | A short paragraph explaining the term in context |
 
 On the page, each entry appears as a collapsible accordion — the term and category are always visible, and clicking expands it to show the full definition. Users can search across all fields and filter by category.
 
 ## Open Questions for Stakeholders
 
-- **What terms and abbreviations should be in the glossary?** The current entries are placeholders to demonstrate the format. We need the real list of terms that volunteers ask about.
-- **What categories should we use to group the entries?** The current ones (Programa, Organización, Plataforma, Rol, Evento) are suggestions — stakeholders should define the groupings that make sense for the foundation.
-- **Are there other languages needed** beyond Spanish and English (e.g., Catalan)?
+- **What terms and abbreviations should be in the glossary?** The list grows as stakeholders surface terms volunteers actually ask about.
+- **Are the current categories the right groupings?** Refugio/Protectora, Plataforma, Rol, and Evento cover everything submitted so far, but new entry types may justify adding categories.
