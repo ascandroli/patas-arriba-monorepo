@@ -1,101 +1,84 @@
-<!-- gitnexus:start -->
-# GitNexus — Code Intelligence
+# Compound Learning
 
-This project is indexed by GitNexus as **patas-arriba-monorepo** (478 symbols, 746 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+<!-- This file is the project's persistent memory across AI sessions.
+     It accumulates patterns, gotchas, and decisions so that each session
+     builds on what previous sessions learned — rather than rediscovering
+     the same things from scratch.
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+     IMPORTANT: This file is often generated or updated by LLM agents.
+     Review new entries with the same scepticism you would apply to any
+     generated content. Entries should reflect observed reality in the
+     codebase, not aspirational conventions. An entry in GOTCHAS that
+     does not reflect an actual problem that was actually solved is noise
+     that increases the cognitive cost of every future session.
 
-## Always Do
+     Curation flow: REFLECTION_LOG.md collects raw observations; humans
+     promote durable patterns from there into the sections below. Do NOT
+     auto-promote — only the human curator decides what graduates. -->
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
-- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+## STYLE
 
-## When Debugging
+<!-- Patterns and idioms that work well in this codebase.
+     Each entry: what to do, and why it works here. -->
 
-1. `gitnexus_query({query: "<error or symptom>"})` — find execution flows related to the issue
-2. `gitnexus_context({name: "<suspect function>"})` — see all callers, callees, and process participation
-3. `READ gitnexus://repo/patas-arriba-monorepo/process/{processName}` — trace the full execution flow step by step
-4. For regressions: `gitnexus_detect_changes({scope: "compare", base_ref: "main"})` — see what your branch changed
+<!-- (no entries yet — populate as patterns are confirmed across sessions) -->
 
-## When Refactoring
+## GOTCHAS
 
-- **Renaming**: MUST use `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` first. Review the preview — graph edits are safe, text_search edits need manual review. Then run with `dry_run: false`.
-- **Extracting/Splitting**: MUST run `gitnexus_context({name: "target"})` to see all incoming/outgoing refs, then `gitnexus_impact({target: "target", direction: "upstream"})` to find all external callers before moving code.
-- After any refactor: run `gitnexus_detect_changes({scope: "all"})` to verify only expected files changed.
+<!-- Traps, surprises, and non-obvious constraints. Initially empty — entries
+     accumulate as the pipeline discovers them.
+     Each entry: what the trap is, and how to avoid it. -->
 
-## Never Do
+<!-- (no entries yet) -->
 
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
-- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+## ARCH_DECISIONS
 
-## Tools Quick Reference
+<!-- Key architectural decisions and the reasoning behind them.
+     Each entry: what was decided, why, and what the alternatives were. -->
 
-| Tool | When to use | Command |
-|------|-------------|---------|
-| `query` | Find code by concept | `gitnexus_query({query: "auth validation"})` |
-| `context` | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})` |
-| `impact` | Blast radius before editing | `gitnexus_impact({target: "X", direction: "upstream"})` |
-| `detect_changes` | Pre-commit scope check | `gitnexus_detect_changes({scope: "staged"})` |
-| `rename` | Safe multi-file rename | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
-| `cypher` | Custom graph queries | `gitnexus_cypher({query: "MATCH ..."})` |
+- **Decision**: The monorepo root (`patas-arriba-monorepo/`) is a Claude Code
+  workspace, not a build/deploy target.
+  **Reason**: It exists to give Claude unified context over `client/` and
+  `server/` submodules. The submodules each have their own CI, builds, and
+  releases — duplicating that at the root would add maintenance with no
+  value.
+  **Alternatives considered**: A true monorepo with shared CI (rejected —
+  the upstream repos are independently owned and deployed); a flat
+  workspace without git submodules (rejected — loses the ability to track
+  exact submodule commits).
 
-## Impact Risk Levels
+- **Decision**: GitHub issues are tracked only in
+  `ascandroli/patas-arriba-monorepo`.
+  **Reason**: One issue tracker keeps planning and triage in one place.
+  Submodule repos receive PRs but do not host issues.
+  **Alternatives considered**: Per-submodule issues (rejected — fragments
+  the backlog; cross-cutting work spans both repos).
 
-| Depth | Meaning | Action |
-|-------|---------|--------|
-| d=1 | WILL BREAK — direct callers/importers | MUST update these |
-| d=2 | LIKELY AFFECTED — indirect deps | Should test |
-| d=3 | MAY NEED TESTING — transitive | Test if critical path |
+## TEST_STRATEGY
 
-## Resources
+<!-- How tests are structured in this project. Helps agents write consistent
+     tests without reading every test file from scratch. -->
 
-| Resource | Use for |
-|----------|---------|
-| `gitnexus://repo/patas-arriba-monorepo/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/patas-arriba-monorepo/clusters` | All functional areas |
-| `gitnexus://repo/patas-arriba-monorepo/processes` | All execution flows |
-| `gitnexus://repo/patas-arriba-monorepo/process/{name}` | Step-by-step execution trace |
+- Top-level E2E tests use Playwright and live in `e2e/`. Configuration is
+  in `playwright.config.js`. They exercise client + server together.
+- Client unit tests use Vitest, colocated with the source they test, inside
+  the `client/` submodule.
+- Server tests live inside the `server/` submodule.
+- When writing top-level E2E tests, target real running services (client
+  dev server + server) rather than mocks — the value of E2E is catching
+  integration regressions the unit suites cannot.
 
-## Self-Check Before Finishing
+## DESIGN_DECISIONS
 
-Before completing any code modification task, verify:
-1. `gitnexus_impact` was run for all modified symbols
-2. No HIGH/CRITICAL risk warnings were ignored
-3. `gitnexus_detect_changes()` confirms changes match expected scope
-4. All d=1 (WILL BREAK) dependents were updated
+<!-- Interface contracts, data shapes, and design choices that are stable and
+     that agents should not second-guess without good reason. -->
 
-## Keeping the Index Fresh
-
-After committing code changes, the GitNexus index becomes stale. Re-run analyze to update it:
-
-```bash
-npx gitnexus analyze
-```
-
-If the index previously included embeddings, preserve them by adding `--embeddings`:
-
-```bash
-npx gitnexus analyze --embeddings
-```
-
-To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.embeddings` field shows the count (0 means no embeddings). **Running analyze without `--embeddings` will delete any previously generated embeddings.**
-
-> Claude Code users: A PostToolUse hook handles this automatically after `git commit` and `git merge`.
-
-## CLI
-
-| Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
-
-<!-- gitnexus:end -->
+- **Push notifications use VAPID keys.** The client requires
+  `VITE_VAPID_PUSH_PUBLIC_KEY`; the server requires `PUSH_PUBLIC_KEY`,
+  `PUSH_PRIVATE_KEY`, and `PUSH_SUBJECT`. Generate matching pairs with
+  `npm run generate-vapid-keys` in `server/`. Mismatched keys silently
+  break delivery — verify both sides after rotation.
+- **Submodule pointers, not source.** The monorepo's git history records
+  submodule commit references. Editing submodule code from the monorepo
+  root and committing only at the root would orphan the changes — they
+  must be committed and pushed in the upstream repo first.
