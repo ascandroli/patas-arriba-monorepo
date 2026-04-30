@@ -78,18 +78,29 @@ entries:
       Evento especial donde se presentan animales disponibles para adopción
       al público. Los voluntarios ayudan con la logística, atención al
       público y cuidado de los animales durante la jornada.
+
+  - term: ASS
+    fullName: Animals Sense Sostre
+    category: Refugio/Protectora
+    definition: >
+      Refugio ubicado en VALLIRANA donde hace casi 10 años que colaboramos...
+      <br><br><b>Información perros</b><br>
+      Hoja de cálculo con la información detallada de los perros del refugio
+      ASS. Consulta obligatoria antes de las salidas.
+    link: https://docs.google.com/spreadsheets/d/.../edit?usp=sharing
 ```
 
-Each entry has four fields:
+Each entry has five fields:
 
 | Field | Required | Description |
 |-------|----------|-------------|
 | `term` | Yes | The abbreviation or term as used in the foundation |
 | `fullName` | No | The expanded name (typically used to spell out an abbreviation) |
 | `category` | Yes | Groups the entry under a filter chip on the page (Refugio/Protectora, Plataforma, Rol, Evento) |
-| `definition` | Yes | A short paragraph explaining the term in context |
+| `definition` | Yes | A short paragraph explaining the term in context. Inline HTML is supported (e.g., `<b>` for emphasis, `<br>` for line breaks) since the YAML's folded-scalar (`>`) collapses real newlines into spaces |
+| `link` | No | An external URL (e.g., shared Drive document) — rendered as an "Abrir enlace" button inside the expanded accordion |
 
-On the page, each entry appears as a collapsible accordion — the term and category are always visible, and clicking expands it to show the full definition. Users can search across all fields and filter by category.
+On the page, each entry appears as a collapsible accordion — the term and category are always visible, and clicking expands it to show the full definition (and the link button, if one is set). Users can search across all fields and filter by category.
 
 ## Open Questions for Stakeholders
 
