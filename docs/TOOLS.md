@@ -4,14 +4,6 @@ AI-assisted development tools used in this monorepo. All tools must be installed
 
 ## Development Framework
 
-### [nWave](https://nwave.ai/)
-
-AI-augmented development framework that runs inside Claude Code. Provides specialized agents for the full development lifecycle (spec, tests, code, docs) with TDD enforcement.
-
-- **Install:** `pipx install nwave-ai` (requires Python 3.10+)
-- **Claude Code plugin:** `/plugin marketplace add nwave-ai/nwave` then `/plugin install nw@nwave-marketplace`
-- **Commands:** `/nw-discuss`, `/nw-design`, `/nw-distill`, `/nw-deliver`, `/nw-discover`, `/nw-devops`, `/nw-rigor`
-
 ## Token Optimization
 
 ### [RTK (Rust Token Killer)](https://www.rtk-ai.app/)
@@ -50,13 +42,6 @@ Analyzes Claude Code token usage and costs from local JSONL logs. Reports by day
 - **Flags:** `--breakdown` (per-model costs), `--since`/`--until` (date range), `--instances` (by project)
 
 ## Session History
-
-### [Entire](https://entire.io/)
-
-Captures AI agent sessions on every git push, pairing commits with the full agent conversation that produced them. Preserves reasoning and context for future sessions.
-
-- **Install:** `curl -fsSL https://entire.io/install.sh | bash`
-- **Supported agents:** Claude Code, Gemini CLI, Cursor, OpenCode, GitHub Copilot CLI
 
 ## Claude Code Plugins
 

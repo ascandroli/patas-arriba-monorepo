@@ -140,11 +140,11 @@ These protections prevent AI tooling (e.g., Entire CLI) from publishing checkpoi
 
 This project uses several tools to support AI-assisted development with Claude Code. See [`TOOLS.md`](docs/TOOLS.md) for the full list and installation instructions.
 
-| Tool | Purpose |
-|------|---------|
-| [nWave](https://nwave.ai/) | AI development framework with TDD workflow |
-| [RTK](https://www.rtk-ai.app/) | Token optimization — compresses CLI output ~89% |
-| [GitNexus](https://github.com/abhigyanpatwari/GitNexus) | Codebase knowledge graph via MCP |
-| [Tessl](https://tessl.io/) | Package manager for AI agent skills/context |
-| [ccusage](https://ccusage.com/) | Claude Code token usage and cost tracking |
-| [Entire](https://entire.io/) | Git-integrated AI session history |
+| Tool | Purpose                                                                                                                                                 |
+|------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [RTK](https://www.rtk-ai.app/) | Token optimization — compresses CLI output ~89%                                                                                                         |
+| [GitNexus](https://github.com/abhigyanpatwari/GitNexus) | Codebase knowledge graph via MCP                                                                                                                        |
+| [Tessl](https://tessl.io/) | Package manager for AI agent skills/context                                                                                                             |
+| [ccusage](https://ccusage.com/) | Claude Code token usage and cost tracking                                                                                                               |
+| [ai-literacy-superpowers](https://github.com/Habitat-Thinking/ai-literacy-superpowers) | A set of plugins providing a complete development workflow — harness engineering, agent orchestration, literate programming, CUPID code review and more |
+
