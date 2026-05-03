@@ -13,6 +13,7 @@ This monorepo contains two projects imported as Git submodules (changes must be 
 
 - **Client:** React, Vite, PWA, VAPID push notifications
 - **Server:** Node.js, Express, Web Push, Docker, Fly.io, GitHub Actions CI/CD
+- **Top-level:** Playwright E2E (`e2e/`), devcontainer, docker-compose
 - **Node version:** Pinned via `.nvmrc` in each submodule
 
 ## Development Setup
@@ -46,7 +47,139 @@ This monorepo is structured to provide Claude Code with full context across both
 - **`client/CLAUDE.md`**: client-specific patterns, components, conventions
 - **`server/CLAUDE.md`**: server-specific patterns, API routes, models
 
-See [`TOOLS.md`](docs/TOOLS.md) for the full list of AI development tools used in this project (nWave, RTK, GitNexus, Tessl, ccusage, Entire).
+See [`TOOLS.md`](docs/TOOLS.md) for the full list of AI development tools used in this project (RTK, GitNexus, Tessl, ccusage).
+
+## Literate Programming
+
+When creating a new source file or significantly rewriting an existing one, apply the
+`/ai-literacy-superpowers:literate-programming` skill before writing any code.
+
+The five rules in brief:
+
+1. Every file opens with a narrative preamble — why it exists, key design decisions,
+   what it deliberately does NOT do
+2. Documentation explains reasoning, not signatures — WHY the design is this way,
+   not what the function returns
+3. Order of presentation follows logical understanding — orchestration before detail,
+   concept before mechanism
+4. Each file has one clearly stated concern — named in the first sentence of the preamble
+5. Inline comments explain WHY, not WHAT — the code already shows what happens
+
+## CUPID Code Review
+
+When reviewing or refactoring code, apply the `/ai-literacy-superpowers:cupid-code-review` skill.
+
+The five properties in brief:
+
+1. **Composable** — can it be used independently without hidden dependencies?
+2. **Unix philosophy** — does it do one thing completely and well?
+3. **Predictable** — does it behave as its name suggests, with no hidden side effects?
+4. **Idiomatic** — does it follow the grain of the language and project conventions?
+5. **Domain-based** — do its names come from the problem domain, not the technical implementation?
+
+## Workflow
+
+### Spec-First Change Discipline
+
+Any change to application behaviour must flow through the spec before touching
+implementation code:
+
+1. Update the spec — add or revise user stories, acceptance scenarios, and FRs
+2. Update the implementation plan — reflect new or changed FRs
+3. Write failing tests from the spec — confirm red before writing implementation
+4. Update the implementation — until failing tests turn green
+5. Refactor — clean up while keeping all tests green
+
+### Test-Driven Development
+
+Follow red-green-refactor strictly:
+
+1. RED — write a failing test that describes the desired behaviour
+2. GREEN — write the minimal production code needed to make the test pass
+3. REFACTOR — clean up while keeping all tests green
+
+No production code without a failing test first.
+
+### Branch Discipline
+
+Never commit directly to `main`. At the start of any task:
+
+1. Create a GitHub issue in **`ascandroli/patas-arriba-monorepo`** describing the task
+   (issues live only in the monorepo, never in the submodule repositories)
+2. Create a branch: `git checkout -b <short-descriptive-name>`
+   (lowercase, hyphen-separated, e.g. `add-search`, `fix-renderer-wrapping`)
+3. Code changes that touch the submodules happen on branches in those upstream repos —
+   the monorepo only tracks the resulting commit references
+
+### Commit Messages
+
+Write concise commit messages that describe what changed and why. No postamble,
+no attribution lines. The message ends when the description ends.
+
+### Pushing
+
+Claude never runs `git push`. The user pushes manually after reviewing local commits.
+Never amend commits that have already been pushed — create a new commit instead.
+
+### CHANGELOG
+
+Before every PR, update CHANGELOG.md:
+
+- Add a dated section at the top if today's date is not already present
+- Group entries under a short theme heading
+- One bullet per change: what changed and why it matters
+
+### PR Health Check
+
+After every PR creation (the user pushes; Claude does not):
+
+1. Run `gh pr checks <number> --watch`
+2. If any check fails, fetch the log: `gh run view <run-id> --log-failed`
+3. Fix every error, then commit (never amend) and push
+4. Repeat until all checks are green
+
+## Build and Test
+
+The monorepo root is a Claude Code workspace, not a build target. Real builds, lints,
+and unit tests live inside each submodule. Top-level commands:
+
+    # Top-level E2E (Playwright, runs against client + server)
+    npx playwright test
+
+    # Client (in client/)
+    cd client && npm run dev      # dev server with HMR
+    cd client && npm run build    # production build
+    cd client && npm run lint     # ESLint
+    cd client && npm test         # Vitest
+
+    # Server (in server/)
+    cd server && npm start        # run API
+    cd server && npm test         # server tests
+
+Wrap any of these with `rtk` for token-optimized output (e.g. `rtk npx playwright test`,
+`rtk npm run lint` from inside `client/`).
+
+## Project Constraints
+
+- **Issues belong only in `ascandroli/patas-arriba-monorepo`.** Do not open issues
+  in the submodule repos — they receive code via PRs but are not the issue tracker.
+- **Submodule code changes commit upstream, not to the monorepo root.** The monorepo
+  records the resulting submodule commit pointers; the actual diff lives in the
+  submodule repository.
+- **Claude does not push.** All commits stay local until the user pushes.
+- **No top-level CI at the monorepo root.** The submodules each run their own GitHub
+  Actions; the root has no `.github/workflows/`. Do not add one without an explicit ask.
+- **Devcontainer is the autonomous-agent target.** Any tooling Claude introduces
+  must work inside `.devcontainer/` so the agent can run unattended there.
+
+## Learnings
+
+[`REFLECTION_LOG.md`](REFLECTION_LOG.md) accumulates session-level surprises, failures,
+and improvement proposals captured by the integration-agent at the end of each pipeline
+run. Read recent entries before starting work to avoid repeating past mistakes.
+
+[`AGENTS.md`](AGENTS.md) holds compound learning — patterns, gotchas, and architectural
+decisions that have been promoted from REFLECTION_LOG.md by human curation.
 
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer) - Token-Optimized Commands
@@ -185,7 +318,7 @@ Overall average: **60-90% token reduction** on common development operations.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **patas-arriba-monorepo** (478 symbols, 746 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **patas-arriba-monorepo** (729 symbols, 1039 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
