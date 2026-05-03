@@ -106,3 +106,19 @@
   - Model tiers used: Sonnet 4.6 throughout (single tier)
   - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Claude Opus 4.7 (1M context) — direct interaction, no orchestrator
+- **Task**: Manually verify issue #2 (attendance default flip) in the browser via claude-in-chrome MCP, then relocate two specs that had leaked into `client/specs/` and `server/specs/` submodule directories to a new `/specs/` folder at the monorepo root, and pin the convention in CLAUDE.md and `.claude/agents/spec-writer.md`.
+- **Surprise**: Two. (1) The visible diff for issue #2 lives on the organizer's attendance management screen (`/event/<id>/manage` → "Marcar asistencia"), not the participant view. I assumed participant-facing because the user-action being tested was a participant signing up, and produced a useless first GIF that captured a screen where nothing observable had changed. The user's pushback ("what is the expected behaviour here? what changed from before we did any work?") was the only thing that surfaced the misread; without it the wrong evidence would have shipped to the upstream PR. (2) Two specs sat in `server/specs/attendance-default.md` and `client/specs/attendance-default.md` — both inside submodules whose upstream maintainer has no interest in our spec-first process. The cause: `.claude/agents/spec-writer.md` line 50 said "do not create new files outside spec and plan locations" but never named the locations, so the spec-writer agent inferred "next to the code" and landed them in the submodules.
+- **Proposal**: Add to AGENTS.md (WORKFLOW): "Specs are project-management artefacts for the monorepo team. They live at `/specs/` at the monorepo root, never in `client/specs/` or `server/specs/`. When a change spans both halves, write `<topic>-frontend.md` and `<topic>-backend.md` as separate files." Add to AGENTS.md (WORKFLOW): "Before running browser-based UI verification, identify which user role and which screen actually renders the changed code path. Don't assume the user-action that triggers a code path is rendered on the same screen as the visible side effect — for issue #2 the trigger was the participant clicking 'join' but the visible regression was on the organizer's management view."
+- **Improvement**: For UI verification handoffs, the brief should include an explicit "where in the rendered UI does this change become visible?" line, derived from the diff, before any browser is opened. For agent location-anchoring rules, any "do not write outside X" instruction must enumerate X — vague rules create plausible misinterpretations.
+- **Signal**: failure
+- **Constraint**: agent rule pinned in `.claude/agents/spec-writer.md` and root `CLAUDE.md` this session (commit `090c88f`); no new tooling proposed — submodule pre-commit hooks are disabled per monorepo issue #20, and there's no top-level CI per project constraints.
+- **Session metadata**:
+  - Duration: ~2h
+  - Model tiers used: Opus 4.7 throughout (no delegation)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
