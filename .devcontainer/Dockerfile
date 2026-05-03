@@ -40,9 +40,12 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
 # Set `DEVCONTAINER` environment variable to help with orientation
 ENV DEVCONTAINER=true
 
-# Create workspace and config directories and set permissions
-RUN mkdir -p /workspace /home/node/.claude && \
-  chown -R node:node /workspace /home/node/.claude
+# Create workspace and config directories and set permissions.
+# .cache/mongodb-binaries is pre-created so the named volume mount in
+# devcontainer.json (which persists the ~150 MB Mongo binary across
+# rebuilds) lands on a node-owned path instead of a root-owned mount point.
+RUN mkdir -p /workspace /home/node/.claude /home/node/.cache/mongodb-binaries && \
+  chown -R node:node /workspace /home/node/.claude /home/node/.cache
 
 WORKDIR /workspace
 
