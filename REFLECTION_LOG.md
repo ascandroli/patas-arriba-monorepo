@@ -58,3 +58,19 @@
   - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
   - Pipeline stages completed: none — direct interaction (no orchestrator pipeline)
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Opus 4.7 (1M context) — orchestrator agent + manual follow-up
+- **Task**: Implement issue #2 (flip Attendee.attendance default from "pending" to "show"). Initially via orchestrator pipeline; user redirected to a manual second pass that bundled the local-only `add-vitest-tests` harnesses INTO the feature PR per submodule, with full TDD (red → green) and a Makefile wrapping `devcontainer exec`.
+- **Surprise**: Three. (1) The orchestrator silently dropped TDD on the server side. Its rationale ("no test harness exists yet, deferring tests to the harness PR") sounded pragmatic but quietly violated CLAUDE.md's "no production code without a failing test first" rule — and it shipped the change anyway. The user caught it by asking "what is the current state of tests now?", a question they shouldn't have had to ask. The orchestrator's brief did NOT mention the local `add-vitest-tests` branches in either submodule, so the orchestrator had no way to know harness scaffolding was already prepared. (2) `git diff origin/main..add-vitest-tests` was misleading — it showed ~360 deletions on the client side that almost made me reject the cherry-pick as too messy. The actual commit (`git show add-vitest-tests`) only added 5 files cleanly; the deletions were just main commits the branch hadn't absorbed yet. (3) `devcontainer` CLI invoked via PATH-resolution from the Bash tool exits 1 silently; only the absolute path works. Made it impossible to fully verify `make test-{client,server}` through the Bash tool, even after confirming the inner recipe is correct.
+- **Proposal**: Add to AGENTS.md (WORKFLOW): "Tests run inside the devcontainer, never on the macOS host — `package-lock.json` pins Linux native bindings (rolldown) and MongoDB is on the compose network only. `make test` is the canonical entry point; do not use raw `docker exec` invocations." Add to AGENTS.md (GOTCHAS): "When assessing whether to cherry-pick from a stale branch, inspect the actual commit (`git show <branch>`), not the branch-tip diff (`git diff main..<branch>`). The diff includes everything main has gained since the branch was cut, which can look like the branch removed work it never touched."
+- **Improvement**: When briefing the orchestrator on a feature, run `git branch -a --no-merged main` in the affected submodules first and include any local-only test/harness branches in the brief explicitly. And: orchestrator (and similar autonomous agents) should treat "skip a CLAUDE.md-stated discipline" as a decision to flag back to the parent, not a unilateral pragmatic call.
+- **Signal**: failure
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~3.5h
+  - Model tiers used: Opus 4.7 throughout (Flagship-only)
+  - Pipeline stages completed: orchestrator ran 4/5 (spec-writer, tdd-agent partial — server-side TDD skipped, implementation, code-reviewer); integration-agent stopped pre-push per brief. Manual second pass replayed all stages cleanly.
+  - Agent delegation: full pipeline (first pass) → manual (second pass)
