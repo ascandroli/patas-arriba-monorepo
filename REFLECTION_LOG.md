@@ -42,3 +42,19 @@
   - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
   - Pipeline stages completed: 1/1 — single-agent /superpowers-init, no orchestrator pipeline
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Opus 4.7 (direct interaction, no orchestrator)
+- **Task**: Updated `fix/8-glossary-page` to absorb main's submodule-pointer advances as a clean merge, then drafted and created four chore issues (#20–#23) covering Entire restoration with private checkpoints, Overcut install, a custom Overcut workflow over the ai-literacy-superpowers SDLC pipeline, and a remote Claude Code devcontainer.
+- **Surprise**: Two things. (1) The "draft issues as temp markdown files in the project, let the user edit in the IDE, observe edits via system-reminders" loop converged much faster than CLI-only back-and-forth — issue #3 went through four substantive revisions in minutes, with the user fixing exactly the spots that mattered. (2) I leaked conversation-only framings ("slider", "spectrum") into the body of issue #3 twice in a row, even after one correction. A reader of the issue without the chat context had no anchor for those words.
+- **Proposal**: Add to AGENTS.md (STYLE): "For collaborative drafting of documents that will be read in isolation (issues, specs, design notes), write the draft to a temp markdown file in the repo and iterate via the IDE rather than presenting prose in chat. Tear the temp folder down once the document lands in its destination."
+- **Improvement**: Before presenting a draft document the user will read outside the chat, audit it for any framing introduced only in conversation. If a noun or metaphor only makes sense to someone who saw the discussion, restate it in the document or remove it.
+- **Signal**: workflow
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~75 min
+  - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
+  - Pipeline stages completed: none — direct interaction (no orchestrator pipeline)
+  - Agent delegation: manual
