@@ -19,6 +19,5 @@ test-results/
 
 # Claude Code user state (.claude-user = CLAUDE_CONFIG_DIR)
 # ONLY memory is committed (shared context) — everything else is sensitive or ephemeral
-.claude-user
 .claude-user/*
 !.claude-user/settings.json
