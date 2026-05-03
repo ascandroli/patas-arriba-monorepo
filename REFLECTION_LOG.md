@@ -90,3 +90,19 @@
   - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
   - Pipeline stages completed: none — direct collaboration, manual edits and commits
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
+- **Task**: Devcontainer readiness recon and upgrade: verified tests pass inside the container, upgraded base image from `node:20` to `node:24-trixie`, installed `rtk` and `gitnexus` globally, pre-baked the MongoDB 7.0.14 binary into the image layer (removing the named volume), and fixed a `.gitignore` rule that blocked `.claude-user/settings.json` from being tracked.
+- **Surprise**: Four. (1) `node:24-noble` does not exist as a Docker image tag — the Ubuntu 24.04-based Node image is not published under that name; the right tag for glibc 2.38+ is `node:24-trixie` (Debian 13). (2) `gitnexus` depends on `tree-sitter@0.21.1` which compiles as C++17 by default, but Node 24's V8 headers hard-require C++20 (`#error "C++20 or later required."`); the fix is `CXXFLAGS="-std=c++20"` in the Dockerfile `RUN` step. (3) Named volumes in `devcontainer.json` are always empty on first creation — they do not inherit content baked into the image at the same path. Baking the MongoDB binary into the image is only effective once the named volume mount for that path is removed. (4) The `.gitignore` entry `.claude-user` (directory-level ignore) silently prevented `!.claude-user/settings.json` from working — git never descends into an ignored directory to evaluate negation rules. The fix is to remove the directory-level line and keep only `.claude-user/*` plus the exception.
+- **Proposal**: none
+- **Improvement**: none
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~2h
+  - Model tiers used: Sonnet 4.6 throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
