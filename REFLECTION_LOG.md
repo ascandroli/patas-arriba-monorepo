@@ -74,3 +74,19 @@
   - Model tiers used: Opus 4.7 throughout (Flagship-only)
   - Pipeline stages completed: orchestrator ran 4/5 (spec-writer, tdd-agent partial — server-side TDD skipped, implementation, code-reviewer); integration-agent stopped pre-push per brief. Manual second pass replayed all stages cleanly.
   - Agent delegation: full pipeline (first pass) → manual (second pass)
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Opus 4.7 (1M context) — direct interaction, no orchestrator
+- **Task**: Wire mongodb-memory-server into server tests so the Anthropic-reference devcontainer can run `make test` without a sidecar Mongo. Added a named volume for the Mongo binary cache, allowlisted fastdl/downloads.mongodb.org in the firewall, and pinned MONGOMS_VERSION + MONGOMS_DISTRO to work around missing aarch64-Debian builds.
+- **Surprise**: Three. (1) `npm install --save-dev mongodb-memory-server` run from the macOS host poisoned the bind-mounted `server/node_modules` with darwin-arm64 native bindings, so `make test` (which runs vitest inside the container) crashed with `Cannot find module './rolldown-binding.linux-arm64-gnu.node'`. The fix is `devcontainer exec ... npm install` — easy in retrospect, but I never paused to consider where the install would land given the bind mount. (2) MongoDB Community Edition does not publish aarch64 binaries for Debian — only Ubuntu / RHEL / Amazon Linux. memory-server's auto-detection on Apple Silicon + bookworm asked fastdl.mongodb.org for `mongodb-linux-aarch64-debian12-8.2.6.tgz` and got a 403; the workaround is `MONGOMS_DISTRO=ubuntu-22.04` even though the container is bookworm. (3) The first failed run also showed a confusing `UnableToUnlockLockfileError` that looked like a parallelism bug, but it was a downstream symptom of the 403 — workers fighting over a lockfile while the download itself was failing. Once the URL was correct, the race resolved itself.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "MongoDB CE does not ship aarch64 binaries for Debian. Tests using mongodb-memory-server inside a Debian-based devcontainer on Apple Silicon must override `MONGOMS_DISTRO` (e.g. to `ubuntu-22.04`) or memory-server's auto-detection produces a URL that 403s." And: "node_modules is bind-mounted from host into the devcontainer; never run `npm install` on the macOS host or native bindings end up on the wrong platform."
+- **Improvement**: Before any `npm install --save-*` on this monorepo, default to running it via `devcontainer exec`. The reflex of "I'm at a terminal, just install" doesn't hold when the runtime target is a different platform than my shell.
+- **Signal**: failure
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~2h
+  - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
+  - Pipeline stages completed: none — direct collaboration, manual edits and commits
+  - Agent delegation: manual
