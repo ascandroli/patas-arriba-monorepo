@@ -1,7 +1,24 @@
+.DS_Store
 .gitnexus
 .claude/settings.local.json
 .claude/projects/
+.claude/worktrees
 .idea/
 node_modules/
 playwright-report/
 test-results/
+
+# Obsidian - change often
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json
+.trash/
+
+# Dev container — downloaded at runtime, machine-specific
+.devcontainer/github-meta.json
+
+# Claude Code user state (.claude-user = CLAUDE_CONFIG_DIR)
+# ONLY memory is committed (shared context) — everything else is sensitive or ephemeral
+.claude-user
+.claude-user/*
+!.claude-user/settings.json

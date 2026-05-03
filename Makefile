@@ -15,6 +15,7 @@ devcontainer-zsh: ## Open a zsh shell inside the dev container
 devcontainer-down: ## Stop and remove the devcontainer dev container
 	$(call down_by_config,.devcontainer/devcontainer.json)
 
+# until support for stop and down gets merged https://github.com/devcontainers/cli/pull/1041
 # -----------------------------------------------------------------------------
 # Shared helpers
 # -----------------------------------------------------------------------------
@@ -73,6 +74,3 @@ test-watch-server:  ## Server tests in watch mode (re-runs on file change)
 
 test-watch-client:  ## Client tests in watch mode (re-runs on file change)
 	devcontainer exec --workspace-folder . sh -c "cd /workspace/client && npm run test:watch"
-
-help: ## Show available commands
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  make %-40s %s\n", $$1, $$2}'

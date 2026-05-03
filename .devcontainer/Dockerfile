@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:24-trixie
 
 ARG TZ
 ENV TZ="$TZ"
@@ -91,3 +91,23 @@ RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
   chmod 0440 /etc/sudoers.d/node-firewall
 USER node
+
+# CXXFLAGS: tree-sitter (gitnexus dep) predates Node 24's C++20 V8 headers;
+# force C++20 so the native addon compiles.
+RUN CXXFLAGS="-std=c++20" npm install -g gitnexus
+RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh | sh
+
+# Pre-download the MongoDB binary used by mongodb-memory-server in tests.
+# Replaces the named volume mount — binary is baked into the image layer.
+# MONGOMS_DISTRO is forced to ubuntu-22.04 because MongoDB CE has no arm64
+# binaries for Debian; the ubuntu-22.04 archive works on both arm64 and amd64.
+ENV MONGOMS_VERSION=7.0.14 \
+    MONGOMS_DISTRO=ubuntu-22.04 \
+    MONGOMS_DOWNLOAD_DIR=/home/node/.cache/mongodb-binaries
+RUN mkdir -p /tmp/mongo-prefetch && \
+    cd /tmp/mongo-prefetch && \
+    npm init -y --quiet > /dev/null && \
+    npm install --no-save --quiet mongodb-memory-server@^11 && \
+    node --input-type=module -e \
+      'import {MongoBinary} from "mongodb-memory-server"; const p = await MongoBinary.getPath({version: process.env.MONGOMS_VERSION}); console.log("Cached:", p);' && \
+    rm -rf /tmp/mongo-prefetch
