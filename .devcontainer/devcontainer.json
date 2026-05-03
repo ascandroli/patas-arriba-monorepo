@@ -3,15 +3,15 @@
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
-      "TZ": "${localEnv:TZ:America/Los_Angeles}",
-      "CLAUDE_CODE_VERSION": "latest",
+      "TZ": "${localEnv:TZ:Europe/Madrid}",
       "GIT_DELTA_VERSION": "0.18.2",
       "ZSH_IN_DOCKER_VERSION": "1.2.0"
     }
   },
   "runArgs": [
     "--cap-add=NET_ADMIN",
-    "--cap-add=NET_RAW"
+    "--cap-add=NET_RAW",
+    "--name=patas-arriba",
   ],
   "customizations": {
     "vscode": {
@@ -47,10 +47,25 @@
   ],
   "containerEnv": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
-    "CLAUDE_CONFIG_DIR": "/home/node/.claude",
-    "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
+    "CLAUDE_CONFIG_DIR": "/workspace/.claude-user",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_METRIC_EXPORT_INTERVAL": "10000",
+    "OTEL_LOGS_EXPORT_INTERVAL": "5000",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "https://api.honeycomb.io:443",
+    "OTEL_EXPORTER_OTLP_HEADERS": "x-honeycomb-dataset=claude-patas-arriba,x-honeycomb-team=${localEnv:HONEYCOMB_API_KEY}",
+    "OTEL_SERVICE_NAME": "claude-code",
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
   "workspaceFolder": "/workspace",
-  "waitFor": "postStartCommand"
+  "secrets": {
+    "HONEYCOMB_API_KEY": {
+      "description": "Honeycomb ingest key for Claude Code OpenTelemetry export. Use an ingest key with 'create datasets' disabled. Omit to disable telemetry.",
+      "documentationUrl": "https://docs.honeycomb.io/get-started/configure/environments/manage-api-keys/"
+    }
+  }
 }
