@@ -90,6 +90,12 @@ implementation code:
 4. Update the implementation — until failing tests turn green
 5. Refactor — clean up while keeping all tests green
 
+**Specs live at `/specs/` at the monorepo root — never inside `client/` or
+`server/`.** Specs are project-management artefacts for the monorepo team;
+the upstream submodule maintainers do not want them. Use suffixed filenames
+to disambiguate frontend vs backend concerns of the same change (e.g.
+`/specs/attendance-default-frontend.md`, `/specs/attendance-default-backend.md`).
+
 ### Test-Driven Development
 
 Follow red-green-refactor strictly:
