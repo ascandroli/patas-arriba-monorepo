@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git push)"
+    ]
+  },
   "enabledPlugins": {
     "context7@claude-plugins-official": true,
     "github@claude-plugins-official": true,
@@ -6,10 +12,12 @@
     "claude-md-management@claude-plugins-official": true,
     "ai-literacy-superpowers@ai-literacy-superpowers": true
   },
-  "permissions": {
-    "deny": [
-      "Bash(git push:*)",
-      "Bash(git push)"
-    ]
+  "extraKnownMarketplaces": {
+    "ai-literacy-superpowers": {
+      "source": {
+        "source": "github",
+        "repo": "Habitat-Thinking/ai-literacy-superpowers"
+      }
+    }
   }
 }

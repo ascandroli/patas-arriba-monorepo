@@ -47,7 +47,12 @@ story is needed, but the fix must be traceable.
 - Do not add implementation detail (class names, method signatures) to the spec.
   That belongs in the plan.
 - Do not modify any source code, test files, or CI configuration.
-- Do not create new files outside of spec and plan locations.
+- All specs live at `/specs/` at the monorepo root — NEVER inside `client/specs/`
+  or `server/specs/`. Those paths are inside Git submodules whose upstream
+  maintainers do not want our project-management artefacts. When a change spans
+  both frontend and backend, write two separate spec files using suffixes
+  (e.g. `/specs/<topic>-frontend.md`, `/specs/<topic>-backend.md`).
+- Do not create new files outside `/specs/` or the project's plan location.
 
 ## Output to orchestrator
 
