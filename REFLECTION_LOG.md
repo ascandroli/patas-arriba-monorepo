@@ -127,6 +127,22 @@
 
 - **Date**: 2026-05-27
 - **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
+- **Task**: Initialized HARNESS.md at project root (migrating from `.claude/HARNESS.md` v0.22.0 to v0.39.0 with new constraints and GC rules), then diagnosed and fixed false-positive shell-script warnings from the `gc-rotate.sh` Stop hook.
+- **Surprise**: Two. (1) The "GC check (strict mode)" banner was not coming from a `/harness-gc` agent run — it was firing from a plugin-registered Stop hook (`gc-rotate.sh`) that runs automatically at every session end. The ground truth for what runs at session end is `hooks.json` in the plugin cache, not HARNESS.md's GC section; looking there first would have saved several diagnostic steps through project scripts and the harness-gc agent definition. (2) The escape-hatch comment we added to `session-start-verify-plugins.sh` (`# -e intentionally omitted`) was placed at line 27, silently past the `head -15` window that `gc-rotate.sh` rule 3 uses to detect the escape hatch — the fix looked complete but still fired. The `head -15` window is not documented anywhere visible.
+- **Proposal**: Already promoted to AGENTS.md this session (gc-rotate false-positives gotcha, including the head-15 window trap and the cache-file caveat).
+- **Improvement**: When a Stop hook emits unexpected output, the first diagnostic step should be reading `hooks.json` in the plugin cache (`$CLAUDE_PLUGIN_ROOT/hooks/hooks.json`), not HARNESS.md GC rules or project scripts. The hook registry is the authoritative list of what fires at session end.
+- **Signal**: failure
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~90 min
+  - Model tiers used: Sonnet 4.6 throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-27
+- **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
 - **Task**: Built the plugin verification and auto-repair system for the monorepo: `required-plugins.yaml` (canonical declaration), `verify-plugins.sh` (drift detector), `install-plugins.sh` (idempotent fixer with marketplace dedup), `session-start-verify-plugins.sh` (SessionStart hook), `/verify-setup` slash command, and `docs/PLUGINS-AND-SKILLS.md`. Caught and fixed two bugs discovered during live smoke testing, moved the hook to project scope in `.claude/settings.json`, cleaned stale references across scripts and docs, added CalVer, squashed history, and opened PR #27.
 - **Surprise**: Three. (1) `claude plugin marketplace remove <name>` silently strips **all** plugins from that marketplace out of `settings.json`'s `enabledPlugins` — not just the marketplace registration. Two sequential reinstalls from the same marketplace left only the last one in `settings.json`, causing a "2/2 declared plugins clean" result after the fixer ran. This was the root motivation for `required-plugins.yaml` as a stable anchor that survives CLI destructive operations. (2) `verify-plugins.sh` was iterating over `claude plugin list` output as its baseline. When `settings.json` got stripped, the script had no expected list to compare against and reported "0 FAILs" for the missing plugins — making it blind to the damage and causing `install-plugins.sh` to exit "nothing to do" on a second run. (3) `context7` showed FAIL (stale paths) in `verify-plugins.sh` but appeared LOADED in the `/verify-setup` runtime check — because an older install in `~/.claude/` was still being served to the session. Install state and session-loaded state can diverge silently; the two checks measure different things.
 - **Proposal**: Add to AGENTS.md (GOTCHAS): "`claude plugin marketplace remove <name>` is destructive — it strips all plugins from that marketplace out of `settings.json`'s `enabledPlugins`, not just the marketplace entry. Always repair via `scripts/install-plugins.sh`, never by running the remove command manually. `required-plugins.yaml` exists precisely as a stable anchor that survives this side-effect."
