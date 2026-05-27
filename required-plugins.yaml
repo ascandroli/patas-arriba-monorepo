@@ -1,0 +1,27 @@
+# version: 2026.05.27
+# Canonical plugin requirements for patas-arriba-monorepo.
+#
+# This file is the source of truth. verify-plugins.sh reads it to determine
+# what must be installed. install-plugins.sh fixes any drift it finds.
+# settings.json is runtime state managed by the Claude CLI — do not edit
+# its enabledPlugins or extraKnownMarketplaces by hand; let the scripts own them.
+#
+# To add a plugin from claude-plugins-official:
+#   1. Add its id under plugins (format: name@marketplace)
+#   2. Run scripts/install-plugins.sh from a fresh terminal
+#
+# To add a plugin from a new marketplace:
+#   1. Add the marketplace under marketplaces with its GitHub repo source
+#   2. Add the plugin id under plugins
+#   3. Run scripts/install-plugins.sh from a fresh terminal
+
+marketplaces:
+  ai-literacy-superpowers:
+    source: Habitat-Thinking/ai-literacy-superpowers
+
+plugins:
+  - ai-literacy-superpowers@ai-literacy-superpowers
+  - claude-md-management@claude-plugins-official
+  - context7@claude-plugins-official
+  - github@claude-plugins-official
+  - typescript-lsp@claude-plugins-official

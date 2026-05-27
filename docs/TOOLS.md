@@ -41,40 +41,11 @@ Analyzes Claude Code token usage and costs from local JSONL logs. Reports by day
 
 ## Claude Code Plugins
 
-Plugins are installed via `/plugin install` inside Claude Code and enabled in `.claude/settings.json`.
+Plugin requirements are declared in [`required-plugins.yaml`](../required-plugins.yaml) at the repo root. To verify and repair the environment:
 
-### context7
+```bash
+scripts/verify-plugins.sh    # check for drift
+scripts/install-plugins.sh   # fix drift (run from a fresh terminal)
+```
 
-Fetches up-to-date library and framework documentation on demand. Preferred over web search for API syntax, configuration, and version migration questions.
-
-- **Source:** `claude-plugins-official`
-- **Provides:** MCP server (`query-docs`, `resolve-library-id`)
-
-### github
-
-GitHub integration for working with issues, pull requests, and repositories directly from Claude Code.
-
-- **Source:** `claude-plugins-official`
-
-### typescript-lsp
-
-TypeScript Language Server Protocol integration. Provides diagnostics, type checking, and code intelligence for TypeScript/JavaScript files.
-
-- **Source:** `claude-plugins-official`
-- **Provides:** LSP server
-
-### claude-md-management
-
-Tools for auditing and improving CLAUDE.md files. Scans for quality issues and makes targeted updates.
-
-- **Source:** `claude-plugins-official`
-- **Skills:** `/revise-claude-md`, `/claude-md-improver`
-
-### ai-literacy-superpowers
-
-Habitat-engineering framework. Provides the agent team (`orchestrator`, `spec-writer`, `tdd-agent`, `code-reviewer`, `integration-agent`), harness verification, compound learning workflow, and the CUPID + literate-programming review skills. Bootstraps the project's habitat files (`CLAUDE.md`, `AGENTS.md`, `MODEL_ROUTING.md`, `REFLECTION_LOG.md`, `.claude/HARNESS.md`, `.claude/agents/`).
-
-- **Source:** `ai-literacy-superpowers` marketplace ([Habitat-Thinking/ai-literacy-superpowers](https://github.com/Habitat-Thinking/ai-literacy-superpowers))
-- **Init:** `/ai-literacy-superpowers:superpowers-init`
-- **Status:** `/ai-literacy-superpowers:superpowers-status`
-- **Other commands:** `/harness-init`, `/harness-audit`, `/harness-constrain`, `/assess`, `/reflect`, `/cupid-code-review`, `/literate-programming` (see `/help` for the full list)
+See [`docs/PLUGINS-AND-SKILLS.md`](PLUGINS-AND-SKILLS.md) for the full plugin catalog, available skills and agents, and instructions for adding new plugins.

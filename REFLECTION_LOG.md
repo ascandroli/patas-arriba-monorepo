@@ -58,3 +58,67 @@
   - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
   - Pipeline stages completed: none — direct interaction (no orchestrator pipeline)
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Opus 4.7 (1M context) — orchestrator agent + manual follow-up
+- **Task**: Implement issue #2 (flip Attendee.attendance default from "pending" to "show"). Initially via orchestrator pipeline; user redirected to a manual second pass that bundled the local-only `add-vitest-tests` harnesses INTO the feature PR per submodule, with full TDD (red → green) and a Makefile wrapping `devcontainer exec`.
+- **Surprise**: Three. (1) The orchestrator silently dropped TDD on the server side. Its rationale ("no test harness exists yet, deferring tests to the harness PR") sounded pragmatic but quietly violated CLAUDE.md's "no production code without a failing test first" rule — and it shipped the change anyway. The user caught it by asking "what is the current state of tests now?", a question they shouldn't have had to ask. The orchestrator's brief did NOT mention the local `add-vitest-tests` branches in either submodule, so the orchestrator had no way to know harness scaffolding was already prepared. (2) `git diff origin/main..add-vitest-tests` was misleading — it showed ~360 deletions on the client side that almost made me reject the cherry-pick as too messy. The actual commit (`git show add-vitest-tests`) only added 5 files cleanly; the deletions were just main commits the branch hadn't absorbed yet. (3) `devcontainer` CLI invoked via PATH-resolution from the Bash tool exits 1 silently; only the absolute path works. Made it impossible to fully verify `make test-{client,server}` through the Bash tool, even after confirming the inner recipe is correct.
+- **Proposal**: Add to AGENTS.md (WORKFLOW): "Tests run inside the devcontainer, never on the macOS host — `package-lock.json` pins Linux native bindings (rolldown) and MongoDB is on the compose network only. `make test` is the canonical entry point; do not use raw `docker exec` invocations." Add to AGENTS.md (GOTCHAS): "When assessing whether to cherry-pick from a stale branch, inspect the actual commit (`git show <branch>`), not the branch-tip diff (`git diff main..<branch>`). The diff includes everything main has gained since the branch was cut, which can look like the branch removed work it never touched."
+- **Improvement**: When briefing the orchestrator on a feature, run `git branch -a --no-merged main` in the affected submodules first and include any local-only test/harness branches in the brief explicitly. And: orchestrator (and similar autonomous agents) should treat "skip a CLAUDE.md-stated discipline" as a decision to flag back to the parent, not a unilateral pragmatic call.
+- **Signal**: failure
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~3.5h
+  - Model tiers used: Opus 4.7 throughout (Flagship-only)
+  - Pipeline stages completed: orchestrator ran 4/5 (spec-writer, tdd-agent partial — server-side TDD skipped, implementation, code-reviewer); integration-agent stopped pre-push per brief. Manual second pass replayed all stages cleanly.
+  - Agent delegation: full pipeline (first pass) → manual (second pass)
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Opus 4.7 (1M context) — direct interaction, no orchestrator
+- **Task**: Wire mongodb-memory-server into server tests so the Anthropic-reference devcontainer can run `make test` without a sidecar Mongo. Added a named volume for the Mongo binary cache, allowlisted fastdl/downloads.mongodb.org in the firewall, and pinned MONGOMS_VERSION + MONGOMS_DISTRO to work around missing aarch64-Debian builds.
+- **Surprise**: Three. (1) `npm install --save-dev mongodb-memory-server` run from the macOS host poisoned the bind-mounted `server/node_modules` with darwin-arm64 native bindings, so `make test` (which runs vitest inside the container) crashed with `Cannot find module './rolldown-binding.linux-arm64-gnu.node'`. The fix is `devcontainer exec ... npm install` — easy in retrospect, but I never paused to consider where the install would land given the bind mount. (2) MongoDB Community Edition does not publish aarch64 binaries for Debian — only Ubuntu / RHEL / Amazon Linux. memory-server's auto-detection on Apple Silicon + bookworm asked fastdl.mongodb.org for `mongodb-linux-aarch64-debian12-8.2.6.tgz` and got a 403; the workaround is `MONGOMS_DISTRO=ubuntu-22.04` even though the container is bookworm. (3) The first failed run also showed a confusing `UnableToUnlockLockfileError` that looked like a parallelism bug, but it was a downstream symptom of the 403 — workers fighting over a lockfile while the download itself was failing. Once the URL was correct, the race resolved itself.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "MongoDB CE does not ship aarch64 binaries for Debian. Tests using mongodb-memory-server inside a Debian-based devcontainer on Apple Silicon must override `MONGOMS_DISTRO` (e.g. to `ubuntu-22.04`) or memory-server's auto-detection produces a URL that 403s." And: "node_modules is bind-mounted from host into the devcontainer; never run `npm install` on the macOS host or native bindings end up on the wrong platform."
+- **Improvement**: Before any `npm install --save-*` on this monorepo, default to running it via `devcontainer exec`. The reflex of "I'm at a terminal, just install" doesn't hold when the runtime target is a different platform than my shell.
+- **Signal**: failure
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~2h
+  - Model tiers used: Opus 4.7 throughout (Flagship-only — no delegation)
+  - Pipeline stages completed: none — direct collaboration, manual edits and commits
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
+- **Task**: Devcontainer readiness recon and upgrade: verified tests pass inside the container, upgraded base image from `node:20` to `node:24-trixie`, installed `rtk` and `gitnexus` globally, pre-baked the MongoDB 7.0.14 binary into the image layer (removing the named volume), and fixed a `.gitignore` rule that blocked `.claude-user/settings.json` from being tracked.
+- **Surprise**: Four. (1) `node:24-noble` does not exist as a Docker image tag — the Ubuntu 24.04-based Node image is not published under that name; the right tag for glibc 2.38+ is `node:24-trixie` (Debian 13). (2) `gitnexus` depends on `tree-sitter@0.21.1` which compiles as C++17 by default, but Node 24's V8 headers hard-require C++20 (`#error "C++20 or later required."`); the fix is `CXXFLAGS="-std=c++20"` in the Dockerfile `RUN` step. (3) Named volumes in `devcontainer.json` are always empty on first creation — they do not inherit content baked into the image at the same path. Baking the MongoDB binary into the image is only effective once the named volume mount for that path is removed. (4) The `.gitignore` entry `.claude-user` (directory-level ignore) silently prevented `!.claude-user/settings.json` from working — git never descends into an ignored directory to evaluate negation rules. The fix is to remove the directory-level line and keep only `.claude-user/*` plus the exception.
+- **Proposal**: none
+- **Improvement**: none
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~2h
+  - Model tiers used: Sonnet 4.6 throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-03
+- **Agent**: Claude Opus 4.7 (1M context) — direct interaction, no orchestrator
+- **Task**: Manually verify issue #2 (attendance default flip) in the browser via claude-in-chrome MCP, then relocate two specs that had leaked into `client/specs/` and `server/specs/` submodule directories to a new `/specs/` folder at the monorepo root, and pin the convention in CLAUDE.md and `.claude/agents/spec-writer.md`.
+- **Surprise**: Two. (1) The visible diff for issue #2 lives on the organizer's attendance management screen (`/event/<id>/manage` → "Marcar asistencia"), not the participant view. I assumed participant-facing because the user-action being tested was a participant signing up, and produced a useless first GIF that captured a screen where nothing observable had changed. The user's pushback ("what is the expected behaviour here? what changed from before we did any work?") was the only thing that surfaced the misread; without it the wrong evidence would have shipped to the upstream PR. (2) Two specs sat in `server/specs/attendance-default.md` and `client/specs/attendance-default.md` — both inside submodules whose upstream maintainer has no interest in our spec-first process. The cause: `.claude/agents/spec-writer.md` line 50 said "do not create new files outside spec and plan locations" but never named the locations, so the spec-writer agent inferred "next to the code" and landed them in the submodules.
+- **Proposal**: Add to AGENTS.md (WORKFLOW): "Specs are project-management artefacts for the monorepo team. They live at `/specs/` at the monorepo root, never in `client/specs/` or `server/specs/`. When a change spans both halves, write `<topic>-frontend.md` and `<topic>-backend.md` as separate files." Add to AGENTS.md (WORKFLOW): "Before running browser-based UI verification, identify which user role and which screen actually renders the changed code path. Don't assume the user-action that triggers a code path is rendered on the same screen as the visible side effect — for issue #2 the trigger was the participant clicking 'join' but the visible regression was on the organizer's management view."
+- **Improvement**: For UI verification handoffs, the brief should include an explicit "where in the rendered UI does this change become visible?" line, derived from the diff, before any browser is opened. For agent location-anchoring rules, any "do not write outside X" instruction must enumerate X — vague rules create plausible misinterpretations.
+- **Signal**: failure
+- **Constraint**: agent rule pinned in `.claude/agents/spec-writer.md` and root `CLAUDE.md` this session (commit `090c88f`); no new tooling proposed — submodule pre-commit hooks are disabled per monorepo issue #20, and there's no top-level CI per project constraints.
+- **Session metadata**:
+  - Duration: ~2h
+  - Model tiers used: Opus 4.7 throughout (no delegation)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual

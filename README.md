@@ -139,3 +139,14 @@ This project uses several tools to support AI-assisted development with Claude C
 | [ccusage](https://ccusage.com/) | Claude Code token usage and cost tracking                                                                                                               |
 | [ai-literacy-superpowers](https://github.com/Habitat-Thinking/ai-literacy-superpowers) | A set of plugins providing a complete development workflow — harness engineering, agent orchestration, literate programming, CUPID code review and more |
 
+### Claude Code Plugins & Skills
+
+Plugin requirements are declared in [`required-plugins.yaml`](required-plugins.yaml) at the project root — edit that file to add or remove plugins. To verify and repair the environment:
+
+```bash
+scripts/verify-plugins.sh    # check for drift
+scripts/install-plugins.sh   # fix drift (run from a fresh terminal)
+```
+
+See [`docs/PLUGINS-AND-SKILLS.md`](docs/PLUGINS-AND-SKILLS.md) for the full plugin reference, available skills and agents, and instructions for adding new plugins.
+

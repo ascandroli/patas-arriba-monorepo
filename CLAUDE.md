@@ -90,6 +90,12 @@ implementation code:
 4. Update the implementation — until failing tests turn green
 5. Refactor — clean up while keeping all tests green
 
+**Specs live at `/specs/` at the monorepo root — never inside `client/` or
+`server/`.** Specs are project-management artefacts for the monorepo team;
+the upstream submodule maintainers do not want them. Use suffixed filenames
+to disambiguate frontend vs backend concerns of the same change (e.g.
+`/specs/attendance-default-frontend.md`, `/specs/attendance-default-backend.md`).
+
 ### Test-Driven Development
 
 Follow red-green-refactor strictly:
@@ -318,7 +324,7 @@ Overall average: **60-90% token reduction** on common development operations.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **patas-arriba-monorepo** (729 symbols, 1039 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **patas-arriba-monorepo** (803 symbols, 1107 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
