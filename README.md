@@ -1,5 +1,8 @@
 # Patas Arriba Monorepo
 
+[![Harness](https://img.shields.io/badge/Harness-2%2F7_enforced-808080?style=flat-square)](HARNESS.md)
+[![Agent Harness Enabled](https://img.shields.io/badge/Agent_Harness-Enabled-000000?style=flat-square)](HARNESS.md)
+
 Monorepo for **Fundación Patas Arriba** — a platform to manage and coordinate volunteer participation in the foundation's events.
 
 This monorepo brings together the client and server projects to enable AI-assisted development with [Claude Code](https://claude.ai/claude-code), providing full cross-project context for skills, agents, constraints, and workflows.
