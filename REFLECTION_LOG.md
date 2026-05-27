@@ -170,3 +170,19 @@
   - Model tiers used: Sonnet 4.6 throughout (single tier)
   - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-27
+- **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
+- **Task**: Installed Overcut as an SDLC automation tool: documented it in `docs/TOOLS.md`, worked around its repo-ownership requirement using a dedicated bot account (`amneris-bot`) with a fork, enabled issues on the fork, created a test issue, triggered the `requirements-document-generation` playbook successfully, posted findings back to issue #21, and committed the documentation including the GitHub account setup notes.
+- **Surprise**: Two. (1) Overcut requires the connected GitHub account to *own* the repository — collaborator or developer access is not sufficient for Overcut to discover the repo. This is not prominently documented and forced the bot-account/fork workaround. (2) GitHub disables issues on forks by default; the fork's settings had to be updated manually before any Overcut playbook could target an issue there.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "Overcut requires the connected GitHub account to be the repository owner, not just a collaborator. The workaround in use is a dedicated bot account (`amneris-bot`) that owns a fork at `amneris-bot/patas-arriba-monorepo`. Issues on that fork must be enabled manually (GitHub disables them on forks by default). Overcut playbooks are triggered against issues on the fork; useful output is linked back to the corresponding issue in the main repo."
+- **Improvement**: The original issue (#21) listed ownership as a "constraint to confirm" rather than a known blocker — underestimating the friction. Future third-party tool evaluation tickets should explicitly ask "does this tool require ownership, not just collaboration?" as a pre-flight question, since the answer shapes the entire integration strategy.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~45 min
+  - Model tiers used: Sonnet 4.6 throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
