@@ -154,3 +154,19 @@
   - Model tiers used: Sonnet 4.6 throughout (single tier)
   - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-05-27
+- **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
+- **Task**: Restored Entire CLI with checkpoints routed to a private GitHub repo (`ascandroli/patas-arriba-monorepo-entire-checkpoints-private`) so working session data stays private; closes issue #20.
+- **Surprise**: Two. (1) `entire checkpoint list` showed 4 existing checkpoints even though `entire/checkpoints/v1` had never been pushed anywhere — the command reads the local branch, not a remote. All 4 old checkpoints were entirely local and will be pushed for the first time when the session ends. (2) There is no manual way to trigger a checkpoint push. The CLI's `entire checkpoint` command is purely read-only (list/explain/rewind/search). The only verification path is "end the session and check the private repo" — we could confirm configuration was correct (private repo exists, hooks in place, `.entire/settings.json` committed) but could not confirm the push routing itself within the same session.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "`entire checkpoint list` reads the local `entire/checkpoints/v1` branch and shows checkpoints even if the branch has never been pushed. The checkpoint push is entirely hook-driven (Stop/SessionEnd); there is no manual trigger. To verify private remote routing, check the target repo's branches *after* a session ends — not before."
+- **Improvement**: When setting up a new Entire checkpoint remote, add a lightweight end-of-session verification step to the issue's acceptance criteria: "after next session end, confirm `entire/checkpoints/v1` appears in the private repo." This makes the final acceptance check something the user can do asynchronously rather than leaving it open.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~30 min
+  - Model tiers used: Sonnet 4.6 throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
