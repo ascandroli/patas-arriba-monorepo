@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-HARNESS_FILE=".claude/HARNESS.md"
+HARNESS_FILE="HARNESS.md"
 
 if [ ! -f "$HARNESS_FILE" ]; then
   echo "[harness] No $HARNESS_FILE found — skipping constraint enforcement"

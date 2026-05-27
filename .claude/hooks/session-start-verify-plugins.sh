@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# set -e intentionally omitted: exit code from verify-plugins.sh is captured
+# manually so the hook can emit a structured message instead of exiting early.
 # Version: 2026.05.27
 # SessionStart hook: ensure the teammate knows whether the project plugins are
 # loaded correctly. Behaviour depends on the surface running Claude Code:

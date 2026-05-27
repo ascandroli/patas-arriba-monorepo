@@ -170,6 +170,10 @@ Use /governance-constrain for guided authoring of governance constraints.
 - **Enforcement**: agent
 - **Tool**: harness-gc agent
 - **Auto-fix**: false
+- **Scope note**: shell script quality checks must be scoped to owned paths only —
+  exclude `node_modules/`, `.claude-user/`, `.claude-user/shell-snapshots/`,
+  and any path not under version control in this repo. Scripts under those
+  paths are owned by plugins or package managers, not this project.
 
 ### Dependency currency
 
@@ -207,6 +211,17 @@ Use /governance-constrain for guided authoring of governance constraints.
 - **Frequency**: weekly
 - **Enforcement**: agent
 - **Tool**: harness-gc agent
+- **Auto-fix**: false
+
+### Shell script safety
+
+- **What it checks**: Whether project-owned shell scripts use `set -euo pipefail`
+  (or carry a `# -e intentionally omitted` comment explaining why `-e` is absent).
+  Scoped to owned paths only — `scripts/` and `.claude/hooks/`. Never checks
+  `node_modules/`, `.claude-user/`, `.git/`, or any path not committed to this repo.
+- **Frequency**: weekly
+- **Enforcement**: deterministic
+- **Tool**: find scripts/ .claude/hooks/ -name "*.sh" | xargs grep -rL "set -euo pipefail\|intentionally omitted"
 - **Auto-fix**: false
 
 ### Secret scanner operational
@@ -456,5 +471,5 @@ honour the values declared here when reading.
 
 Last audit: never
 Constraints enforced: 2/7
-Garbage collection active: 0/15
+Garbage collection active: 0/16
 Drift detected: not yet audited

@@ -29,7 +29,25 @@
      accumulate as the pipeline discovers them.
      Each entry: what the trap is, and how to avoid it. -->
 
-<!-- (no entries yet) -->
+- **gc-rotate.sh Stop hook emits false positives for node_modules and plugin scripts.**
+  Symptom: at session end, Claude Code shows a banner "GC check (strict mode): missing
+  set -euo pipefail in: ..." listing many `.sh` files under `node_modules/`,
+  `.claude-user/`, or similar unowned paths.
+  Cause: `gc-rotate.sh` rules 2 (shell syntax) and 3 (strict mode) use
+  `find "$PROJECT_DIR" -name "*.sh" -not -path "*/.git/*"` — the only exclusion is
+  `.git/`, so every third-party script in the project tree is scanned.
+  Fix: edit the cached plugin file at
+  `.claude-user/plugins/cache/ai-literacy-superpowers/ai-literacy-superpowers/<version>/hooks/scripts/gc-rotate.sh`
+  and add `-not -path "*/node_modules/*" -not -path "*/.claude-user/*"` to both
+  `find` calls (rules 2 and 3). Also broaden rule 3's grep to
+  `grep -qE "set -euo pipefail|intentionally omitted"` so scripts that deliberately
+  omit `-e` and document it with a comment are not flagged.
+  Additionally, any project-owned hook script that intentionally omits `-e` must put
+  the escape-hatch comment (`# set -e intentionally omitted: ...`) within the first
+  15 lines — the check uses `head -15`, so a comment at line 27 is invisible to it.
+  Caveat: the cache file is overwritten on every plugin upgrade — reapply the fix
+  after each `/harness-upgrade` run. The bug has been documented in
+  `gc-rotate-false-positives.md` for upstream reporting.
 
 ## ARCH_DECISIONS
 
