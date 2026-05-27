@@ -1,6 +1,4 @@
 {
-  "skipDangerousModePermissionPrompt": true,
-  "theme": "auto",
   "hooks": {
     "PreToolUse": [
       {
@@ -13,5 +11,7 @@
         ]
       }
     ]
-  }
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "auto"
 }

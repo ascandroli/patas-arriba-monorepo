@@ -5,12 +5,25 @@
       "Bash(git push)"
     ]
   },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start-verify-plugins.sh"
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
+    "ai-literacy-superpowers@ai-literacy-superpowers": true,
+    "claude-md-management@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "github@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "ai-literacy-superpowers@ai-literacy-superpowers": true
+    "typescript-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "ai-literacy-superpowers": {

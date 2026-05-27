@@ -1,4 +1,4 @@
-.PHONY: devcontainer-up devcontainer-up-hardened devcontainer-claude devcontainer-down devcontainer-version devcontainer-update-github-meta help test test-server test-client test-watch-server test-watch-client
+.PHONY: devcontainer-up devcontainer-up-hardened devcontainer-claude devcontainer-down devcontainer-down-v devcontainer-version devcontainer-update-github-meta help test test-server test-client test-watch-server test-watch-client
 
 devcontainer-up: ## Start the dev container (open network)
 	devcontainer up --workspace-folder .
@@ -12,8 +12,11 @@ devcontainer-claude: ## Run Claude Code inside the dev container (skip permissio
 devcontainer-zsh: ## Open a zsh shell inside the dev container
 	devcontainer exec --workspace-folder . zsh
 
-devcontainer-down: ## Stop and remove the devcontainer dev container
-	$(call down_by_config,.devcontainer/devcontainer.json)
+devcontainer-down: ## Stop and remove the devcontainer dev container (keeps named volumes)
+	$(call down_by_config,.devcontainer/devcontainer.json,)
+
+devcontainer-down-v: ## Stop and remove the devcontainer dev container AND its named volumes
+	$(call down_by_config,.devcontainer/devcontainer.json,1)
 
 # until support for stop and down gets merged https://github.com/devcontainers/cli/pull/1041
 # -----------------------------------------------------------------------------
@@ -24,6 +27,9 @@ devcontainer-down: ## Stop and remove the devcontainer dev container
 # Uses `docker ps -aq` (not `-q`) so Created/Exited containers are also
 # caught -- they hold the original port bindings even when not running
 # and cause "port already in use" errors on the next `up`.
+#
+# Args: $1 = config file path, $2 = remove-volumes flag (non-empty = yes).
+# Mirrors `docker compose down` vs `docker compose down -v`.
 define down_by_config
 	@CONFIG_PATH=$$(pwd)/$1; \
 	CONTAINER_IDS=$$(docker ps -aq --filter "label=devcontainer.config_file=$$CONFIG_PATH"); \
@@ -35,9 +41,11 @@ define down_by_config
 		VOLUMES=$$(docker inspect "$$ID" --format '{{range .Mounts}}{{if eq .Type "volume"}}{{.Name}} {{end}}{{end}}'); \
 		echo "Removing container $$ID (config: $1)..."; \
 		docker rm -f "$$ID"; \
-		if [ -n "$$VOLUMES" ]; then \
+		if [ -n "$2" ] && [ -n "$$VOLUMES" ]; then \
 			echo "Removing volumes: $$VOLUMES"; \
 			docker volume rm $$VOLUMES 2>/dev/null || true; \
+		elif [ -n "$$VOLUMES" ]; then \
+			echo "Keeping volumes: $$VOLUMES (use devcontainer-down-v to remove)"; \
 		fi; \
 	done; \
 	echo "Done."
