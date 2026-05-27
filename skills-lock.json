@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "explain": {
+      "source": "entireio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/explain/SKILL.md",
+      "computedHash": "0cb6d343df702b36cb6c846431c216b10ea310ea89eb6aa8bb34888924bb3f66"
+    },
+    "search": {
+      "source": "entireio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/search/SKILL.md",
+      "computedHash": "25046cf7c8dc97f1bd85b59153af43107d252174d269cf09e56213e5fbce1eaf"
+    },
+    "session-crosslink": {
+      "source": "entireio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/session-crosslink/SKILL.md",
+      "computedHash": "601061e9544bdba83c98a7f6a4bb6103caa7dd1d4108ee973e0fa4f6bc38e36b"
+    },
+    "session-handoff": {
+      "source": "entireio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/session-handoff/SKILL.md",
+      "computedHash": "4781a0fb3e36317ec41ecf423dd974ea9d1a73c8e99bf1041e8bb99e419ac735"
+    },
+    "session-to-skill": {
+      "source": "entireio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/session-to-skill/SKILL.md",
+      "computedHash": "e83ef9dd7b6974336470f215b1596d13bacdb86b97df6ec7243d1d4510b4229e"
+    },
+    "what-happened": {
+      "source": "entireio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/what-happened/SKILL.md",
+      "computedHash": "13335ba1a4bfad41c444b3a730ba2ea038afddb87aa34cff043bbeeba5e91f72"
+    }
+  }
+}
