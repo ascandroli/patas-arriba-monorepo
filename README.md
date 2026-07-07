@@ -1,5 +1,9 @@
 # Patas Arriba Monorepo
 
+[![Harness](https://img.shields.io/badge/Harness-6%2F7_enforced-4682B4?style=flat-square)](HARNESS.md)
+[![Harness Health](https://img.shields.io/badge/Harness_Health-Healthy-2E8B57?style=flat-square)](observability/snapshots/)
+[![Agent Harness Enabled](https://img.shields.io/badge/Agent_Harness-Enabled-000000?style=flat-square)](HARNESS.md)
+
 Monorepo for **Fundación Patas Arriba** — a platform to manage and coordinate volunteer participation in the foundation's events.
 
 This monorepo brings together the client and server projects to enable AI-assisted development with [Claude Code](https://claude.ai/claude-code), providing full cross-project context for skills, agents, constraints, and workflows.
@@ -127,25 +131,26 @@ To update submodules to latest:
 git submodule update --remote
 ```
 
-## Branch Protection
-
-The monorepo has branch protection to prevent internal/tool-generated branches from being pushed to GitHub:
-
-- **GitHub ruleset**: A branch ruleset blocks pushes to `entire/checkpoints/**` branches server-side. If migrating to a different Git host, recreate an equivalent rule.
-- **Local pre-push hook**: `.git/hooks/pre-push` blocks pushes to any branch matching `*entire/checkpoints*` before they leave the machine.
-
-These protections prevent AI tooling (e.g., Entire CLI) from publishing checkpoint branches to the public repository.
-
 ## AI Development Tools
 
 This project uses several tools to support AI-assisted development with Claude Code. See [`TOOLS.md`](docs/TOOLS.md) for the full list and installation instructions.
 
-| Tool | Purpose |
-|------|---------|
-| [nWave](https://nwave.ai/) | AI development framework with TDD workflow |
-| [RTK](https://www.rtk-ai.app/) | Token optimization — compresses CLI output ~89% |
-| [GitNexus](https://github.com/abhigyanpatwari/GitNexus) | Codebase knowledge graph via MCP |
-| [VoiceMode](https://github.com/mbailey/voicemode) | Voice interface — hands-free conversational programming |
-| [Tessl](https://tessl.io/) | Package manager for AI agent skills/context |
-| [ccusage](https://ccusage.com/) | Claude Code token usage and cost tracking |
-| [Entire](https://entire.io/) | Git-integrated AI session history |
+| Tool | Purpose                                                                                                                                                 |
+|------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [RTK](https://www.rtk-ai.app/) | Token optimization — compresses CLI output ~89%                                                                                                         |
+| [GitNexus](https://github.com/abhigyanpatwari/GitNexus) | Codebase knowledge graph via MCP                                                                                                                        |
+| [Tessl](https://tessl.io/) | Package manager for AI agent skills/context                                                                                                             |
+| [ccusage](https://ccusage.com/) | Claude Code token usage and cost tracking                                                                                                               |
+| [ai-literacy-superpowers](https://github.com/Habitat-Thinking/ai-literacy-superpowers) | A set of plugins providing a complete development workflow — harness engineering, agent orchestration, literate programming, CUPID code review and more |
+
+### Claude Code Plugins & Skills
+
+Plugin requirements are declared in [`required-plugins.yaml`](required-plugins.yaml) at the project root — edit that file to add or remove plugins. To verify and repair the environment:
+
+```bash
+devex/scripts/verify-plugins.sh    # check for drift
+devex/scripts/install-plugins.sh   # fix drift (run from a fresh terminal)
+```
+
+See [`docs/PLUGINS-AND-SKILLS.md`](docs/PLUGINS-AND-SKILLS.md) for the full plugin reference, available skills and agents, and instructions for adding new plugins.
+

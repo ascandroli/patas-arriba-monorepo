@@ -1,7 +1,110 @@
+# Compound Learning
+
+<!-- This file is the project's persistent memory across AI sessions.
+     It accumulates patterns, gotchas, and decisions so that each session
+     builds on what previous sessions learned — rather than rediscovering
+     the same things from scratch.
+
+     IMPORTANT: This file is often generated or updated by LLM agents.
+     Review new entries with the same scepticism you would apply to any
+     generated content. Entries should reflect observed reality in the
+     codebase, not aspirational conventions. An entry in GOTCHAS that
+     does not reflect an actual problem that was actually solved is noise
+     that increases the cognitive cost of every future session.
+
+     Curation flow: REFLECTION_LOG.md collects raw observations; humans
+     promote durable patterns from there into the sections below. Do NOT
+     auto-promote — only the human curator decides what graduates. -->
+
+## STYLE
+
+<!-- Patterns and idioms that work well in this codebase.
+     Each entry: what to do, and why it works here. -->
+
+<!-- (no entries yet — populate as patterns are confirmed across sessions) -->
+
+## GOTCHAS
+
+<!-- Traps, surprises, and non-obvious constraints. Initially empty — entries
+     accumulate as the pipeline discovers them.
+     Each entry: what the trap is, and how to avoid it. -->
+
+- **gc-rotate.sh Stop hook emits false positives for node_modules and plugin scripts.**
+  Symptom: at session end, Claude Code shows a banner "GC check (strict mode): missing
+  set -euo pipefail in: ..." listing many `.sh` files under `node_modules/`,
+  `.claude-user/`, or similar unowned paths.
+  Cause: `gc-rotate.sh` rules 2 (shell syntax) and 3 (strict mode) use
+  `find "$PROJECT_DIR" -name "*.sh" -not -path "*/.git/*"` — the only exclusion is
+  `.git/`, so every third-party script in the project tree is scanned.
+  Fix: edit the cached plugin file at
+  `.claude-user/plugins/cache/ai-literacy-superpowers/ai-literacy-superpowers/<version>/hooks/scripts/gc-rotate.sh`
+  and add `-not -path "*/node_modules/*" -not -path "*/.claude-user/*"` to both
+  `find` calls (rules 2 and 3). Also broaden rule 3's grep to
+  `grep -qE "set -euo pipefail|intentionally omitted"` so scripts that deliberately
+  omit `-e` and document it with a comment are not flagged.
+  Additionally, any project-owned hook script that intentionally omits `-e` must put
+  the escape-hatch comment (`# set -e intentionally omitted: ...`) within the first
+  15 lines — the check uses `head -15`, so a comment at line 27 is invisible to it.
+  Caveat: the cache file is overwritten on every plugin upgrade — reapply the fix
+  after each `/harness-upgrade` run. The bug has been documented in
+  `gc-rotate-false-positives.md` for upstream reporting.
+
+## ARCH_DECISIONS
+
+<!-- Key architectural decisions and the reasoning behind them.
+     Each entry: what was decided, why, and what the alternatives were. -->
+
+- **Decision**: The monorepo root (`patas-arriba-monorepo/`) is a Claude Code
+  workspace, not a build/deploy target.
+  **Reason**: It exists to give Claude unified context over `client/` and
+  `server/` submodules. The submodules each have their own CI, builds, and
+  releases — duplicating that at the root would add maintenance with no
+  value.
+  **Alternatives considered**: A true monorepo with shared CI (rejected —
+  the upstream repos are independently owned and deployed); a flat
+  workspace without git submodules (rejected — loses the ability to track
+  exact submodule commits).
+
+- **Decision**: GitHub issues are tracked only in
+  `ascandroli/patas-arriba-monorepo`.
+  **Reason**: One issue tracker keeps planning and triage in one place.
+  Submodule repos receive PRs but do not host issues.
+  **Alternatives considered**: Per-submodule issues (rejected — fragments
+  the backlog; cross-cutting work spans both repos).
+
+## TEST_STRATEGY
+
+<!-- How tests are structured in this project. Helps agents write consistent
+     tests without reading every test file from scratch. -->
+
+- Top-level E2E tests use Playwright and live in `e2e/`. Configuration is
+  in `playwright.config.js`. They exercise client + server together.
+- Client unit tests use Vitest, colocated with the source they test, inside
+  the `client/` submodule.
+- Server tests live inside the `server/` submodule.
+- When writing top-level E2E tests, target real running services (client
+  dev server + server) rather than mocks — the value of E2E is catching
+  integration regressions the unit suites cannot.
+
+## DESIGN_DECISIONS
+
+<!-- Interface contracts, data shapes, and design choices that are stable and
+     that agents should not second-guess without good reason. -->
+
+- **Push notifications use VAPID keys.** The client requires
+  `VITE_VAPID_PUSH_PUBLIC_KEY`; the server requires `PUSH_PUBLIC_KEY`,
+  `PUSH_PRIVATE_KEY`, and `PUSH_SUBJECT`. Generate matching pairs with
+  `npm run generate-vapid-keys` in `server/`. Mismatched keys silently
+  break delivery — verify both sides after rotation.
+- **Submodule pointers, not source.** The monorepo's git history records
+  submodule commit references. Editing submodule code from the monorepo
+  root and committing only at the root would orphan the changes — they
+  must be committed and pushed in the upstream repo first.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **patas-arriba-monorepo** (478 symbols, 746 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **patas-arriba-monorepo** (803 symbols, 1107 relationships, 1 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

@@ -1,0 +1,13 @@
+- **Date**: 2026-06-19
+- **Agent**: Claude Opus 4.8 (1M context) — direct interaction, no orchestrator
+- **Task**: Re-investigated issue #26 (organizers report they can't access the "voluntarios con coche" view), rewrote the ticket as a clean first report with read-only production evidence, and discovered/diagnosed a separate React 19 production bug (`react-linkify` blank-page crash) opened as #31.
+- **Surprise**: The client runs **React 19 / Vite 8 / MUI 7** (client `CLAUDE.md` still says "React 18"), and `react-linkify@1.0.0-alpha` renders a **blank page on any event-detail page that has a description** — a *live* production crash that went unnoticed because most events have no description and it presents as "the page doesn't load," not a missing feature. Separately, the owner-gate (`isAdmin || owner`, `EventDetails.jsx:124`) **already** implements the desired "owner + admin only" behaviour, so #26's real cause is data-dependent (who owns the event), not a missing role check. Methodologically: a reproducible *local* crash was repeatedly conflated with the *reported* complaint; only read-only inspection of production resolved which was which.
+- **Proposal**: Add to AGENTS.md (CONTEXT/GOTCHAS): client stack is React 19 / Vite 8 / MUI 7 (fix client `CLAUDE.md`'s "React 18"); React-19-incompatible packages are masked by `legacy-peer-deps=true` in `client/.npmrc` (`react-lottie-player` #16; `react-linkify` #31 — the latter declares *no* peer dep, so peer-dep audits miss it and it fails only at runtime on event descriptions); dev workflow is `npm run dev` on the host with MongoDB as the only Docker service; in this shell `rtk` wraps `grep`/`git` and can mangle output (use `command grep`); the Bash tool's cwd persists across calls.
+- **Improvement**: When local behaviour and a user's report diverge, verify against the source of truth (production, read-only) **early**, before building extensive theories — several wrong conclusions were stated before the decisive production check.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~5h (estimated, long multi-phase session)
+  - Model tiers used: Opus 4.8 (1M) throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual

@@ -1,12 +1,18 @@
 {
   "enabledPlugins": {
+    "ai-literacy-superpowers@ai-literacy-superpowers": true,
+    "claude-md-management@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "github@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "nw@nwave-marketplace": true
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "ai-literacy-superpowers": {
+      "source": {
+        "source": "github",
+        "repo": "Habitat-Thinking/ai-literacy-superpowers"
+      }
+    }
   },
   "hooks": {
     "PostToolUse": [
@@ -15,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code post-task"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks claude-code post-task'"
           }
         ]
       },
@@ -24,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code post-todo"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks claude-code post-todo'"
           }
         ]
       }
@@ -35,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code pre-task"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks claude-code pre-task'"
           }
         ]
       }
@@ -46,18 +52,27 @@
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code session-end"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks claude-code session-end'"
           }
         ]
       }
     ],
     "SessionStart": [
       {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start-verify-plugins.sh"
+          }
+        ]
+      },
+      {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code session-start"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then printf \"%s\\n\" \"{\\\"systemMessage\\\":\\\"\\\\n\\\\nEntire CLI is enabled but not installed or not on PATH.\\\\nInstallation guide: https://docs.entire.io/cli/installation#installation-methods\\\"}\"; exit 0; fi; exec entire hooks claude-code session-start'"
           }
         ]
       }
@@ -68,7 +83,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code stop"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks claude-code stop'"
           }
         ]
       }
@@ -79,7 +94,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "entire hooks claude-code user-prompt-submit"
+            "command": "sh -c 'if ! command -v entire >/dev/null 2>&1; then exit 0; fi; exec entire hooks claude-code user-prompt-submit'"
           }
         ]
       }
@@ -90,6 +105,16 @@
       "Bash(git push:*)",
       "Bash(git push)",
       "Read(./.entire/metadata/**)"
+    ],
+    "allow": [
+      "mcp__codegraph__codegraph_explore",
+      "mcp__codegraph__codegraph_search",
+      "mcp__codegraph__codegraph_node",
+      "mcp__codegraph__codegraph_callers",
+      "mcp__codegraph__codegraph_callees",
+      "mcp__codegraph__codegraph_impact",
+      "mcp__codegraph__codegraph_files",
+      "mcp__codegraph__codegraph_status"
     ]
   }
 }

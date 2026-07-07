@@ -17,6 +17,14 @@
         "start"
       ]
     },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    },
     "mui-mcp": {
       "type": "stdio",
       "command": "npx",

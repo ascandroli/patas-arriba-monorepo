@@ -1,0 +1,13 @@
+- **Date**: 2026-07-03
+- **Agent**: Claude Opus 4.8 (1M context) — direct interaction, no orchestrator
+- **Task**: Confirmed and finished CodeGraph integration across the monorepo and both submodules — verified the index spans `client/` and `server/`, diagnosed why `.claude-user/` was being indexed, upgraded CodeGraph 1.0.1 → 1.2.0, added a root `codegraph.json` excluding `.claude-user/**`, force-reindexed, and opened draft PR #32.
+- **Surprise**: `.claude-user/plugins/marketplaces/ai-literacy-superpowers/` is an **embedded git repo** (it has its own `.git`), and CodeGraph ≤1.0.1 **deliberately indexes gitignored embedded repos anyway** (upstream #514) — so the parent `.gitignore` rule `.claude-user/*` (which correctly hides it from `git ls-files`) could not exclude it. There is **no `.codegraphignore` and no exclude flag/env var**; the only exclusion levers are built-in defaults, the root `.gitignore`, and (from 1.2.0) a `codegraph.json` `exclude`/`includeIgnored`. 1.2.0 also flips the default (#970/#976) so gitignored embedded repos respect `.gitignore` unless opted in. The mechanism was only discoverable by reading the installed package's `dist/**/*.d.ts` docs — the CLI `--help` says nothing about ignore behaviour.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "CodeGraph indexes embedded git repos found under gitignored paths (e.g. plugin marketplaces under `.claude-user/`); exclude them with a root `codegraph.json` `{ "exclude": ["..."] }` and keep CodeGraph ≥1.2.0. There is no `.codegraphignore`. The monorepo pins the exclude at `codegraph.json` (`.claude-user/**`)." Also flag that root `CLAUDE.md` still carries a stale **GitNexus** code-intelligence section (803 symbols) alongside the newer CodeGraph section in `.claude/CLAUDE.md` — two code-intelligence tools are documented; the GitNexus block likely wants pruning or reconciling.
+- **Improvement**: For a CLI tool with sparse `--help`, inspecting the installed package's `dist/**/*.d.ts` (which carried the authoritative `#514`/`#999` design notes and the `codegraph.json` schema) was decisive and far faster than trial-and-error. Reach for the shipped type/doc comments before guessing at config.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~40 min
+  - Model tiers used: Opus 4.8 (1M) throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual

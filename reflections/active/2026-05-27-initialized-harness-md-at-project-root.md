@@ -1,0 +1,13 @@
+- **Date**: 2026-05-27
+- **Agent**: Claude Sonnet 4.6 — direct interaction, no orchestrator
+- **Task**: Initialized HARNESS.md at project root (migrating from `.claude/HARNESS.md` v0.22.0 to v0.39.0 with new constraints and GC rules), then diagnosed and fixed false-positive shell-script warnings from the `gc-rotate.sh` Stop hook.
+- **Surprise**: Two. (1) The "GC check (strict mode)" banner was not coming from a `/harness-gc` agent run — it was firing from a plugin-registered Stop hook (`gc-rotate.sh`) that runs automatically at every session end. The ground truth for what runs at session end is `hooks.json` in the plugin cache, not HARNESS.md's GC section; looking there first would have saved several diagnostic steps through project scripts and the harness-gc agent definition. (2) The escape-hatch comment we added to `session-start-verify-plugins.sh` (`# -e intentionally omitted`) was placed at line 27, silently past the `head -15` window that `gc-rotate.sh` rule 3 uses to detect the escape hatch — the fix looked complete but still fired. The `head -15` window is not documented anywhere visible.
+- **Proposal**: Already promoted to AGENTS.md this session (gc-rotate false-positives gotcha, including the head-15 window trap and the cache-file caveat).
+- **Improvement**: When a Stop hook emits unexpected output, the first diagnostic step should be reading `hooks.json` in the plugin cache (`$CLAUDE_PLUGIN_ROOT/hooks/hooks.json`), not HARNESS.md GC rules or project scripts. The hook registry is the authoritative list of what fires at session end.
+- **Signal**: failure
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~90 min
+  - Model tiers used: Sonnet 4.6 throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual

@@ -1,29 +1,72 @@
 {
-  "name": "Patas Arriba Dev",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
-  "workspaceFolder": "/workspace",
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  "name": "Claude Code Sandbox",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "TZ": "${localEnv:TZ:Europe/Madrid}",
+      "GIT_DELTA_VERSION": "0.18.2",
+      "ZSH_IN_DOCKER_VERSION": "1.2.0"
+    }
   },
-  "remoteEnv": {
-    "DEVCONTAINER": "true"
-  },
-  "forwardPorts": [5005, 5173, 27017],
-  "postCreateCommand": "npm install && npx playwright install chromium && cd /workspace/client && npm install && cd /workspace/server && npm install",
+  "runArgs": [
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW",
+    "--name=patas-arriba",
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
+        "anthropic.claude-code",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
+        "eamodio.gitlens",
         "ms-vscode.vscode-typescript-next"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
       }
     }
   },
-  "remoteUser": "node"
+  "remoteUser": "node",
+  "mounts": [
+    "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
+    "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume"
+  ],
+  "containerEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "CLAUDE_CONFIG_DIR": "/workspace/.claude-user",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_METRIC_EXPORT_INTERVAL": "10000",
+    "OTEL_LOGS_EXPORT_INTERVAL": "5000",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "https://api.honeycomb.io:443",
+    "OTEL_EXPORTER_OTLP_HEADERS": "x-honeycomb-dataset=claude-patas-arriba,x-honeycomb-team=${localEnv:HONEYCOMB_API_KEY}",
+    "OTEL_SERVICE_NAME": "claude-code",
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code"
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+  "workspaceFolder": "/workspace",
+  "secrets": {
+    "HONEYCOMB_API_KEY": {
+      "description": "Honeycomb ingest key for Claude Code OpenTelemetry export. Use an ingest key with 'create datasets' disabled. Omit to disable telemetry.",
+      "documentationUrl": "https://docs.honeycomb.io/get-started/configure/environments/manage-api-keys/"
+    }
+  }
 }
