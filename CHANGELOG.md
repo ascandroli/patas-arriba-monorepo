@@ -4,6 +4,31 @@ Notable changes to the patas-arriba-monorepo workspace (harness, tooling,
 and orchestration glue). Submodule code changes are recorded in their own
 upstream repositories.
 
+## 2026-07-07
+
+### Issue #14 — MUI design-system theme from the foundation's real branding
+
+- **Extracted the real brand** from fundacionpatasarriba.com (live Elementor CSS
+  variables + computed styles via Claude-in-Chrome), recorded in
+  `docs/design-tokens-issue-14.md` with a per-token WCAG contrast check for each
+  colour pair.
+- **Reversed two brief assumptions** (confirmed with the maintainer): the brand
+  *primary* is coral `#EA5347` with amber `#EFB666` as *secondary* — the site's own
+  Elementor tokens — not amber-primary as guessed; and the navy `#173A5E` was
+  incidental, so it is deleted (text is now a warm near-black). Display headings and
+  the wordmark use the real brand face **Staatliches**; body/UI stay Roboto.
+- **Built the token theme** in `docs/mockup/v6-mui-light.html` (v5 rebuilt on named
+  tokens), fixing the six "no-reference" mistakes: inline hex → `surface`/`brand`/
+  `category` tokens, the two category-colour systems unified into one
+  `palette.category` map, documented `contrastText`, avatar colours derived via
+  `avatarColorFor()`, and component styling moved off the `App.css !important` block
+  into `theme.components`.
+- **Published a 7-card component library** to a claude.ai Design project via
+  `/design-sync`, generated from `docs/design-system/build-cards.mjs` so the cards
+  never drift from the theme.
+- **Pruned superseded early mockups** (`index.html`, `v2-native.html`,
+  `v3-mui-dark.html`).
+
 ## 2026-07-03
 
 ### GitNexus moved to an on-demand `/gitnexus` skill
