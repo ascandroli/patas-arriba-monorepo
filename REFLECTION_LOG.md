@@ -249,6 +249,22 @@
 ---
 
 - **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context), single-agent session
+- **Task**: Resumed issue #14 (mobile-first), recovered the prior audit + HTML mockups from the repo, compared v4-mui-light against an external developer's proposal video (extracted as frames), built a deeper v5 mockup, then wrote a theme/design-system brief for the next task.
+- **Surprise**: Three things. (1) The prior mobile-first audit and four prototype mockups already existed at `docs/design-choices-issue-14-mobile-first.md` and `docs/mockup/` — the user had forgotten, but the full context was recoverable from git. (2) `/design-sync` (the DesignSync tool) is NOT a website→design-system extractor as assumed — it syncs a *local component library* to a claude.ai/design project; its real role is publishing the finished system, not extracting branding. (3) `WebFetch` converts pages to markdown and therefore cannot read CSS hex codes or font stacks, making it weak for branding extraction — you need the raw CSS, a browser eyedrop, or brand assets.
+- **Proposal**: Add two tool-capability notes to HARNESS.md Context (human decides): "`/design-sync` publishes a local component library to claude.ai/design; it does not scrape URLs" and "`WebFetch` returns markdown — it cannot read CSS colors/fonts; use browser eyedrop or fetch the stylesheet for branding extraction." The #14 direction itself is already captured in the `issue-14-design-system-direction` memory + `docs/design-choices-issue-14-theme.md`.
+- **Improvement**: Analyzing a screen-recording video required manually extracting frames with `ffmpeg` (fps=1/2, scaled) then Reading the JPGs — worked well and is worth reusing, but there's no skill/helper for it. A small "video-to-frames" devex helper would make video-based UX review repeatable.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~90 min (estimated)
+  - Model tiers used: capable (100%) — Opus 4.8 throughout; MODEL_ROUTING not exercised
+  - Pipeline stages completed: single-agent interaction, no orchestrator
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-07-07
 - **Agent**: Claude Opus 4.8 (1M context) — direct interaction, no orchestrator
 - **Task**: Fixed monorepo issues #31 and #16 in a single PR against the `client` submodule: replaced `react-linkify@1.0.0-alpha` with the maintained `linkify-react` (+ `linkifyjs`) in `EventDescription.jsx` (the #31 blank-page bug), and `@lottiefiles/react-lottie-player` with `@lottiefiles/dotlottie-react` in `NotFound.jsx`/`ServerError.jsx` (#16). Removed the now-unneeded `legacy-peer-deps=true` from `client/.npmrc`, added a contract-guard test, updated CHANGELOG, and opened draft PR jorgeberrizbeitia/patas-arriba-client#6.
 - **Surprise**: The #31 blank-page bug **does not reproduce in the jsdom/vitest unit environment** — `react-linkify` rendered the anchor perfectly under `vitest run`, so a proper TDD RED was impossible. The failure (`<Linkify>` default import resolving to an object → React error #130) is specific to the **Vite 8 *production* bundle**, which unit tests never exercise. The regression test could therefore only be a *contract guard* (asserting the description renders and URLs become links), not a real repro — an honest but weaker guarantee than red-green-refactor implies. Two smaller surprises: (2) `client/.npmrc`'s `legacy-peer-deps=true` was load-bearing for *both* offending packages, so it could only be deleted once both were gone — a hidden coupling that argued for a single PR over splitting. (3) The Netlify deploy-preview check *is* the missing production-environment verification for #31, so the definitive visual check belongs there, not in CI unit tests.
