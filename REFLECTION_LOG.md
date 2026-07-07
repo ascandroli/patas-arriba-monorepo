@@ -245,3 +245,19 @@
   - Model tiers used: Opus 4.8 (1M) throughout (single tier)
   - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context) — direct interaction, no orchestrator
+- **Task**: Fixed monorepo issues #31 and #16 in a single PR against the `client` submodule: replaced `react-linkify@1.0.0-alpha` with the maintained `linkify-react` (+ `linkifyjs`) in `EventDescription.jsx` (the #31 blank-page bug), and `@lottiefiles/react-lottie-player` with `@lottiefiles/dotlottie-react` in `NotFound.jsx`/`ServerError.jsx` (#16). Removed the now-unneeded `legacy-peer-deps=true` from `client/.npmrc`, added a contract-guard test, updated CHANGELOG, and opened draft PR jorgeberrizbeitia/patas-arriba-client#6.
+- **Surprise**: The #31 blank-page bug **does not reproduce in the jsdom/vitest unit environment** — `react-linkify` rendered the anchor perfectly under `vitest run`, so a proper TDD RED was impossible. The failure (`<Linkify>` default import resolving to an object → React error #130) is specific to the **Vite 8 *production* bundle**, which unit tests never exercise. The regression test could therefore only be a *contract guard* (asserting the description renders and URLs become links), not a real repro — an honest but weaker guarantee than red-green-refactor implies. Two smaller surprises: (2) `client/.npmrc`'s `legacy-peer-deps=true` was load-bearing for *both* offending packages, so it could only be deleted once both were gone — a hidden coupling that argued for a single PR over splitting. (3) The Netlify deploy-preview check *is* the missing production-environment verification for #31, so the definitive visual check belongs there, not in CI unit tests.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "Client unit tests run under **vitest + jsdom**, which uses Vite's transform but **not** the production bundle — toolchain/bundler-specific failures (bad default-export interop, minified React errors like #130, tree-shaking edge cases) will pass green in unit tests and only surface in `npm run build` output or the Netlify **deploy preview**. For a bug that manifests as a blank/broken *production* page, treat the deploy preview as the real repro surface; a unit test can pin the behavioural contract but is not a substitute for the production check." And: "Code PRs target the **upstream submodule repos** (`jorgeberrizbeitia/patas-arriba-{client,server}`) while issues live only in `ascandroli/patas-arriba-monorepo` — so `Closes #N` in a submodule PR will **not** auto-close the issue (cross-repo). Issues close when the monorepo submodule-pointer bump lands; write the linkage as a plain reference, not a magic keyword."
+- **Improvement**: When the spec-first/TDD discipline meets a bug that provably can't be reproduced in the available test harness, state that explicitly up front (as "contract guard, not RED") and route the definitive verification to the environment that *can* reproduce it (build output / deploy preview) — rather than letting a green unit test imply the bug is proven fixed. Verifying the actual fix still depends on a human visual check behind auth, which the agent can't perform.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~1h (estimated — investigation → dep swaps → verify → commit → draft PR)
+  - Model tiers used: Opus 4.8 (1M) throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual
