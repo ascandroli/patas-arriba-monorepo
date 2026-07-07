@@ -250,6 +250,22 @@
 
 - **Date**: 2026-07-07
 - **Agent**: Claude Opus 4.8 (1M context), single-agent session
+- **Task**: Executed the issue #14 theme task set up by the earlier v5/brief session — eyedropped the foundation's real brand from fundacionpatasarriba.com via Claude-in-Chrome, defined named MUI tokens for the whole taxonomy (fixing the six "no-reference" mistakes), rebuilt the mockup as v6 on those tokens, recorded the extraction + WCAG checks in `docs/design-tokens-issue-14.md`, then published a 7-card component library to a claude.ai Design project via `/design-sync`.
+- **Surprise**: The extracted brand overturned the brief's "known anchor" that had been treated as settled across prior sessions. The site's *own* Elementor global token `--e-global-color-primary` is coral `#EA5347` with amber `#EFB666` as the *accent* — the inverse of the brief's amber-primary assumption — and the navy `#173A5E` that earlier mockups used for secondary/text appears **nowhere** on the site. The real display face is **Staatliches** (the actual wordmark font), not the assumed Roboto. Reading the raw CSS custom properties (`getComputedStyle` + iterating `document.styleSheets` for `--*` vars) via Claude-in-Chrome's `javascript_tool` did exactly the branding extraction the prior reflection flagged WebFetch *couldn't* do — closing that loop.
+- **Proposal**: Worth an AGENTS.md/HARNESS.md-Context note (human decides): "A brief's reverse-engineered anchor values (colors, fonts) are guesses until checked against the primary source. For this project the source of truth is the site's Elementor global CSS vars (`--e-global-color-*`, `--e-global-typography-*`), readable via Claude-in-Chrome `javascript_tool` — verify before building tokens on them." Two smaller gotchas also worth a line: the Chrome extension blocks `file://` (serve mockups over a local http server instead), and `/design-sync` requires `/design-login` first and expects self-contained `<!-- @dsCard group="…" -->` preview HTMLs, not an app mockup.
+- **Improvement**: The design-sync card bundle was far more robust generated from a single source (`build-cards.mjs`: one theme, N card bodies) than hand-authored — the cards can't drift from each other or the theme. The first generated card rendered blank because helper `function` declarations were injected into JSX children; serving + screenshotting each card *before* syncing caught it immediately. "Verify-before-publish" (render locally, screenshot, then push to the external design project) is the pattern that saved a broken publish.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~2 hr (estimated)
+  - Model tiers used: capable (100%) — Opus 4.8 throughout; MODEL_ROUTING not exercised
+  - Pipeline stages completed: single-agent interaction, no orchestrator; the client/main.jsx port was deliberately deferred to a later spec-first + TDD task (design-token/mockup work only here)
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context), single-agent session
 - **Task**: Resumed issue #14 (mobile-first), recovered the prior audit + HTML mockups from the repo, compared v4-mui-light against an external developer's proposal video (extracted as frames), built a deeper v5 mockup, then wrote a theme/design-system brief for the next task.
 - **Surprise**: Three things. (1) The prior mobile-first audit and four prototype mockups already existed at `docs/design-choices-issue-14-mobile-first.md` and `docs/mockup/` — the user had forgotten, but the full context was recoverable from git. (2) `/design-sync` (the DesignSync tool) is NOT a website→design-system extractor as assumed — it syncs a *local component library* to a claude.ai/design project; its real role is publishing the finished system, not extracting branding. (3) `WebFetch` converts pages to markdown and therefore cannot read CSS hex codes or font stacks, making it weak for branding extraction — you need the raw CSS, a browser eyedrop, or brand assets.
 - **Proposal**: Add two tool-capability notes to HARNESS.md Context (human decides): "`/design-sync` publishes a local component library to claude.ai/design; it does not scrape URLs" and "`WebFetch` returns markdown — it cannot read CSS colors/fonts; use browser eyedrop or fetch the stylesheet for branding extraction." The #14 direction itself is already captured in the `issue-14-design-system-direction` memory + `docs/design-choices-issue-14-theme.md`.
