@@ -1,0 +1,13 @@
+- **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context), single-agent session
+- **Task**: Resumed issue #14 (mobile-first), recovered the prior audit + HTML mockups from the repo, compared v4-mui-light against an external developer's proposal video (extracted as frames), built a deeper v5 mockup, then wrote a theme/design-system brief for the next task.
+- **Surprise**: Three things. (1) The prior mobile-first audit and four prototype mockups already existed at `docs/design-choices-issue-14-mobile-first.md` and `docs/mockup/` — the user had forgotten, but the full context was recoverable from git. (2) `/design-sync` (the DesignSync tool) is NOT a website→design-system extractor as assumed — it syncs a *local component library* to a claude.ai/design project; its real role is publishing the finished system, not extracting branding. (3) `WebFetch` converts pages to markdown and therefore cannot read CSS hex codes or font stacks, making it weak for branding extraction — you need the raw CSS, a browser eyedrop, or brand assets.
+- **Proposal**: Add two tool-capability notes to HARNESS.md Context (human decides): "`/design-sync` publishes a local component library to claude.ai/design; it does not scrape URLs" and "`WebFetch` returns markdown — it cannot read CSS colors/fonts; use browser eyedrop or fetch the stylesheet for branding extraction." The #14 direction itself is already captured in the `issue-14-design-system-direction` memory + `docs/design-choices-issue-14-theme.md`.
+- **Improvement**: Analyzing a screen-recording video required manually extracting frames with `ffmpeg` (fps=1/2, scaled) then Reading the JPGs — worked well and is worth reusing, but there's no skill/helper for it. A small "video-to-frames" devex helper would make video-based UX review repeatable.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~90 min (estimated)
+  - Model tiers used: capable (100%) — Opus 4.8 throughout; MODEL_ROUTING not exercised
+  - Pipeline stages completed: single-agent interaction, no orchestrator
+  - Agent delegation: manual

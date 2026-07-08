@@ -245,3 +245,51 @@
   - Model tiers used: Opus 4.8 (1M) throughout (single tier)
   - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
   - Agent delegation: manual
+
+---
+
+- **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context), single-agent session
+- **Task**: Executed the issue #14 theme task set up by the earlier v5/brief session — eyedropped the foundation's real brand from fundacionpatasarriba.com via Claude-in-Chrome, defined named MUI tokens for the whole taxonomy (fixing the six "no-reference" mistakes), rebuilt the mockup as v6 on those tokens, recorded the extraction + WCAG checks in `docs/design-tokens-issue-14.md`, then published a 7-card component library to a claude.ai Design project via `/design-sync`.
+- **Surprise**: The extracted brand overturned the brief's "known anchor" that had been treated as settled across prior sessions. The site's *own* Elementor global token `--e-global-color-primary` is coral `#EA5347` with amber `#EFB666` as the *accent* — the inverse of the brief's amber-primary assumption — and the navy `#173A5E` that earlier mockups used for secondary/text appears **nowhere** on the site. The real display face is **Staatliches** (the actual wordmark font), not the assumed Roboto. Reading the raw CSS custom properties (`getComputedStyle` + iterating `document.styleSheets` for `--*` vars) via Claude-in-Chrome's `javascript_tool` did exactly the branding extraction the prior reflection flagged WebFetch *couldn't* do — closing that loop.
+- **Proposal**: Worth an AGENTS.md/HARNESS.md-Context note (human decides): "A brief's reverse-engineered anchor values (colors, fonts) are guesses until checked against the primary source. For this project the source of truth is the site's Elementor global CSS vars (`--e-global-color-*`, `--e-global-typography-*`), readable via Claude-in-Chrome `javascript_tool` — verify before building tokens on them." Two smaller gotchas also worth a line: the Chrome extension blocks `file://` (serve mockups over a local http server instead), and `/design-sync` requires `/design-login` first and expects self-contained `<!-- @dsCard group="…" -->` preview HTMLs, not an app mockup.
+- **Improvement**: The design-sync card bundle was far more robust generated from a single source (`build-cards.mjs`: one theme, N card bodies) than hand-authored — the cards can't drift from each other or the theme. The first generated card rendered blank because helper `function` declarations were injected into JSX children; serving + screenshotting each card *before* syncing caught it immediately. "Verify-before-publish" (render locally, screenshot, then push to the external design project) is the pattern that saved a broken publish.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~2 hr (estimated)
+  - Model tiers used: capable (100%) — Opus 4.8 throughout; MODEL_ROUTING not exercised
+  - Pipeline stages completed: single-agent interaction, no orchestrator; the client/main.jsx port was deliberately deferred to a later spec-first + TDD task (design-token/mockup work only here)
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context), single-agent session
+- **Task**: Resumed issue #14 (mobile-first), recovered the prior audit + HTML mockups from the repo, compared v4-mui-light against an external developer's proposal video (extracted as frames), built a deeper v5 mockup, then wrote a theme/design-system brief for the next task.
+- **Surprise**: Three things. (1) The prior mobile-first audit and four prototype mockups already existed at `docs/design-choices-issue-14-mobile-first.md` and `docs/mockup/` — the user had forgotten, but the full context was recoverable from git. (2) `/design-sync` (the DesignSync tool) is NOT a website→design-system extractor as assumed — it syncs a *local component library* to a claude.ai/design project; its real role is publishing the finished system, not extracting branding. (3) `WebFetch` converts pages to markdown and therefore cannot read CSS hex codes or font stacks, making it weak for branding extraction — you need the raw CSS, a browser eyedrop, or brand assets.
+- **Proposal**: Add two tool-capability notes to HARNESS.md Context (human decides): "`/design-sync` publishes a local component library to claude.ai/design; it does not scrape URLs" and "`WebFetch` returns markdown — it cannot read CSS colors/fonts; use browser eyedrop or fetch the stylesheet for branding extraction." The #14 direction itself is already captured in the `issue-14-design-system-direction` memory + `docs/design-choices-issue-14-theme.md`.
+- **Improvement**: Analyzing a screen-recording video required manually extracting frames with `ffmpeg` (fps=1/2, scaled) then Reading the JPGs — worked well and is worth reusing, but there's no skill/helper for it. A small "video-to-frames" devex helper would make video-based UX review repeatable.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~90 min (estimated)
+  - Model tiers used: capable (100%) — Opus 4.8 throughout; MODEL_ROUTING not exercised
+  - Pipeline stages completed: single-agent interaction, no orchestrator
+  - Agent delegation: manual
+
+---
+
+- **Date**: 2026-07-07
+- **Agent**: Claude Opus 4.8 (1M context) — direct interaction, no orchestrator
+- **Task**: Fixed monorepo issues #31 and #16 in a single PR against the `client` submodule: replaced `react-linkify@1.0.0-alpha` with the maintained `linkify-react` (+ `linkifyjs`) in `EventDescription.jsx` (the #31 blank-page bug), and `@lottiefiles/react-lottie-player` with `@lottiefiles/dotlottie-react` in `NotFound.jsx`/`ServerError.jsx` (#16). Removed the now-unneeded `legacy-peer-deps=true` from `client/.npmrc`, added a contract-guard test, updated CHANGELOG, and opened draft PR jorgeberrizbeitia/patas-arriba-client#6.
+- **Surprise**: The #31 blank-page bug **does not reproduce in the jsdom/vitest unit environment** — `react-linkify` rendered the anchor perfectly under `vitest run`, so a proper TDD RED was impossible. The failure (`<Linkify>` default import resolving to an object → React error #130) is specific to the **Vite 8 *production* bundle**, which unit tests never exercise. The regression test could therefore only be a *contract guard* (asserting the description renders and URLs become links), not a real repro — an honest but weaker guarantee than red-green-refactor implies. Two smaller surprises: (2) `client/.npmrc`'s `legacy-peer-deps=true` was load-bearing for *both* offending packages, so it could only be deleted once both were gone — a hidden coupling that argued for a single PR over splitting. (3) The Netlify deploy-preview check *is* the missing production-environment verification for #31, so the definitive visual check belongs there, not in CI unit tests.
+- **Proposal**: Add to AGENTS.md (GOTCHAS): "Client unit tests run under **vitest + jsdom**, which uses Vite's transform but **not** the production bundle — toolchain/bundler-specific failures (bad default-export interop, minified React errors like #130, tree-shaking edge cases) will pass green in unit tests and only surface in `npm run build` output or the Netlify **deploy preview**. For a bug that manifests as a blank/broken *production* page, treat the deploy preview as the real repro surface; a unit test can pin the behavioural contract but is not a substitute for the production check." And: "Code PRs target the **upstream submodule repos** (`jorgeberrizbeitia/patas-arriba-{client,server}`) while issues live only in `ascandroli/patas-arriba-monorepo` — so `Closes #N` in a submodule PR will **not** auto-close the issue (cross-repo). Issues close when the monorepo submodule-pointer bump lands; write the linkage as a plain reference, not a magic keyword."
+- **Improvement**: When the spec-first/TDD discipline meets a bug that provably can't be reproduced in the available test harness, state that explicitly up front (as "contract guard, not RED") and route the definitive verification to the environment that *can* reproduce it (build output / deploy preview) — rather than letting a green unit test imply the bug is proven fixed. Verifying the actual fix still depends on a human visual check behind auth, which the agent can't perform.
+- **Signal**: context
+- **Constraint**: none
+- **Session metadata**:
+  - Duration: ~1h (estimated — investigation → dep swaps → verify → commit → draft PR)
+  - Model tiers used: Opus 4.8 (1M) throughout (single tier)
+  - Pipeline stages completed: none — direct interaction, no orchestrator pipeline
+  - Agent delegation: manual

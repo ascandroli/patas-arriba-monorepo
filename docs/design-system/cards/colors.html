@@ -1,0 +1,69 @@
+<!-- @dsCard group="Foundations" -->
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Color palette</title>
+<style>
+:root{
+  --coral:#EA5347;--coral-dark:#C13A2E;--amber:#EFB666;--amber-deep:#D99946;
+  --teal:#98D2CD;--teal-deep:#3E9B95;--pink:#FFB3B9;--pink-deep:#E06B8D;--black:#1A1A1A;
+  --error:#C62828;--warning:#E8850C;--success:#2E7D46;--info:#147A70;
+  --bg:#FAFAF8;--paper:#FFFFFF;--subtle:#F5F5F2;--muted:#F0F0EC;--line:#E8E8E4;
+  --text:#2E2E2E;--text2:#6B7078;
+  --display:'Staatliches','Arial Narrow',Impact,sans-serif;
+  --body:'Roboto',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.4}
+main{max-width:420px;margin:0 auto;padding:22px 20px 32px}
+.title{font-family:var(--display);font-weight:400;letter-spacing:.5px;font-size:1.9rem;text-transform:uppercase;margin-bottom:18px;color:var(--text)}
+.section{margin-bottom:22px}
+.slabel{text-transform:uppercase;letter-spacing:1px;color:var(--text2);font-weight:700;font-size:.7rem;margin-bottom:9px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--text2)}
+.b2{font-size:.875rem}.cap{font-size:.75rem}
+svg{display:block}
+/* swatch */
+.sw{flex:1 1 30%;min-width:98px;height:66px;border-radius:8px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;border:1px solid rgba(0,0,0,.06)}
+.sw b{font-size:.7rem;line-height:1.15}.sw i{font-size:.62rem;opacity:.85;font-style:normal}
+/* chip */
+.chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 11px;border-radius:20px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.chip.out{background:transparent;border:1px solid var(--line);color:var(--text2)}
+/* button */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.95rem;border:1px solid transparent}
+.btn.full{display:flex;width:100%}
+.btn.primary{background:var(--coral);color:#fff}
+.btn.secondary{background:var(--amber);color:#212121}
+.btn.error{background:var(--error);color:#fff}
+.btn.out{background:transparent;border-color:var(--line);color:var(--text)}
+.btn.out-error{background:transparent;border-color:var(--error);color:var(--error)}
+.btn.disabled{opacity:.5}
+.btn.text{min-height:40px;padding:8px 10px;background:transparent;color:var(--text2)}
+.iconbtn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--coral);color:#fff;border:none}
+/* avatar */
+.avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex:none}
+/* card + panel */
+.card{background:var(--paper);border-radius:16px;box-shadow:0 1px 3px rgba(26,26,26,.06),0 1px 2px rgba(26,26,26,.04);padding:16px;position:relative;overflow:hidden}
+.card .bar{position:absolute;top:0;left:0;width:4px;height:100%}
+.panel{background:var(--subtle);border-radius:16px;padding:16px}
+.line{display:flex;align-items:center;gap:8px}
+/* field */
+.field{width:100%;min-height:52px;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:0 14px;color:var(--text2);font-size:1rem;display:flex;align-items:center;gap:8px}
+.field.pill{border-radius:24px;background:var(--subtle);min-height:44px}
+/* bottom nav */
+.nav{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.nav .item{flex:1;text-align:center;padding:9px 0;font-size:.72rem;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav .item.sel{color:var(--coral)}
+</style></head>
+<body><main><div class="title">Color</div>
+      <div class="section"><div class="slabel">Brand — primary &amp; secondary</div>
+        <div class="row"><div class="sw" style="background:#EA5347;color:#fff"><b>primary</b><i>#EA5347</i></div><div class="sw" style="background:#C13A2E;color:#fff"><b>primary.dark</b><i>#C13A2E</i></div><div class="sw" style="background:#EFB666;color:#212121"><b>secondary</b><i>#EFB666</i></div></div></div>
+      <div class="section"><div class="slabel">Brand accents</div>
+        <div class="row"><div class="sw" style="background:#98D2CD;color:#212121"><b>teal</b><i>#98D2CD</i></div><div class="sw" style="background:#3E9B95;color:#fff"><b>tealDeep</b><i>#3E9B95</i></div><div class="sw" style="background:#FFB3B9;color:#212121"><b>pink</b><i>#FFB3B9</i></div></div>
+        <div class="row"><div class="sw" style="background:#E06B8D;color:#fff"><b>pinkDeep</b><i>#E06B8D</i></div><div class="sw" style="background:#1A1A1A;color:#fff"><b>black</b><i>#1A1A1A</i></div></div></div>
+      <div class="section"><div class="slabel">Semantic (functional, kept distinct from brand)</div>
+        <div class="row"><div class="sw" style="background:#C62828;color:#fff"><b>error</b><i>#C62828</i></div><div class="sw" style="background:#E8850C;color:#212121"><b>warning</b><i>#E8850C</i></div><div class="sw" style="background:#2E7D46;color:#fff"><b>success</b><i>#2E7D46</i></div></div>
+        <div class="row"><div class="sw" style="background:#147A70;color:#fff"><b>info</b><i>#147A70</i></div></div></div>
+      <div class="section"><div class="slabel">Surfaces &amp; text</div>
+        <div class="row"><div class="sw" style="background:#FAFAF8;color:#212121"><b>bg.default</b><i>#FAFAF8</i></div><div class="sw" style="background:#FFFFFF;color:#212121"><b>paper</b><i>#FFFFFF</i></div><div class="sw" style="background:#F5F5F2;color:#212121"><b>surface.subtle</b><i>#F5F5F2</i></div></div>
+        <div class="row"><div class="sw" style="background:#F0F0EC;color:#212121"><b>surface.muted</b><i>#F0F0EC</i></div><div class="sw" style="background:#2E2E2E;color:#fff"><b>text.primary</b><i>#2E2E2E</i></div><div class="sw" style="background:#6B7078;color:#fff"><b>text.secondary</b><i>#6B7078</i></div></div></div></main></body></html>

@@ -78,6 +78,16 @@ Overcut requires the connected GitHub account to **own** the repository — bein
 - **Issues:** GitHub disables issues on forks by default — they were enabled manually in the fork's settings so Overcut playbooks can target them
 - Workflows are triggered against issues on the fork; any useful output is linked back to the corresponding issue in the main repo
 
+## Conversational Programming
+
+### [VoiceMode](https://github.com/mbailey/voicemode)
+
+Two-way voice interface for Claude Code using local Whisper (STT) and Kokoro (TTS) services. Enables hands-free conversational programming through speech.
+
+- **Install:** `pipx install voicemode`
+- **Services:** Whisper (speech-to-text), Kokoro (text-to-speech)
+- **Provides:** `converse` (speak + listen), `service` (manage Whisper/Kokoro/VoiceMode services)
+
 ## Claude Code Plugins
 
 Plugin requirements are declared in [`required-plugins.yaml`](../required-plugins.yaml) at the repo root. To verify and repair the environment:
