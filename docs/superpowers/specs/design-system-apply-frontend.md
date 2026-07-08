@@ -1,5 +1,5 @@
 ---
-diaboli: docs/superpowers/objections/design-system-apply-frontend.md (9/10 disposed; O4 pending live review)
+diaboli: docs/superpowers/objections/design-system-apply-frontend.md (10/10 disposed)
 cartographer: pending
 issue: 34
 ---
@@ -88,6 +88,10 @@ the audit's sketches.
   - The bar itself pads with `env(safe-area-inset-bottom)` and the viewport
     meta sets `viewport-fit=cover`, so an installed iOS PWA doesn't sink the
     bar under the home indicator (O7).
+  - **No global top bar (O4).** Screens own their headers, per the v6
+    pattern: main screens render a `PageHeader` (first-name greeting,
+    display-face title, avatar as profile shortcut). Role information is
+    shown on the Perfil screen, not in persistent chrome.
 - **FR-7 [TDD]** (Change 2) A "Crear Evento" FAB renders on the Event List
   for organizer/admin users only; volunteers and anonymous users never see it.
 - **FR-8 [TDD]** (Change 6) Email fields set `inputMode="email"`, phone

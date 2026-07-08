@@ -30,8 +30,8 @@ objections:
     severity: medium
     claim: "FR-6 says BottomNavigation replaces the hamburger drawer but never specifies what happens to the top of the screen — the logged-in identity display, role badge, and profile shortcut the old Navbar carried are unaddressed, so implementations can reasonably diverge between deleting and keeping them."
     evidence: "FR-6: '`BottomNavigation` replaces the hamburger drawer as primary navigation' — the spec's only statements about the remaining chrome are the Más overflow contents and 'content gets bottom padding'; no FR mentions the AppBar/Navbar remnant, username display, or admin/organizer indicator."
-    disposition: pending
-    disposition_rationale: null  # awaiting live review of the shipped UI with the real server
+    disposition: accepted
+    disposition_rationale: "Agreed after live review: the interim global identity strip was an implementation invention. Resolution follows the v6 mockup — no global top bar; screens own their headers (PageHeader: greeting + display title + avatar profile shortcut, first on the events list); role information lives on the Perfil screen. FR-6 amended; Navbar deleted. Disposed by ascandroli 2026-07-08."
   - id: O5
     category: scope
     severity: medium
