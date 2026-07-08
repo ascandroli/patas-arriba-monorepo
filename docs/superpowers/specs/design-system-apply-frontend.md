@@ -1,5 +1,5 @@
 ---
-diaboli: pending
+diaboli: docs/superpowers/objections/design-system-apply-frontend.md (9/10 disposed; O4 pending live review)
 cartographer: pending
 issue: 34
 ---
@@ -35,14 +35,21 @@ the audit's sketches.
 
 ### Step 1 — Theme port (foundational)
 
-- **FR-1 [visual]** `client/src/main.jsx` builds its theme from the v6 named
-  tokens: coral `#EA5347` primary / amber `#EFB666` secondary (with the
-  documented contrastText decisions), functional error/warning/success/info,
-  named `surface.*`, `brand.*`, unified `palette.category` map,
-  `palette.avatar` ring, warm text near-black `#2E2E2E` (navy `#173A5E` is
-  deleted), `shape.borderRadius: 12` + `radii` scale, warm shadows, and the
-  v6 `theme.components` overrides (Button ≥48px, IconButton ≥44px, Card,
-  Chip, TextField, Accordion, Fab, BottomNavigationAction).
+- **FR-1 [visual]** The theme lives in a dedicated side-effect-free module
+  `client/src/theme.js`, consumed by `main.jsx` (the entry point keeps only
+  mounting + service-worker concerns, so components and tests can import
+  tokens without executing it — O1). It builds from the v6 named tokens:
+  coral `#EA5347` primary / amber `#EFB666` secondary (with the documented
+  contrastText decisions), functional error/warning/success/info, named
+  `surface.*`, `brand.*`, unified `palette.category` map, `palette.avatar`
+  ring, warm text near-black `#2E2E2E` (navy `#173A5E` is deleted),
+  `shape.borderRadius: 12` + `radii` scale, warm shadows, and the v6
+  `theme.components` overrides (Button ≥48px, IconButton ≥44px, Card, Chip,
+  TextField, Accordion, Fab, BottomNavigationAction).
+  **Contrast rule (O6):** contained primary buttons stay coral everywhere —
+  the 3.6:1 white-on-coral tradeoff is accepted app-wide (it is what the
+  foundation's own site does); `primary.dark` is reserved for future
+  strict-AA contexts, not applied ad hoc per component.
 - **FR-2 [visual]** Display typography: h1/h2 use Staatliches via
   `@fontsource/staatliches` with v6's `clamp()` sizes; h3–h6 stay Roboto at
   v6 sizes; body/subtitle/caption revert to MUI defaults (16px inputs avoid
@@ -59,6 +66,11 @@ the audit's sketches.
   `iconColor`/icon feature (`UpdateUserIcon.jsx`, stored server-side). The
   helper is available as fallback/for new surfaces; ripping out user-chosen
   colors is a product + server-model change that needs the maintainer.
+  **Deliberately consumer-less (O5):** the ring ships without call sites on
+  purpose — it is part of the documented token system (tokens doc §avatar)
+  and the chat-bubble redesign (audit Suggestion 6) is its intended first
+  consumer; landing it with the rest of the tokens keeps the theme a
+  faithful port rather than a subset.
 - **FR-5 [visual]** `Glossary.jsx` chips read from `palette.category` (slugs
   `plataforma`/`rol`/`evento`/`refugio`) instead of overloading semantic
   colors — the "two category systems" mistake the tokens doc fixes.
@@ -73,17 +85,26 @@ the audit's sketches.
     and — for organizer/admin — Ver Usuarios and Crear Evento.
   - The bar marks the active destination and navigates on tap; content gets
     bottom padding so nothing hides behind the fixed bar.
+  - The bar itself pads with `env(safe-area-inset-bottom)` and the viewport
+    meta sets `viewport-fit=cover`, so an installed iOS PWA doesn't sink the
+    bar under the home indicator (O7).
 - **FR-7 [TDD]** (Change 2) A "Crear Evento" FAB renders on the Event List
   for organizer/admin users only; volunteers and anonymous users never see it.
 - **FR-8 [TDD]** (Change 6) Email fields set `inputMode="email"`, phone
   fields `inputMode="tel"`, numeric fields `inputMode="numeric"` (Login,
   Signup, PasswordForget/Reset, EventCreate, CarGroup forms).
-- **FR-9 [TDD]** (Change 8) Every icon-only button has an `aria-label`
-  (edit, delete, expand/collapse, send, password visibility); collapse
-  triggers expose `aria-expanded`.
-- **FR-10 [visual]** (Change 3) All touch targets ≥48px: Message delete,
-  Glossary toggles + chips, UserSearch input, password toggles, collapse
-  IconButtons (much of this falls out of the FR-1 component overrides).
+- **FR-9 [TDD]** (Change 8) These icon-only buttons have an `aria-label`
+  (the audit's enumeration, replacing an unfalsifiable "every" — O8):
+  EventCard edit, Message options menu, the three disclosure toggles
+  (EventDescription, EventParticipantsCollapse, CarGroupCollapse), and the
+  password-visibility toggles (already labeled). The three disclosure
+  toggles also expose `aria-expanded`.
+- **FR-10 [visual]** (Change 3) Touch-target floors (O2 resolved 2026-07-08):
+  **48px for buttons and inputs, 44px for icon-only buttons** — the v6
+  IconButton override deliberately follows the Apple HIG 44pt minimum
+  because 48px icon buttons crowd dense rows (message list, card headers).
+  Applies to: Message options, Glossary filter chips, UserSearch input,
+  password toggles, collapse IconButtons (mostly via the FR-1 overrides).
 - **FR-11 [visual]** (Change 4) Responsive headings via the v6 theme (FR-2
   delivers this; no per-page work beyond removing local font-size hacks).
 - **FR-12 [visual]** (Change 5) Percentage-width button rows in
@@ -117,9 +138,13 @@ the audit's sketches.
 ## Test discipline (user-approved 2026-07-08)
 
 Hybrid: strict red-green TDD only for the behavior-bearing FRs (FR-6..FR-9)
-via Vitest + React Testing Library (first component tests in the client —
-includes harness setup). Pure styling FRs are verified visually against the
-v6 mockup and by the root Playwright suite as the regression net; token
+via Vitest + React Testing Library, reusing the component-test harness the
+client has had since 2026-05-03 (an earlier draft wrongly claimed these were
+the client's first component tests — corrected per O10). Pure styling FRs
+are verified visually against the v6 mockup and by the root Playwright
+suite; per O3 that suite gains a **mobile-viewport project** (iPhone-class
+emulation in `playwright.config.js`) so every e2e spec also runs at phone
+size — a desktop-only run cannot see xs-breakpoint regressions. Token
 values are not asserted in unit tests (tautological).
 
 ## Decisions proposed here (flag to maintainer, not yet confirmed)

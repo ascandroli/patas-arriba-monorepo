@@ -1,4 +1,4 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 
 const isDevContainer =
   !!process.env.DEVCONTAINER ||
@@ -46,6 +46,13 @@ export default defineConfig({
     {
       name: "chromium",
       use: { browserType: "chromium" },
+    },
+    {
+      // Mobile-first regression net (issue #34, objection O3): the client is
+      // a phone-first PWA, so every spec also runs at a real phone viewport —
+      // desktop-only runs cannot see xs-breakpoint layout regressions.
+      name: "mobile-chromium",
+      use: { ...devices["iPhone 13"] },
     },
   ],
   webServer,
