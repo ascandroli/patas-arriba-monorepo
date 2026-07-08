@@ -4,6 +4,30 @@ Notable changes to the patas-arriba-monorepo workspace (harness, tooling,
 and orchestration glue). Submodule code changes are recorded in their own
 upstream repositories.
 
+## 2026-07-08
+
+### Issue #34 — mobile-first design system applied to the client
+
+- **Landed the #14 design system in the app** (client submodule branch
+  `feat/34-apply-design-system`): the v6 token theme ported to
+  `client/src/theme.js` (coral primary, Staatliches display, named
+  surface/brand/category/avatar tokens, touch-sized component defaults), the
+  `App.css !important` block deleted, BottomNavigation replacing the
+  hamburger drawer, a Crear Evento FAB for organizers, `inputMode` keyboard
+  hints, icon-button aria-labels, and the responsive layout fixes from the
+  audit's 10 changes.
+- **Spec-first with a hybrid test discipline** (user-approved): spec at
+  `docs/superpowers/specs/design-system-apply-frontend.md`; strict TDD only
+  for the behavior-bearing changes (nav items per role, FAB visibility,
+  keyboard hints, disclosure semantics — 13 new client tests), pure styling
+  verified visually against the v6 mockup instead of tautological
+  token-value assertions.
+- **Open questions resolved by proposal, flagged for the maintainer**: same
+  4-item bar for every role (Ver Usuarios lives under Más), FAB on the event
+  list only, GoBack simplified to arrow + label, logout in the Más sheet,
+  and user-chosen avatar colors kept (the derived `avatarColorFor` ring
+  lands as a token, not a replacement).
+
 ## 2026-07-07
 
 ### Issue #14 — MUI design-system theme from the foundation's real branding
