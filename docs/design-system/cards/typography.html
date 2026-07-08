@@ -2,65 +2,71 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Typography & wordmark</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Staatliches&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/@mui/material@5.17.1/umd/material-ui.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Roboto',sans-serif;background:#FAFAF8}</style>
-</head><body><div id="root"></div>
-<script type="text/babel">
-const {ThemeProvider,createTheme,CssBaseline,Box,Stack,Typography,Button,IconButton,TextField,MenuItem,InputAdornment,Card,CardContent,Chip,Avatar,Divider,Paper,BottomNavigation,BottomNavigationAction,List,ListItemButton,ListItemAvatar,ListItemText}=MaterialUI;
-const {useState}=React;
-
-const SURFACE={subtle:'#F5F5F2',muted:'#F0F0EC',line:'#E8E8E4'};
-const BRAND={coral:'#EA5347',coralDeep:'#E23125',amber:'#EFB666',amberDeep:'#D99946',teal:'#98D2CD',tealDeep:'#3E9B95',pink:'#FFB3B9',pinkDeep:'#E06B8D',black:'#1A1A1A'};
-const CATEGORY={protectora:{main:'#3E9B95',contrastText:'#FFFFFF'},mercadillo:{main:'#E8850C',contrastText:'#212121'},recogida:{main:'#8E7CC3',contrastText:'#FFFFFF'},otro:{main:'#7A8691',contrastText:'#FFFFFF'},plataforma:{main:'#5B8DEF',contrastText:'#FFFFFF'},rol:{main:'#95A5A6',contrastText:'#212121'},evento:{main:'#EA5347',contrastText:'#FFFFFF'},refugio:{main:'#E06B8D',contrastText:'#FFFFFF'}};
-const AVATAR_COLORS=['#EA5347','#D99946','#3E9B95','#E06B8D','#8E7CC3','#E8850C','#5B8DEF','#98D2CD'];
-const avatarColorFor=(seed='')=>AVATAR_COLORS[[...String(seed)].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7)%AVATAR_COLORS.length];
-const DISPLAY_FONT="'Staatliches','Roboto',sans-serif";
-const theme=createTheme({palette:{mode:'light',
-  primary:{main:BRAND.coral,light:'#F4837A',dark:'#C13A2E',contrastText:'#FFFFFF'},
-  secondary:{main:BRAND.amber,light:BRAND.amberDeep,dark:'#C9882F',contrastText:'#212121'},
-  error:{main:'#C62828',contrastText:'#FFFFFF'},warning:{main:'#E8850C',contrastText:'#212121'},
-  success:{main:'#2E7D46',contrastText:'#FFFFFF'},info:{main:'#147A70',contrastText:'#FFFFFF'},
-  background:{default:'#FAFAF8',paper:'#FFFFFF'},text:{primary:'#2E2E2E',secondary:'#6B7078'},
-  divider:SURFACE.line,surface:SURFACE,brand:BRAND,category:CATEGORY,avatar:AVATAR_COLORS},
- typography:{fontFamily:"'Roboto',-apple-system,sans-serif",
-  h1:{fontFamily:DISPLAY_FONT,fontSize:'clamp(1.9rem,6vw,2.35rem)',fontWeight:400,letterSpacing:'0.5px',lineHeight:1.05,color:'#2E2E2E'},
-  h2:{fontFamily:DISPLAY_FONT,fontSize:'clamp(1.5rem,5vw,1.8rem)',fontWeight:400,letterSpacing:'0.4px',lineHeight:1.1,color:'#2E2E2E'},
-  h3:{fontSize:'1.2rem',fontWeight:700,color:'#2E2E2E'},h4:{fontSize:'1.0625rem',fontWeight:700,color:'#2E2E2E'},
-  h5:{fontSize:'1rem',fontWeight:600,color:'#2E2E2E'},h6:{fontSize:'0.9375rem',fontWeight:600,color:'#2E2E2E'},
-  button:{textTransform:'none',fontWeight:600}},
- shape:{borderRadius:12},
- components:{MuiButton:{styleOverrides:{root:{minHeight:48,borderRadius:10,padding:'12px 20px'}}},
-  MuiIconButton:{styleOverrides:{root:{minWidth:44,minHeight:44}}},
-  MuiCard:{styleOverrides:{root:{borderRadius:16,backgroundImage:'none',boxShadow:'0 1px 3px rgba(26,26,26,0.06), 0 1px 2px rgba(26,26,26,0.04)'}}},
-  MuiChip:{styleOverrides:{root:{fontWeight:600,borderRadius:20}}},
-  MuiTextField:{styleOverrides:{root:{'& .MuiOutlinedInput-root':{borderRadius:10}}}}}});
-const MI=({name,sx})=><span className="material-icons-round" style={{fontSize:20,...sx}}>{name}</span>;
-function Section({label,children}){return <Box sx={{mb:2.5}}><Typography variant="caption" sx={{textTransform:'uppercase',letterSpacing:1,color:'text.secondary',fontWeight:700,display:'block',mb:1}}>{label}</Typography>{children}</Box>;}
-
-function Demo(){return <ThemeProvider theme={theme}><CssBaseline/><Box sx={{p:2.5,maxWidth:420,mx:'auto'}}><Box sx={{textAlign:'center',mb:3}}>
-        <Typography sx={{fontFamily:DISPLAY_FONT,letterSpacing:'0.4em',fontSize:'0.9rem',color:'text.primary',ml:'0.4em',mb:0.5}}>FUNDACIÓN</Typography>
-        <Typography sx={{fontFamily:DISPLAY_FONT,fontSize:'3.4rem',lineHeight:0.9,color:'brand.black',letterSpacing:'0.5px'}}>PATAS<br/>ARRIBA</Typography>
-      </Box>
-      <Divider sx={{mb:2}}/>
-      <Section label="Display — Staatliches">
-        <Typography variant="h1">Eventos</Typography>
-        <Typography variant="h2">Información</Typography>
-      </Section>
-      <Section label="Headings & UI — Roboto">
-        <Typography variant="h3">Título de sección (h3)</Typography>
-        <Typography variant="h5">Subsección (h5)</Typography>
-      </Section>
-      <Section label="Body — MUI defaults (16 / 14 / 12)">
-        <Typography variant="body1">body1 · 16px — texto principal legible en móvil.</Typography>
-        <Typography variant="body2" color="text.secondary">body2 · 14px — texto secundario.</Typography>
-        <Typography variant="caption" color="text.secondary" sx={{display:'block'}}>caption · 12px — etiquetas y metadatos.</Typography>
-      </Section></Box></ThemeProvider>;}
-ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
-</script></body></html>
+<style>
+:root{
+  --coral:#EA5347;--coral-dark:#C13A2E;--amber:#EFB666;--amber-deep:#D99946;
+  --teal:#98D2CD;--teal-deep:#3E9B95;--pink:#FFB3B9;--pink-deep:#E06B8D;--black:#1A1A1A;
+  --error:#C62828;--warning:#E8850C;--success:#2E7D46;--info:#147A70;
+  --bg:#FAFAF8;--paper:#FFFFFF;--subtle:#F5F5F2;--muted:#F0F0EC;--line:#E8E8E4;
+  --text:#2E2E2E;--text2:#6B7078;
+  --display:'Staatliches','Arial Narrow',Impact,sans-serif;
+  --body:'Roboto',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.4}
+main{max-width:420px;margin:0 auto;padding:22px 20px 32px}
+.title{font-family:var(--display);font-weight:400;letter-spacing:.5px;font-size:1.9rem;text-transform:uppercase;margin-bottom:18px;color:var(--text)}
+.section{margin-bottom:22px}
+.slabel{text-transform:uppercase;letter-spacing:1px;color:var(--text2);font-weight:700;font-size:.7rem;margin-bottom:9px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--text2)}
+.b2{font-size:.875rem}.cap{font-size:.75rem}
+svg{display:block}
+/* swatch */
+.sw{flex:1 1 30%;min-width:98px;height:66px;border-radius:8px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;border:1px solid rgba(0,0,0,.06)}
+.sw b{font-size:.7rem;line-height:1.15}.sw i{font-size:.62rem;opacity:.85;font-style:normal}
+/* chip */
+.chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 11px;border-radius:20px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.chip.out{background:transparent;border:1px solid var(--line);color:var(--text2)}
+/* button */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.95rem;border:1px solid transparent}
+.btn.full{display:flex;width:100%}
+.btn.primary{background:var(--coral);color:#fff}
+.btn.secondary{background:var(--amber);color:#212121}
+.btn.error{background:var(--error);color:#fff}
+.btn.out{background:transparent;border-color:var(--line);color:var(--text)}
+.btn.out-error{background:transparent;border-color:var(--error);color:var(--error)}
+.btn.disabled{opacity:.5}
+.btn.text{min-height:40px;padding:8px 10px;background:transparent;color:var(--text2)}
+.iconbtn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--coral);color:#fff;border:none}
+/* avatar */
+.avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex:none}
+/* card + panel */
+.card{background:var(--paper);border-radius:16px;box-shadow:0 1px 3px rgba(26,26,26,.06),0 1px 2px rgba(26,26,26,.04);padding:16px;position:relative;overflow:hidden}
+.card .bar{position:absolute;top:0;left:0;width:4px;height:100%}
+.panel{background:var(--subtle);border-radius:16px;padding:16px}
+.line{display:flex;align-items:center;gap:8px}
+/* field */
+.field{width:100%;min-height:52px;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:0 14px;color:var(--text2);font-size:1rem;display:flex;align-items:center;gap:8px}
+.field.pill{border-radius:24px;background:var(--subtle);min-height:44px}
+/* bottom nav */
+.nav{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.nav .item{flex:1;text-align:center;padding:9px 0;font-size:.72rem;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav .item.sel{color:var(--coral)}
+</style></head>
+<body><main><div style="text-align:center;margin-bottom:22px">
+        <div style="font-family:var(--display);letter-spacing:.4em;font-size:.9rem;margin-left:.4em;margin-bottom:6px;text-transform:uppercase">Fundación</div>
+        <div style="font-family:var(--display);font-size:3.4rem;line-height:.9;color:var(--black);letter-spacing:.5px;text-transform:uppercase">PATAS<br/>ARRIBA</div>
+      </div>
+      <div style="height:1px;background:var(--line);margin-bottom:18px"></div>
+      <div class="section"><div class="slabel">Display — Staatliches</div>
+        <div class="title" style="margin:0 0 4px">Eventos</div>
+        <div class="title" style="font-size:1.5rem;margin:0">Información</div></div>
+      <div class="section"><div class="slabel">Headings &amp; UI — Roboto</div>
+        <div style="font-size:1.2rem;font-weight:700">Título de sección (h3)</div>
+        <div style="font-size:1rem;font-weight:600">Subsección (h5)</div></div>
+      <div class="section"><div class="slabel">Body — 16 / 14 / 12</div>
+        <div>body1 · 16px — texto principal legible en móvil.</div>
+        <div class="b2 muted">body2 · 14px — texto secundario.</div>
+        <div class="cap muted">caption · 12px — etiquetas y metadatos.</div></div></main></body></html>

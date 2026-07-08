@@ -1,12 +1,19 @@
 // Generates the Claude Design preview-card bundle for the Patas Arriba design
-// system from the single v6 theme. Each emitted HTML file is a SELF-CONTAINED
-// card (React + MUI + the shared theme inlined) whose first line is the
+// system. Each emitted HTML file is a SELF-CONTAINED, STATIC card (inline CSS,
+// NO JavaScript, NO external CDN or web-font requests) whose first line is the
 // `@dsCard` marker the Design System pane indexes. One card = one component
-// group. Run: `node docs/design-system/build-cards.mjs` — writes ./cards/*.html.
+// group.  Run: `node docs/design-system/build-cards.mjs` → writes ./cards/*.html.
 //
-// Why a generator instead of hand-authored files: the theme is defined ONCE
-// here and stamped into every card, so the cards can never drift from each
-// other or from docs/design-tokens-issue-14.md the way copy-pasted files would.
+// Why STATIC, not React/MUI: claude.ai's design-system preview sandbox renders
+// the card HTML without executing external scripts, so an earlier React+MUI+
+// Babel-via-unpkg version came up blank. Static HTML+CSS renders reliably in any
+// sandbox and is the right format for a design-system reference. The token VALUES
+// here are the single source of truth shared with docs/mockup/v6-mui-light.html
+// and docs/design-tokens-issue-14.md — keep the three in step.
+//
+// Fonts: we still NAME the brand faces ('Staatliches' display, 'Roboto' body) so
+// the pane's "Upload fonts" flow can drop in the real files later; until then the
+// sandbox substitutes, and the display stack falls back to a condensed caps look.
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -15,202 +22,199 @@ import { dirname, join } from 'node:path';
 const outDir = join(dirname(fileURLToPath(import.meta.url)), 'cards');
 mkdirSync(outDir, { recursive: true });
 
-// ── The shared theme, verbatim from docs/mockup/v6-mui-light.html ────────────
-const THEME = `
-const SURFACE={subtle:'#F5F5F2',muted:'#F0F0EC',line:'#E8E8E4'};
-const BRAND={coral:'#EA5347',coralDeep:'#E23125',amber:'#EFB666',amberDeep:'#D99946',teal:'#98D2CD',tealDeep:'#3E9B95',pink:'#FFB3B9',pinkDeep:'#E06B8D',black:'#1A1A1A'};
-const CATEGORY={protectora:{main:'#3E9B95',contrastText:'#FFFFFF'},mercadillo:{main:'#E8850C',contrastText:'#212121'},recogida:{main:'#8E7CC3',contrastText:'#FFFFFF'},otro:{main:'#7A8691',contrastText:'#FFFFFF'},plataforma:{main:'#5B8DEF',contrastText:'#FFFFFF'},rol:{main:'#95A5A6',contrastText:'#212121'},evento:{main:'#EA5347',contrastText:'#FFFFFF'},refugio:{main:'#E06B8D',contrastText:'#FFFFFF'}};
-const AVATAR_COLORS=['#EA5347','#D99946','#3E9B95','#E06B8D','#8E7CC3','#E8850C','#5B8DEF','#98D2CD'];
-const avatarColorFor=(seed='')=>AVATAR_COLORS[[...String(seed)].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7)%AVATAR_COLORS.length];
-const DISPLAY_FONT="'Staatliches','Roboto',sans-serif";
-const theme=createTheme({palette:{mode:'light',
-  primary:{main:BRAND.coral,light:'#F4837A',dark:'#C13A2E',contrastText:'#FFFFFF'},
-  secondary:{main:BRAND.amber,light:BRAND.amberDeep,dark:'#C9882F',contrastText:'#212121'},
-  error:{main:'#C62828',contrastText:'#FFFFFF'},warning:{main:'#E8850C',contrastText:'#212121'},
-  success:{main:'#2E7D46',contrastText:'#FFFFFF'},info:{main:'#147A70',contrastText:'#FFFFFF'},
-  background:{default:'#FAFAF8',paper:'#FFFFFF'},text:{primary:'#2E2E2E',secondary:'#6B7078'},
-  divider:SURFACE.line,surface:SURFACE,brand:BRAND,category:CATEGORY,avatar:AVATAR_COLORS},
- typography:{fontFamily:"'Roboto',-apple-system,sans-serif",
-  h1:{fontFamily:DISPLAY_FONT,fontSize:'clamp(1.9rem,6vw,2.35rem)',fontWeight:400,letterSpacing:'0.5px',lineHeight:1.05,color:'#2E2E2E'},
-  h2:{fontFamily:DISPLAY_FONT,fontSize:'clamp(1.5rem,5vw,1.8rem)',fontWeight:400,letterSpacing:'0.4px',lineHeight:1.1,color:'#2E2E2E'},
-  h3:{fontSize:'1.2rem',fontWeight:700,color:'#2E2E2E'},h4:{fontSize:'1.0625rem',fontWeight:700,color:'#2E2E2E'},
-  h5:{fontSize:'1rem',fontWeight:600,color:'#2E2E2E'},h6:{fontSize:'0.9375rem',fontWeight:600,color:'#2E2E2E'},
-  button:{textTransform:'none',fontWeight:600}},
- shape:{borderRadius:12},
- components:{MuiButton:{styleOverrides:{root:{minHeight:48,borderRadius:10,padding:'12px 20px'}}},
-  MuiIconButton:{styleOverrides:{root:{minWidth:44,minHeight:44}}},
-  MuiCard:{styleOverrides:{root:{borderRadius:16,backgroundImage:'none',boxShadow:'0 1px 3px rgba(26,26,26,0.06), 0 1px 2px rgba(26,26,26,0.04)'}}},
-  MuiChip:{styleOverrides:{root:{fontWeight:600,borderRadius:20}}},
-  MuiTextField:{styleOverrides:{root:{'& .MuiOutlinedInput-root':{borderRadius:10}}}}}});
-const MI=({name,sx})=><span className="material-icons-round" style={{fontSize:20,...sx}}>{name}</span>;`;
+// ── Shared token + component CSS (mirrors the v6 theme) ──────────────────────
+const CSS = `
+:root{
+  --coral:#EA5347;--coral-dark:#C13A2E;--amber:#EFB666;--amber-deep:#D99946;
+  --teal:#98D2CD;--teal-deep:#3E9B95;--pink:#FFB3B9;--pink-deep:#E06B8D;--black:#1A1A1A;
+  --error:#C62828;--warning:#E8850C;--success:#2E7D46;--info:#147A70;
+  --bg:#FAFAF8;--paper:#FFFFFF;--subtle:#F5F5F2;--muted:#F0F0EC;--line:#E8E8E4;
+  --text:#2E2E2E;--text2:#6B7078;
+  --display:'Staatliches','Arial Narrow',Impact,sans-serif;
+  --body:'Roboto',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.4}
+main{max-width:420px;margin:0 auto;padding:22px 20px 32px}
+.title{font-family:var(--display);font-weight:400;letter-spacing:.5px;font-size:1.9rem;text-transform:uppercase;margin-bottom:18px;color:var(--text)}
+.section{margin-bottom:22px}
+.slabel{text-transform:uppercase;letter-spacing:1px;color:var(--text2);font-weight:700;font-size:.7rem;margin-bottom:9px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--text2)}
+.b2{font-size:.875rem}.cap{font-size:.75rem}
+svg{display:block}
+/* swatch */
+.sw{flex:1 1 30%;min-width:98px;height:66px;border-radius:8px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;border:1px solid rgba(0,0,0,.06)}
+.sw b{font-size:.7rem;line-height:1.15}.sw i{font-size:.62rem;opacity:.85;font-style:normal}
+/* chip */
+.chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 11px;border-radius:20px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.chip.out{background:transparent;border:1px solid var(--line);color:var(--text2)}
+/* button */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 20px;border-radius:10px;font-weight:600;font-size:.95rem;border:1px solid transparent}
+.btn.full{display:flex;width:100%}
+.btn.primary{background:var(--coral);color:#fff}
+.btn.secondary{background:var(--amber);color:#212121}
+.btn.error{background:var(--error);color:#fff}
+.btn.out{background:transparent;border-color:var(--line);color:var(--text)}
+.btn.out-error{background:transparent;border-color:var(--error);color:var(--error)}
+.btn.disabled{opacity:.5}
+.btn.text{min-height:40px;padding:8px 10px;background:transparent;color:var(--text2)}
+.iconbtn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--coral);color:#fff;border:none}
+/* avatar */
+.avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex:none}
+/* card + panel */
+.card{background:var(--paper);border-radius:16px;box-shadow:0 1px 3px rgba(26,26,26,.06),0 1px 2px rgba(26,26,26,.04);padding:16px;position:relative;overflow:hidden}
+.card .bar{position:absolute;top:0;left:0;width:4px;height:100%}
+.panel{background:var(--subtle);border-radius:16px;padding:16px}
+.line{display:flex;align-items:center;gap:8px}
+/* field */
+.field{width:100%;min-height:52px;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:0 14px;color:var(--text2);font-size:1rem;display:flex;align-items:center;gap:8px}
+.field.pill{border-radius:24px;background:var(--subtle);min-height:44px}
+/* bottom nav */
+.nav{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.nav .item{flex:1;text-align:center;padding:9px 0;font-size:.72rem;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav .item.sel{color:var(--coral)}
+`;
+
+// Tiny inline icons (self-contained; currentColor-driven)
+const ico = {
+  pin: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
+  cal: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm12 8v9H5v-9h14z"/></svg>',
+  group: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.7 0-8 1.3-8 4v3h8v-3c0-1 .4-1.9 1-2.6-.3 0-.6-.1-1-.4zm8 0c-.3 0-.7 0-1 .1 1 .7 1.7 1.7 1.7 2.9v3H24v-3c0-2.7-5.3-4-8-4z"/></svg>',
+  info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+  person: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>',
+  search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>',
+  paw: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="10.5" r="2"/><circle cx="9.5" cy="6.5" r="2"/><circle cx="14.5" cy="6.5" r="2"/><circle cx="18.5" cy="10.5" r="2"/><path d="M12 12c-2.5 0-6 3-6 5.5A2.5 2.5 0 0 0 8.5 20c1 0 2-.5 3.5-.5s2.5.5 3.5.5A2.5 2.5 0 0 0 18 17.5C18 15 14.5 12 12 12z"/></svg>',
+};
 
 // ── Card harness ─────────────────────────────────────────────────────────────
-const page = ({ group, title, body, helpers = '' }) => `<!-- @dsCard group="${group}" -->
+const page = ({ group, title, body }) => `<!-- @dsCard group="${group}" -->
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>${title}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Staatliches&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/@mui/material@5.17.1/umd/material-ui.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Roboto',sans-serif;background:#FAFAF8}</style>
-</head><body><div id="root"></div>
-<script type="text/babel">
-const {ThemeProvider,createTheme,CssBaseline,Box,Stack,Typography,Button,IconButton,TextField,MenuItem,InputAdornment,Card,CardContent,Chip,Avatar,Divider,Paper,BottomNavigation,BottomNavigationAction,List,ListItemButton,ListItemAvatar,ListItemText}=MaterialUI;
-const {useState}=React;
-${THEME}
-function Section({label,children}){return <Box sx={{mb:2.5}}><Typography variant="caption" sx={{textTransform:'uppercase',letterSpacing:1,color:'text.secondary',fontWeight:700,display:'block',mb:1}}>{label}</Typography>{children}</Box>;}
-${helpers}
-function Demo(){return <ThemeProvider theme={theme}><CssBaseline/><Box sx={{p:2.5,maxWidth:420,mx:'auto'}}>${body}</Box></ThemeProvider>;}
-ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
-</script></body></html>`;
+<style>${CSS}</style></head>
+<body><main>${body}</main></body></html>`;
 
-// ── Swatch helper reused by the colour card ──────────────────────────────────
-const swatchRow = `function Sw({name,hex,fg='#fff'}){return <Box sx={{flex:'1 1 30%',minWidth:96,bgcolor:hex,color:fg,borderRadius:2,p:1,height:64,display:'flex',flexDirection:'column',justifyContent:'flex-end',border:'1px solid rgba(0,0,0,0.06)'}}><Typography sx={{fontSize:'0.7rem',fontWeight:700,lineHeight:1.1}}>{name}</Typography><Typography sx={{fontSize:'0.62rem',opacity:0.85}}>{hex}</Typography></Box>;}
-function Row({children}){return <Box sx={{display:'flex',flexWrap:'wrap',gap:1,mb:1}}>{children}</Box>;}`;
+const sw = (name, hex, fg = '#fff') =>
+  `<div class="sw" style="background:${hex};color:${fg}"><b>${name}</b><i>${hex}</i></div>`;
+
+const CATS = [
+  ['protectora', '#3E9B95', '#fff'], ['mercadillo', '#E8850C', '#212121'],
+  ['recogida', '#8E7CC3', '#fff'], ['otro', '#7A8691', '#fff'],
+  ['plataforma', '#5B8DEF', '#fff'], ['rol', '#95A5A6', '#212121'],
+  ['evento', '#EA5347', '#fff'], ['refugio', '#E06B8D', '#fff'],
+];
+const AVA = [['#EA5347', 'MV'], ['#D99946', 'CR'], ['#3E9B95', 'LM'], ['#E06B8D', 'PG'], ['#8E7CC3', 'AS'], ['#5B8DEF', 'PL']];
 
 const cards = [
   {
     file: 'colors.html', group: 'Foundations', title: 'Color palette',
-    helpers: swatchRow,
-    body: `
-      <Typography variant="h2" sx={{mb:2}}>Color</Typography>
-      <Section label="Brand — primary & secondary">
-        <Row><Sw name="primary" hex="#EA5347"/><Sw name="primary.dark" hex="#C13A2E"/><Sw name="secondary" hex="#EFB666" fg="#212121"/></Row>
-      </Section>
-      <Section label="Brand accents">
-        <Row><Sw name="teal" hex="#98D2CD" fg="#212121"/><Sw name="tealDeep" hex="#3E9B95"/><Sw name="pink" hex="#FFB3B9" fg="#212121"/><Sw name="pinkDeep" hex="#E06B8D"/><Sw name="black" hex="#1A1A1A"/></Row>
-      </Section>
-      <Section label="Semantic (functional, kept distinct from brand)">
-        <Row><Sw name="error" hex="#C62828"/><Sw name="warning" hex="#E8850C" fg="#212121"/><Sw name="success" hex="#2E7D46"/><Sw name="info" hex="#147A70"/></Row>
-      </Section>
-      <Section label="Surfaces & text">
-        <Row><Sw name="bg.default" hex="#FAFAF8" fg="#212121"/><Sw name="paper" hex="#FFFFFF" fg="#212121"/><Sw name="surface.subtle" hex="#F5F5F2" fg="#212121"/><Sw name="surface.muted" hex="#F0F0EC" fg="#212121"/><Sw name="text.primary" hex="#2E2E2E"/><Sw name="text.secondary" hex="#6B7078"/></Row>
-      </Section>`
+    body: `<div class="title">Color</div>
+      <div class="section"><div class="slabel">Brand — primary &amp; secondary</div>
+        <div class="row">${sw('primary', '#EA5347')}${sw('primary.dark', '#C13A2E')}${sw('secondary', '#EFB666', '#212121')}</div></div>
+      <div class="section"><div class="slabel">Brand accents</div>
+        <div class="row">${sw('teal', '#98D2CD', '#212121')}${sw('tealDeep', '#3E9B95')}${sw('pink', '#FFB3B9', '#212121')}</div>
+        <div class="row">${sw('pinkDeep', '#E06B8D')}${sw('black', '#1A1A1A')}</div></div>
+      <div class="section"><div class="slabel">Semantic (functional, kept distinct from brand)</div>
+        <div class="row">${sw('error', '#C62828')}${sw('warning', '#E8850C', '#212121')}${sw('success', '#2E7D46')}</div>
+        <div class="row">${sw('info', '#147A70')}</div></div>
+      <div class="section"><div class="slabel">Surfaces &amp; text</div>
+        <div class="row">${sw('bg.default', '#FAFAF8', '#212121')}${sw('paper', '#FFFFFF', '#212121')}${sw('surface.subtle', '#F5F5F2', '#212121')}</div>
+        <div class="row">${sw('surface.muted', '#F0F0EC', '#212121')}${sw('text.primary', '#2E2E2E')}${sw('text.secondary', '#6B7078')}</div></div>`
   },
   {
     file: 'typography.html', group: 'Foundations', title: 'Typography & wordmark',
-    body: `<Box sx={{textAlign:'center',mb:3}}>
-        <Typography sx={{fontFamily:DISPLAY_FONT,letterSpacing:'0.4em',fontSize:'0.9rem',color:'text.primary',ml:'0.4em',mb:0.5}}>FUNDACIÓN</Typography>
-        <Typography sx={{fontFamily:DISPLAY_FONT,fontSize:'3.4rem',lineHeight:0.9,color:'brand.black',letterSpacing:'0.5px'}}>PATAS<br/>ARRIBA</Typography>
-      </Box>
-      <Divider sx={{mb:2}}/>
-      <Section label="Display — Staatliches">
-        <Typography variant="h1">Eventos</Typography>
-        <Typography variant="h2">Información</Typography>
-      </Section>
-      <Section label="Headings & UI — Roboto">
-        <Typography variant="h3">Título de sección (h3)</Typography>
-        <Typography variant="h5">Subsección (h5)</Typography>
-      </Section>
-      <Section label="Body — MUI defaults (16 / 14 / 12)">
-        <Typography variant="body1">body1 · 16px — texto principal legible en móvil.</Typography>
-        <Typography variant="body2" color="text.secondary">body2 · 14px — texto secundario.</Typography>
-        <Typography variant="caption" color="text.secondary" sx={{display:'block'}}>caption · 12px — etiquetas y metadatos.</Typography>
-      </Section>`
+    body: `<div style="text-align:center;margin-bottom:22px">
+        <div style="font-family:var(--display);letter-spacing:.4em;font-size:.9rem;margin-left:.4em;margin-bottom:6px;text-transform:uppercase">Fundación</div>
+        <div style="font-family:var(--display);font-size:3.4rem;line-height:.9;color:var(--black);letter-spacing:.5px;text-transform:uppercase">PATAS<br/>ARRIBA</div>
+      </div>
+      <div style="height:1px;background:var(--line);margin-bottom:18px"></div>
+      <div class="section"><div class="slabel">Display — Staatliches</div>
+        <div class="title" style="margin:0 0 4px">Eventos</div>
+        <div class="title" style="font-size:1.5rem;margin:0">Información</div></div>
+      <div class="section"><div class="slabel">Headings &amp; UI — Roboto</div>
+        <div style="font-size:1.2rem;font-weight:700">Título de sección (h3)</div>
+        <div style="font-size:1rem;font-weight:600">Subsección (h5)</div></div>
+      <div class="section"><div class="slabel">Body — 16 / 14 / 12</div>
+        <div>body1 · 16px — texto principal legible en móvil.</div>
+        <div class="b2 muted">body2 · 14px — texto secundario.</div>
+        <div class="cap muted">caption · 12px — etiquetas y metadatos.</div></div>`
   },
   {
     file: 'buttons.html', group: 'Components', title: 'Buttons',
-    body: `<Typography variant="h2" sx={{mb:2}}>Buttons</Typography>
-      <Section label="Primary (coral) · 48px touch target">
-        <Stack spacing={1.5}>
-          <Button variant="contained" fullWidth size="large">Iniciar sesión</Button>
-          <Stack direction="row" spacing={1}><Button variant="contained">Unirme</Button><Button variant="contained" disabled>Deshabilitado</Button></Stack>
-        </Stack>
-      </Section>
-      <Section label="Secondary & outlined">
-        <Stack direction="row" spacing={1}><Button variant="contained" color="secondary">Socio/a</Button><Button variant="outlined" sx={{borderColor:'divider',color:'text.primary'}}>Buscar</Button></Stack>
-      </Section>
-      <Section label="Destructive (error, distinct from coral)">
-        <Stack direction="row" spacing={1}><Button variant="contained" color="error">Eliminar</Button><Button variant="outlined" sx={{color:'error.main',borderColor:'error.main'}}>Abandonar</Button></Stack>
-      </Section>
-      <Section label="Text & icon">
-        <Stack direction="row" spacing={1} alignItems="center"><Button startIcon={<MI name="arrow_back" sx={{fontSize:18}}/>} sx={{color:'text.secondary'}}>Volver</Button><IconButton sx={{bgcolor:'primary.main',color:'primary.contrastText'}}><MI name="send" sx={{fontSize:18}}/></IconButton></Stack>
-      </Section>`
+    body: `<div class="title">Buttons</div>
+      <div class="section"><div class="slabel">Primary (coral) · 48px touch target</div>
+        <div class="stack">
+          <div class="btn primary full">Iniciar sesión</div>
+          <div class="row"><div class="btn primary">Unirme</div><div class="btn primary disabled">Deshabilitado</div></div>
+        </div></div>
+      <div class="section"><div class="slabel">Secondary &amp; outlined</div>
+        <div class="row"><div class="btn secondary">Socio/a</div><div class="btn out">Buscar</div></div></div>
+      <div class="section"><div class="slabel">Destructive (error, distinct from coral)</div>
+        <div class="row"><div class="btn error">Eliminar</div><div class="btn out-error">Abandonar</div></div></div>
+      <div class="section"><div class="slabel">Text &amp; icon</div>
+        <div class="row" style="align-items:center"><div class="btn text">← Volver</div><div class="iconbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></div></div></div>`
   },
   {
     file: 'chips-categories.html', group: 'Components', title: 'Chips, badges & categories',
-    body: `<Typography variant="h2" sx={{mb:2}}>Chips & categories</Typography>
-      <Section label="Time badges">
-        <Stack direction="row" spacing={1}><Chip label="Hoy" size="small" color="secondary"/><Chip label="Próximo" size="small" color="primary"/><Chip label="Pasado" size="small" variant="outlined"/></Stack>
-      </Section>
-      <Section label="Role chips">
-        <Stack direction="row" spacing={1}><Chip label="Admin" size="small" color="primary" variant="outlined"/><Chip label="Org" size="small" color="secondary" variant="outlined"/><Chip label="Pendiente" size="small" color="warning"/></Stack>
-      </Section>
-      <Section label="Categories — one unified vocabulary (events + glossary)">
-        <Box sx={{display:'flex',flexWrap:'wrap',gap:1}}>
-          {Object.entries(CATEGORY).map(([k,c])=><Chip key={k} label={k} size="small" sx={{bgcolor:c.main,color:c.contrastText,textTransform:'capitalize'}}/>) }
-        </Box>
-      </Section>
-      <Section label="Status">
-        <Stack direction="row" spacing={1}><Chip label="Cerrado" size="small" color="warning"/><Chip icon={<MI name="group" sx={{fontSize:14}}/>} label="5" size="small" variant="outlined" sx={{borderColor:'divider'}}/></Stack>
-      </Section>`
+    body: `<div class="title">Chips &amp; categories</div>
+      <div class="section"><div class="slabel">Time badges</div>
+        <div class="row"><span class="chip" style="background:var(--amber);color:#212121">Hoy</span><span class="chip" style="background:var(--coral);color:#fff">Próximo</span><span class="chip out">Pasado</span></div></div>
+      <div class="section"><div class="slabel">Role chips</div>
+        <div class="row"><span class="chip out" style="border-color:var(--coral);color:var(--coral)">Admin</span><span class="chip out" style="border-color:var(--amber-deep);color:var(--amber-deep)">Org</span><span class="chip" style="background:var(--warning);color:#212121">Pendiente</span></div></div>
+      <div class="section"><div class="slabel">Categories — one unified vocabulary (events + glossary)</div>
+        <div class="row">${CATS.map(([k, c, fg]) => `<span class="chip" style="background:${c};color:${fg};text-transform:capitalize">${k}</span>`).join('')}</div></div>
+      <div class="section"><div class="slabel">Status</div>
+        <div class="row"><span class="chip" style="background:var(--warning);color:#212121">Cerrado</span><span class="chip out">${ico.group} 5</span></div></div>`
   },
   {
     file: 'avatars.html', group: 'Components', title: 'Avatars (derived colors)',
-    body: `<Typography variant="h2" sx={{mb:2}}>Avatars</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{mb:2}}>Colors are derived from the brand ring via a stable hash of the username — never stored per user.</Typography>
-      <Section label="Sizes">
-        <Stack direction="row" spacing={1.5} alignItems="center">
-          {[24,36,48,64].map(s=>{const c=avatarColorFor('maria_v');return <Avatar key={s} sx={{bgcolor:c,width:s,height:s,fontSize:s*0.4,fontWeight:700}}>MV</Avatar>;})}
-        </Stack>
-      </Section>
-      <Section label="Derived across users">
-        <Stack direction="row" spacing={1} sx={{flexWrap:'wrap',gap:1}}>
-          {[['maria_v','MV'],['carlos_r','CR'],['lucia_m','LM'],['pablo_g','PG'],['ana_s','AS'],['nuevo_user','PL']].map(([u,i])=><Avatar key={u} sx={{bgcolor:avatarColorFor(u),width:44,height:44,fontSize:16,fontWeight:700}}>{i}</Avatar>)}
-        </Stack>
-      </Section>`
+    body: `<div class="title">Avatars</div>
+      <div class="b2 muted" style="margin-bottom:16px">Colors are derived from the brand ring via a stable hash of the username — never stored per user.</div>
+      <div class="section"><div class="slabel">Sizes</div>
+        <div class="row" style="align-items:center">
+          ${[24, 36, 48, 64].map(s => `<div class="avatar" style="background:#EA5347;width:${s}px;height:${s}px;font-size:${Math.round(s * 0.4)}px">MV</div>`).join('')}
+        </div></div>
+      <div class="section"><div class="slabel">Derived across users</div>
+        <div class="row">${AVA.map(([c, i]) => `<div class="avatar" style="background:${c};width:44px;height:44px;font-size:16px">${i}</div>`).join('')}</div></div>`
   },
   {
     file: 'cards.html', group: 'Components', title: 'Cards',
-    body: `<Typography variant="h2" sx={{mb:2}}>Cards</Typography>
-      <Section label="Event card (category accent bar)">
-        <Card sx={{position:'relative',overflow:'visible',mb:1}}>
-          <Box sx={{position:'absolute',top:0,left:0,width:4,height:'100%',bgcolor:CATEGORY.protectora.main,borderRadius:'4px 0 0 4px'}}/>
-          <CardContent sx={{pl:2.5}}>
-            <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',mb:1}}>
-              <Chip label="Próximo" size="small" color="primary"/>
-              <Box sx={{display:'flex',alignItems:'center',gap:0.5}}><MI name="pets" sx={{fontSize:16,color:CATEGORY.protectora.main}}/><Typography variant="caption" color="text.secondary">protectora</Typography></Box>
-            </Box>
-            <Typography variant="h3" sx={{mb:1}}>Visita a la Protectora</Typography>
-            <Box sx={{display:'flex',alignItems:'center',gap:0.75}}><MI name="place" sx={{fontSize:16,color:'text.secondary'}}/><Typography variant="body2" color="text.secondary">Protectora Municipal, C/ Esperanza 12</Typography></Box>
-          </CardContent>
-        </Card>
-      </Section>
-      <Section label="Info panel (surface.subtle)">
-        <Card variant="outlined" sx={{bgcolor:'surface.subtle',border:'none'}}><CardContent>
-          <Stack spacing={0.75}>
-            <Box sx={{display:'flex',alignItems:'center',gap:1}}><MI name="event" sx={{fontSize:18,color:'text.secondary'}}/><Typography variant="body2">dom, 5 abr · 10:00</Typography></Box>
-            <Box sx={{display:'flex',alignItems:'center',gap:1}}><MI name="group" sx={{fontSize:18,color:'text.secondary'}}/><Typography variant="body2">5 participantes</Typography></Box>
-          </Stack>
-        </CardContent></Card>
-      </Section>`
+    body: `<div class="title">Cards</div>
+      <div class="section"><div class="slabel">Event card (category accent bar)</div>
+        <div class="card" style="padding-left:20px">
+          <div class="bar" style="background:#3E9B95"></div>
+          <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="chip" style="background:var(--coral);color:#fff">Próximo</span>
+            <span class="line cap muted" style="color:#3E9B95">${ico.paw}<span style="color:var(--text2)">protectora</span></span>
+          </div>
+          <div style="font-size:1.2rem;font-weight:700;margin-bottom:8px">Visita a la Protectora</div>
+          <div class="line b2 muted">${ico.pin}<span>Protectora Municipal, C/ Esperanza 12</span></div>
+        </div></div>
+      <div class="section"><div class="slabel">Info panel (surface.subtle)</div>
+        <div class="panel">
+          <div class="line b2" style="margin-bottom:6px">${ico.cal}<span>dom, 5 abr · 10:00</span></div>
+          <div class="line b2">${ico.group}<span>5 participantes</span></div>
+        </div></div>`
   },
   {
     file: 'inputs-nav.html', group: 'Components', title: 'Inputs & navigation',
-    body: `<Typography variant="h2" sx={{mb:2}}>Inputs & navigation</Typography>
-      <Section label="Text fields (16px — no iOS zoom)">
-        <Stack spacing={2}>
-          <TextField label="Usuario" fullWidth InputProps={{startAdornment:<InputAdornment position="start"><MI name="person" sx={{fontSize:20,color:'text.secondary'}}/></InputAdornment>}}/>
-          <TextField label="Contraseña" type="password" fullWidth/>
-          <TextField placeholder="Buscar..." fullWidth size="small" sx={{'& .MuiOutlinedInput-root':{borderRadius:'24px',bgcolor:'surface.subtle'}}} InputProps={{startAdornment:<InputAdornment position="start"><MI name="search" sx={{fontSize:20,color:'text.secondary'}}/></InputAdornment>}}/>
-        </Stack>
-      </Section>
-      <Section label="Bottom navigation">
-        <Paper elevation={0} sx={{borderTop:'1px solid',borderColor:'divider'}}>
-          <BottomNavigation value={0} showLabels sx={{bgcolor:'background.paper',height:64,'& .Mui-selected':{color:'#EA5347'}}}>
-            <BottomNavigationAction label="Eventos" icon={<MI name="event"/>}/>
-            <BottomNavigationAction label="Información" icon={<MI name="info"/>}/>
-            <BottomNavigationAction label="Perfil" icon={<MI name="person"/>}/>
-          </BottomNavigation>
-        </Paper>
-      </Section>`
+    body: `<div class="title">Inputs &amp; navigation</div>
+      <div class="section"><div class="slabel">Text fields (16px — no iOS zoom)</div>
+        <div class="stack">
+          <div class="field">${ico.person}<span>Usuario</span></div>
+          <div class="field"><span>Contraseña</span></div>
+          <div class="field pill">${ico.search}<span>Buscar...</span></div>
+        </div></div>
+      <div class="section"><div class="slabel">Bottom navigation</div>
+        <div class="nav">
+          <div class="item sel">${ico.cal}<span>Eventos</span></div>
+          <div class="item">${ico.info}<span>Información</span></div>
+          <div class="item">${ico.person}<span>Perfil</span></div>
+        </div></div>`
   },
 ];
 
 for (const c of cards) writeFileSync(join(outDir, c.file), page(c));
-console.log(`Wrote ${cards.length} cards to ${outDir}`);
+console.log(`Wrote ${cards.length} static cards to ${outDir}`);
