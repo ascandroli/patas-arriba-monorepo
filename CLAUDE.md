@@ -67,7 +67,7 @@ This monorepo is structured to provide Claude Code with full context across both
 - **`client/CLAUDE.md`**: client-specific patterns, components, conventions
 - **`server/CLAUDE.md`**: server-specific patterns, API routes, models
 
-See [`TOOLS.md`](docs/TOOLS.md) for the full list of AI development tools used in this project (RTK, CodeGraph, GitNexus, Tessl, ccusage).
+See [`TOOLS.md`](docs/TOOLS.md) for the full list of AI development tools used in this project (RTK, CodeGraph, GitNexus, Entire, Tessl, ccusage).
 
 ## Literate Programming
 

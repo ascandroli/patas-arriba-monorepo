@@ -47,7 +47,10 @@ Indexes the codebase into a knowledge graph exposing dependencies, call chains, 
 
 Package manager and registry for AI agent skills/context. Like npm but for agent knowledge — lets you find, install, and version structured context packages.
 
-- **Website:** https://tessl.io/
+- **Install:** `brew install tesslio/tap/tessl` (CLI `tessl`, v0.90.x)
+- **Config:** `tessl.json` (`mode: vendored`) at the repo root; the resolved set is pinned in `skills-lock.json`
+- **Claude Code MCP:** wired in `.mcp.json` as `tessl mcp start` — search/install skills from Claude Code via the `mcp__tessl__*` tools
+- **CLI:** `tessl search`, `tessl install`, `tessl status`, `tessl outdated`
 
 ## Usage Tracking
 
@@ -78,15 +81,18 @@ Overcut requires the connected GitHub account to **own** the repository — bein
 - **Issues:** GitHub disables issues on forks by default — they were enabled manually in the fork's settings so Overcut playbooks can target them
 - Workflows are triggered against issues on the fork; any useful output is linked back to the corresponding issue in the main repo
 
-## Conversational Programming
+## Session History & Checkpoints
 
-### [VoiceMode](https://github.com/mbailey/voicemode)
+### [Entire](https://entire.io)
 
-Two-way voice interface for Claude Code using local Whisper (STT) and Kokoro (TTS) services. Enables hands-free conversational programming through speech.
+Records every Claude Code session as a checkpoint you can later search, explain, and hand off. Hooks capture sessions automatically; checkpoints for this repo are routed to a **private** GitHub repo (`ascandroli/patas-arriba-monorepo-entire-checkpoints-private`) so working-session data stays out of the public submodules.
 
-- **Install:** `pipx install voicemode`
-- **Services:** Whisper (speech-to-text), Kokoro (text-to-speech)
-- **Provides:** `converse` (speak + listen), `service` (manage Whisper/Kokoro/VoiceMode services)
+- **Install:** `brew install entireio/tap/entire` (see [docs](https://docs.entire.io/cli/installation))
+- **Enable in repo:** `entire enable`, then `entire agent add claude-code` (installs the Stop/SessionEnd hooks)
+- **Config:** `.entire/settings.json` — checkpoint remote + telemetry off (committed)
+- **Query from Claude Code:** the `/search`, `/session-handoff`, `/what-happened`, `/explain`, `/session-crosslink`, and `/session-to-skill` skills, plus the `entire-search` agent
+- **CLI (read-only):** `entire search`, `entire activity`, `entire checkpoint list|explain|rewind`
+- **Gotcha:** `entire checkpoint list` reads the local `entire/checkpoints/v1` branch; the push is hook-driven with no manual trigger — verify remote routing *after* a session ends, not before
 
 ## Claude Code Plugins
 
