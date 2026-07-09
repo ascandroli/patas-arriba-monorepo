@@ -138,7 +138,11 @@ the audit's sketches.
   chips use functional or neutral colors (per the AGENTS.md
   brand-for-identity/ergonomics-for-function rule, coral is reserved for
   primary actions), and the Próximos/Pasados timeframe filter renders as
-  a single exclusive toggle, not two separate buttons.
+  a single exclusive toggle, not two separate buttons. Tappable event
+  cards carry a right-edge chevron as the disclosure affordance, and
+  list↔details navigation animates via the View Transitions API (the
+  card morphs into the details card; no-op on unsupporting browsers,
+  disabled under prefers-reduced-motion).
 
 ## Acceptance scenarios (the TDD'd FRs)
 
