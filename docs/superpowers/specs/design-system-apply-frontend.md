@@ -84,8 +84,9 @@ the audit's sketches.
     Inicio tab: Home and Eventos were near-duplicates, so `/` redirects
     logged-in users to `/event` (Home stays as the anonymous landing) and
     Glosario is promoted from the Más sheet into the bar.
-  - "Más" holds Cerrar Sesión, and — for organizer/admin — Crear Evento
-    and Ver Usuarios.
+  - "Más" holds Cerrar Sesión, and — for organizer/admin — Ver Usuarios.
+    Crear Evento lives only on the events-list FAB (FR-7); the profile
+    page also carries a Cerrar Sesión button at its foot.
   - The bar marks the active destination and navigates on tap; content gets
     bottom padding so nothing hides behind the fixed bar.
   - The bar itself pads with `env(safe-area-inset-bottom)` and the viewport
