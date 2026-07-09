@@ -107,8 +107,9 @@ the audit's sketches.
   - **Back navigation lives in the top bar (2026-07-09).** Screens that
     are not bar destinations (event details/edit/manage/create,
     car-group pages, other users' profiles, password flows, error pages)
-    get a back arrow on the AppBar's left; bar destinations (Eventos,
-    Glosario, Perfil, Usuarios, anonymous Home/Acceso/Registro) never
+    get a back arrow on the AppBar's left — including signup and the
+    password flows, which anonymous users reach from the landing; bar
+    destinations (the landing, Eventos, Glosario, Perfil, Usuarios) never
     show one. The in-page `GoBack` component is deleted, and page titles
     that merely duplicate the AppBar title are removed.
 - **FR-7 [TDD]** (Change 2) A "Crear Evento" FAB renders on the Event List
