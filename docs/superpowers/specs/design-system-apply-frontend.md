@@ -77,12 +77,15 @@ the audit's sketches.
 
 ### Step 2 — Audit changes
 
-- **FR-6 [TDD]** (Change 1) `BottomNavigation` replaces the hamburger drawer
-  as primary navigation:
+- **FR-6 [TDD]** (Change 1, revised 2026-07-09 in-session) `BottomNavigation`
+  replaces the hamburger drawer as primary navigation:
   - Anonymous: Inicio, Acceso, Registro
-  - Logged-in (all roles): Inicio, Eventos, Perfil, Más
-  - "Más" opens an overflow (drawer/menu) holding Glosario, Cerrar Sesión,
-    and — for organizer/admin — Ver Usuarios and Crear Evento.
+  - Logged-in (all roles): **Eventos, Glosario, Perfil, Más** — there is no
+    Inicio tab: Home and Eventos were near-duplicates, so `/` redirects
+    logged-in users to `/event` (Home stays as the anonymous landing) and
+    Glosario is promoted from the Más sheet into the bar.
+  - "Más" holds Cerrar Sesión, and — for organizer/admin — Crear Evento
+    and Ver Usuarios.
   - The bar marks the active destination and navigates on tap; content gets
     bottom padding so nothing hides behind the fixed bar.
   - The bar itself pads with `env(safe-area-inset-bottom)` and the viewport
@@ -94,6 +97,13 @@ the audit's sketches.
     overflow menu in persistent chrome. Identity and role live on the
     Perfil screen; navigation lives in the BottomNav. (S5 superseded the
     O4-era per-screen `PageHeader` greeting header.)
+  - **Back navigation lives in the top bar (2026-07-09).** Screens that
+    are not bar destinations (event details/edit/manage/create,
+    car-group pages, other users' profiles, password flows, error pages)
+    get a back arrow on the AppBar's left; bar destinations (Eventos,
+    Glosario, Perfil, Usuarios, anonymous Home/Acceso/Registro) never
+    show one. The in-page `GoBack` component is deleted, and page titles
+    that merely duplicate the AppBar title are removed.
 - **FR-7 [TDD]** (Change 2) A "Crear Evento" FAB renders on the Event List
   for organizer/admin users only; volunteers and anonymous users never see it.
 - **FR-8 [TDD]** (Change 6) Email fields set `inputMode="email"`, phone
@@ -120,8 +130,15 @@ the audit's sketches.
 - **FR-14 [visual]** (Change 9) Signup phone fields stack on xs.
 - **FR-15 [visual]** (Change 10) CornerChip media query inverted to
   mobile-first; EventMessageBoard height responsive
-  (`maxHeight: { xs: 200, sm: 300 }`); GoBack simplified to arrow + label
-  (no `<hr>`); auth page links become `Button variant="text"`.
+  (`maxHeight: { xs: 200, sm: 300 }`); GoBack first simplified to arrow +
+  label, then deleted outright when back moved into the top bar (see
+  FR-6); auth page links become `Button variant="text"`.
+- **FR-16 [visual]** (2026-07-09) Visual hierarchy on the events screen:
+  informational chips must not wear the CTA coral — timeframe/status
+  chips use functional or neutral colors (per the AGENTS.md
+  brand-for-identity/ergonomics-for-function rule, coral is reserved for
+  primary actions), and the Próximos/Pasados timeframe filter renders as
+  a single exclusive toggle, not two separate buttons.
 
 ## Acceptance scenarios (the TDD'd FRs)
 
