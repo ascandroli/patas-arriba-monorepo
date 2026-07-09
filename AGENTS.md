@@ -100,6 +100,15 @@
   submodule commit references. Editing submodule code from the monorepo
   root and committing only at the root would orphan the changes — they
   must be committed and pushed in the upstream repo first.
+- **Brand for identity, ergonomics for function.** When brand fidelity and
+  usability collide in the client's design system: brand wins where an
+  element carries identity (primary color, display type, the token
+  vocabulary); ergonomics wins where it carries function (body type, input
+  sizes, touch geometry, radii). This one rule explains the coral 3.6:1
+  CTAs, the no-serif body, MUI-default type sizes, soft radii, and the
+  44px icon floor — apply it to new collisions (dark mode, chat bubbles)
+  instead of re-litigating. (Promoted 2026-07-09 from choice-story S7 of
+  `docs/superpowers/stories/design-system-apply-frontend.md`.)
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

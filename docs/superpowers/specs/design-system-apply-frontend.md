@@ -1,6 +1,6 @@
 ---
 diaboli: docs/superpowers/objections/design-system-apply-frontend.md (10/10 disposed)
-cartographer: pending
+cartographer: docs/superpowers/stories/design-system-apply-frontend.md (7/7 disposed)
 issue: 34
 ---
 
@@ -88,10 +88,12 @@ the audit's sketches.
   - The bar itself pads with `env(safe-area-inset-bottom)` and the viewport
     meta sets `viewport-fit=cover`, so an installed iOS PWA doesn't sink the
     bar under the home indicator (O7).
-  - **No global top bar (O4).** Screens own their headers, per the v6
-    pattern: main screens render a `PageHeader` (first-name greeting,
-    display-face title, avatar as profile shortcut). Role information is
-    shown on the Perfil screen, not in persistent chrome.
+  - **Title-only top bar (O4, revised by choice-story S5).** A standard
+    sticky MUI AppBar shows the current screen's title in the brand
+    display face — and nothing else: no username, role badge, avatar or
+    overflow menu in persistent chrome. Identity and role live on the
+    Perfil screen; navigation lives in the BottomNav. (S5 superseded the
+    O4-era per-screen `PageHeader` greeting header.)
 - **FR-7 [TDD]** (Change 2) A "Crear Evento" FAB renders on the Event List
   for organizer/admin users only; volunteers and anonymous users never see it.
 - **FR-8 [TDD]** (Change 6) Email fields set `inputMode="email"`, phone
