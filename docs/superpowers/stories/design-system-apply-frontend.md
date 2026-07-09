@@ -23,7 +23,7 @@ stories:
     lens: [forces, patterns]
     title: Anonymous visitors get the full app shell
     disposition: revisit
-    disposition_rationale: "The full anonymous shell ships in this PR, but the duplication cost on the one-job Home screen deserves a second look once real usage exists. Follow-up issue #36 tracks reconsidering a full-bleed auth funnel or slimmer anonymous bar. Disposed by ascandroli 2026-07-09."
+    disposition_rationale: "Initially deferred to issue #36, then resolved in-branch the same day: reviewing the logged-out state made the duplication concrete, and the full-bleed auth funnel won — anonymous users get no bar (the landing CTAs are the only path in; login/signup rely on the top-bar back arrow). Implemented test-first; #36 closes with the PR. Disposed by ascandroli 2026-07-09."
   - id: 5
     lens: [consequences, defaults]
     title: Role identity becomes sought, not ambient

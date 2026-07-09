@@ -79,7 +79,11 @@ the audit's sketches.
 
 - **FR-6 [TDD]** (Change 1, revised 2026-07-09 in-session) `BottomNavigation`
   replaces the hamburger drawer as primary navigation:
-  - Anonymous: Inicio, Acceso, Registro
+  - Anonymous: **no bar at all** — the landing page is the auth funnel
+    (its Regístrate / Inicia Sesión buttons are the only path in), and
+    login/signup rely on the top-bar back arrow. (Resolved 2026-07-09
+    from choice-story S4 / issue #36, superseding the earlier
+    Inicio/Acceso/Registro bar.)
   - Logged-in (all roles): **Eventos, Glosario, Perfil, Más** — there is no
     Inicio tab: Home and Eventos were near-duplicates, so `/` redirects
     logged-in users to `/event` (Home stays as the anonymous landing) and
